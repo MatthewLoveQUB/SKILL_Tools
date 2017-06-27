@@ -11,7 +11,6 @@
 				(pushf x result)))
 		(reverse result)))
 
-
 (defunqub foldl (fn init lst)
 	(let ((result init))
 		(foreach value lst
@@ -21,5 +20,5 @@
 (defunqub foldr (fn init lst)
 	,(qub->foldl ,fn ,init ,(reverse lst)))
 
-(display (qub->foldl plus 0 '(1 2 3 7)))
-(display (qub->foldr plus 0 '(1 2 3 7)))
+(defunqub sum (lst)
+	(qub->foldl plus 0 lst))
