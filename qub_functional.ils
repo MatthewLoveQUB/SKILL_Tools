@@ -11,5 +11,15 @@
 				(pushf x result)))
 		(reverse result)))
 
-(display ((qub->filter) (lambda (x) (equal 0 (mod x 2))) 
-												'(1 2 3 4 5 6)))
+
+(defunqub foldl (fn init lst)
+	(let ((result init))
+		(foreach value lst
+			(setq result (fn result value)))
+		result))
+
+(defunqub foldr (fn init lst)
+	,(qub->foldl ,fn ,init ,(reverse lst)))
+
+(display (qub->foldl plus 0 '(1 2 3 7)))
+(display (qub->foldr plus 0 '(1 2 3 7)))
