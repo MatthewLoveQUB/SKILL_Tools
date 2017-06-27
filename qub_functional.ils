@@ -1,0 +1,15 @@
+(define qub '(nil))
+
+(defmacro defunqub  (fn_name args @rest body)
+	`(let ((,fn_name (lambda ,args ,@body)))
+		(putprop qub ,fn_name (quote ,fn_name))))
+
+(defunqub filter (f lst)
+	(let ((result nil))
+		(foreach x lst
+			(when (f x)
+				(pushf x result)))
+		(reverse result)))
+
+(display ((qub->filter) (lambda (x) (equal 0 (mod x 2))) 
+												'(1 2 3 4 5 6)))
