@@ -1,8 +1,11 @@
-(define qub '(nil))
+(qub->create_module 'functional)
 
-(defmacro defunqub  (fn_name args @rest body)
-	`(let ((,fn_name (lambda ,args ,@body)))
-		(putprop qub ,fn_name (quote ,fn_name))))
+; Modules should be infinitely nestable
+; Also, implement a function to "import" them
+; kind of like "using" in C++ to reduce the number of arrows needed
+
+(defunqub module_test ()
+	(display "In a module!"))
 
 (defunqub filter (f lst)
 	(let ((result nil))

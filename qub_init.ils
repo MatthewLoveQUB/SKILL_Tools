@@ -1,0 +1,18 @@
+(setSkillPath (cons "/user/mlove/Projects/p_outpa/mlove/code"
+										(getSkillPath)))
+
+(define qub '(nil module_paths nil))
+
+(defmacro defunqub  (fn_name args @rest body)
+	`(let ((,fn_name (lambda ,args ,@body)))
+		(putprop qub ,fn_name (quote ,fn_name))))
+
+(defunqub test ()
+	(display "QUB Test Function\n"))
+
+(defunqub create_module m_name
+	`(putpropqq qub nil ,m_name))
+
+(load "qub_functional.ils")
+((qub->test))
+((qub->module_test))
