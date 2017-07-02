@@ -1,27 +1,24 @@
-(qub->create_module 'functional)
+(toplevel 'ils)
 
-; Modules should be infinitely nestable
-; Also, implement a function to "import" them
-; kind of like "using" in C++ to reduce the number of arrows needed
+;map = mapcar
+;filter = setof
 
-(defunqub module_test ()
-	(display "In a module!"))
-
-(defunqub filter (f lst)
-	(let ((result nil))
-		(foreach x lst
-			(when (f x)
-				(pushf x result)))
-		(reverse result)))
-
-(defunqub foldl (fn init lst)
+(defun foldl (fn init lst)
 	(let ((result init))
 		(foreach value lst
 			(setq result (fn result value)))
 		result))
 
-(defunqub foldr (fn init lst)
-	,(qub->foldl ,fn ,init ,(reverse lst)))
+(defmacro foldr (fn init lst)
+	`(foldl ,fn ,init ,(reverse lst)))
 
-(defunqub sum (lst)
-	(qub->foldl plus 0 lst))
+(defmacro sum (lst)
+	`(foldl plus 0 ,lst))
+        
+(define_syntax lcmp
+	(syntax_rules (for in if)
+		((lcmp expression for element in list)
+		 (mapcar (lambda (element) expression) list))
+		((lcmp expression for element in list if predicate)
+		 (mapcar (lambda (element) expression) (setof element list predicate)))))
+		 	
