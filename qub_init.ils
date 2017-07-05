@@ -1,9 +1,12 @@
 (toplevel 'ils)
 (setSkillPath (cons "/user/mlove/Projects/p_outpa/mlove/code"
 										(getSkillPath)))
-
+									
+(unless (findNamespace "qub")
+				(makeNamespace "qub"))
+				
 ; For mathematics
-(defMathConstants 'm)
+(defMathConstants 'qub:::m)
 
 (load "qub_prelude.ils")
 (load "qub_geometry.ils")

@@ -1,19 +1,19 @@
 ;map = mapcar
 ;filter = setof
 
-(defun foldl (fn init lst)
+(defun qub:::foldl (fn init lst)
 	(let ((result init))
 		(foreach value lst
 			(setq result (fn result value)))
 		result))
 
-(defmacro foldr (fn init lst)
+(defmacro qub:::foldr (fn init lst)
 	`(foldl ,fn ,init ,(reverse lst)))
 
-(defmacro sum (lst)
+(defmacro qub:::sum (lst)
 	`(foldl plus 0 ,lst))
         
-(define_syntax lcmp
+(define_syntax qub:::lcmp
 	(syntax_rules (for in if)
 		((lcmp expression for element in list)
 		 (mapcar (lambda (element) expression) list))
