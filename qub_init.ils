@@ -1,7 +1,9 @@
 (toplevel 'ils)
 (setSkillPath (cons "/user/mlove/Projects/p_outpa/mlove/code"
 										(getSkillPath)))
-									
+					
+; If the namespace hasn't been added yet then add it
+; makeNamespace throws an error if you try to add a namespace twice									
 (unless (findNamespace "qub")
 				(makeNamespace "qub"))
 				

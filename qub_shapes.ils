@@ -1,10 +1,12 @@
 ; Classes
 ; -------
 
-(defclass Shape () ())
+; Top level class
+(defclass qub:::Shape () ())
 
-(defclass RegularPolygon 
-  (Shape)
+; Represents any regular polygon
+(defclass qub:::RegularPolygon 
+  (qub:::Shape)
   ((side_length @initarg side_length
                 @reader get_side_length
                 @writer set_side_length)
@@ -12,35 +14,41 @@
               @reader get_num_sides
               @writer set_num_sides)))
               
-; Don't set num-sides
-(defclass Octagon
+; A regular octagon
+(defclass qub:::Octagon
   (RegularPolygon)
   ((num_sides @initform 8)))
   
 ; Methods
 ; -------  
   
-(defgeneric perimeter (shape))
-(defmethod perimeter ((shape RegularPolygon))
+; Calculates the perimeter
+(defgeneric qub:::perimeter (shape))
+(defmethod qub:::perimeter ((shape qub:::RegularPolygon))
   (times (get_side_length shape) (get_num_sides shape)))
 
-(defgeneric circumradius (shape))
-(defmethod circumradius ((shape RegularPolygon))
+; Finds the circumradius
+; i.e. the radius from the furthest point
+(defgeneric qub:::circumradius (shape))
+(defmethod qub:::circumradius ((shape qub:::RegularPolygon))
   (quotient (get_side_length shape)
             (times 2 (sin (quotient m.PI (get_num_sides shape))))))
 
-(defgeneric area (shape))
-(defmethod area ((shape RegularPolygon))
+; Area of the shape
+(defgeneric qub:::area (shape))
+(defmethod qub:::area ((shape qub:::RegularPolygon))
   (times 0.5
          (get_num_sides shape)
          (expt (circumradius shape) 2)
          (sin (quotient (times 2.0 m.PI) (get_num_sides shape)))))
 
-(defgeneric apothem (shape))
-(defmethod apothem ((shape RegularPolygon))
+; Apothem: Distance from the midpoint of a side to the centre
+(defgeneric qub:::apothem (shape))
+(defmethod qub:::apothem ((shape qub:::RegularPolygon))
   (times (circumradius shape)
          (cos (quotient m.PI (get_num_sides shape)))))
 
-(defgeneric internal_angle (shape))
-(defmethod internal_angle ((shape RegularPolygon))
+; Find the internal angle of the shape
+(defgeneric qub:::internal_angle (shape))
+(defmethod qub:::internal_angle ((shape qub:::RegularPolygon))
   (quotient 360.0 (get_num_sides shape)))

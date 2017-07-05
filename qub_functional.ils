@@ -1,6 +1,7 @@
 ;map = mapcar
 ;filter = setof
 
+; Rough versions of haskell's fold functions
 (defun qub:::foldl (fn init lst)
 	(let ((result init))
 		(foreach value lst
@@ -10,9 +11,11 @@
 (defmacro qub:::foldr (fn init lst)
 	`(foldl ,fn ,init ,(reverse lst)))
 
+; Sums a list
 (defmacro qub:::sum (lst)
 	`(foldl plus 0 ,lst))
         
+; List comprehension modelled after pythons
 (define_syntax qub:::lcmp
 	(syntax_rules (for in if)
 		((lcmp expression for element in list)

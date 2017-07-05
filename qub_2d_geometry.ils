@@ -1,9 +1,10 @@
 ; Using polar coordinates so east is 0 degrees, north 90 etc
 
-
+; Ensures an angle can't go beyond 360 degrees
 (defun qub:::fix_angle (angle "n")
   (mod angle 360))
   
+; Represents a point in 2D space
 (defclass qub:::Point2D ()
   ((x @initarg x
       @writer set_x
@@ -12,9 +13,11 @@
       @writer set_y
       @reader get_y)))
       
+; Helper function      
 (defun qub:::makePoint2D (x y)
 	(makeInstance 'Point2D ?x x ?y y))     
 
+; Represents a rotation action
 (defclass qub:::Rotation ()
   ((angle @initarg angle
           @writer set_angle
@@ -23,6 +26,7 @@
               @writer set_direction
               @reader get_direction)))
 
+; A point in 2D space with a direction
 (defclass qub:::State2D ()
   ((angle @initarg angle
           @writer set_angle
@@ -31,25 +35,27 @@
         @writer set_pos
         @reader get_pos)))
 
+; Helper methods to create a State2D either using a 
+; Point2D or just a two element list
 (defgeneric qub:::makeState2D (angle pos))
-(defmethod makeState2D ((angle number) (pos Pos2D))
+(defmethod makeState2D ((angle number) (pos qub:::Point2D))
   (makeInstance 'State2D ?angle angle ?pos pos))
 (defmethod makeState2D ((angle number) (pos list))
   (makeInstance 'State2D 
                 ?angle angle
-                ?pos (makeInstance 'Pos2D
-                                   ?x (car pos)
-                                   ?y (cadr pos))))
-                                   
+                ?pos (makePoint2D (car pos) (cadr pos))))
+                     
+; Applies a rotation to a state              
 (defgeneric qub:::rotate (target rotation))
 (defmethod rotate ((target State2D) (rotation Rotation))
-  (letseq ((f (case (get_direction rotation)
-                ('clockwise difference)
-                ('anticlockwise plus)))
+  (letseq ((f (caseq (get_direction rotation)
+                (clockwise difference)
+                (anticlockwise plus)))
            (new_angle (f (get_angle target)
                          (get_angle rotation))))
     (makeState2D new_angle (get_pos target))))                                   
-                        
+                  
+; Finds the gradient of two lines                        
 (defmethod qub:::gradient ((a Point2D) (b Point2D))
 	(let ((diff_x (difference (get_x b) (get_x a)))
 	 			(diff_y (difference (get_x b) (get_x a))))
@@ -57,7 +63,9 @@
 	  				(zerop diff_y))
 	  		0
 	  		(quotient diff_y diff_x))))                        
-                                  
+                     
+; Checks if all points are collinear
+; i.e. lie on the same straight line                                  
 (defmethod qub:::collinear? ((points list))
   (let ((ref_point (car points))
         (ref_slope (gradient (car points) (cadr points))))
@@ -65,15 +73,12 @@
       (foreach point (cddr points)
         (when (nequal ref_slope 
                       (gradient ref_point point))
-          (return nil)))
+          (return)))
       (return t))))
 
-; Unknown should either have an x or y coordinate
-; The other will be calculated by the function
-; in order to make the point collinear with the 
-; other two points
-;
-; It just uses the gradients to find the collinear point
+; Using two reference points that are known to be collinear
+; and an x or y coordinate, return a coordinate that is 
+; also on the same line
 (defmethod qub:::find_collinear_point ((unknown Point2D)
 			                                 (ref1 Point2D)
 			                                 (ref2 Point2D))
@@ -90,6 +95,9 @@
      (defun find_collinear_helper (f a b)
        (quotient (f core
                     (times (getn a 1)
+                    			 ; My derivation says that it
+                    			 ; should be b3 - b2 but it gives
+                    			 ; the wrong answer otherwise...
                            (difference (getn b 2)
                                        (getn b 3))))
                  (difference (getn a 3)
@@ -104,4 +112,4 @@
             						 (find_collinear_helper difference 
 									                              x_values 
 									                              y_values)))
-           (t (err "Both coordinates shouldn't be unknown.")))))                                 
+           (t (err "Both coordinates shouldn't be unknown.")))))                             
