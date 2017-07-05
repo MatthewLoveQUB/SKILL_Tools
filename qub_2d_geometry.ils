@@ -26,6 +26,16 @@
               @writer set_direction
               @reader get_direction)))
 
+(defmethod printself ((obj qub:::Rotation))
+	(sprintf nil "Rotation: %n degrees %s" 
+							 (get_angle obj) 
+							 (get_direction obj)))
+
+(defun qub:::makeRotation (angle direction)
+	(makeInstance 'qub:::Rotation
+		 						?angle angle
+		 						?direction direction))
+
 ; Applies a rotation to a state              
 (defgeneric qub:::rotate (target rotation))
 (defmethod rotate ((target State2D) (rotation Rotation))
@@ -36,5 +46,45 @@
                          (get_angle rotation))))
     (makeState2D new_angle (get_pos target))))                                   
                   
-                      
-                     
+(defun qub:::degreesToRadians (value "n")
+	(times qub:::m.PI (quotient value 180.0)))
+	
+(defun qub:::radiansToDegrees (value "n")
+	(times 180.0
+				 (quotient value qub:::m.PI)))
+                  
+; Macro for the use of directions
+; Contains relative and absolute results so be careful
+; Compass directions are absolute
+; Forward, back etc are all relative
+(define_syntax qub:::parseDirection
+	(syntax_rules (degrees rads radians face)
+		((_ number degrees)
+		 number)
+		((_ number radians)
+		 (qub:::radiansToDegrees number))
+		((_ turn number degrees direction)
+		 (qub:::makeRotation number direction))
+		((_ turn number radians direction)
+		 (qub:::makeRotation (qub:::radiansToDegrees number) direction))
+		((_ turn direction)
+		 (caseq direction
+		 	 (forward (qub:::makeRotation 0 'clockwise))
+		 	 (right (qub:::makeRotation 90 'clockwise))
+		 	 (left (qub:::makeRotation 90 'anticlockwise))
+		 	 (back (qub:::makeRotation 180 'clockwise))))
+		((_ face direction)
+		 (caseq direction
+		 	 ; These are absolute directions
+		 	 (north 90)
+		 	 (northeast 45)
+		 	 (east 0)
+		 	 (southeast 315)
+		 	 (south 270)
+		 	 (southwest 225)
+		 	 (west 180)
+		 	 (northwest 135)))))
+		 	 
+(printf "%d\n" (qub:::parseDirection 90 degrees))
+(printf "%f\n" (qub:::parseDirection (times 2 qub:::m.PI) radians))
+(printf "%s\n" (printself (qub:::parseDirection turn 90 degrees 'clockwise)))

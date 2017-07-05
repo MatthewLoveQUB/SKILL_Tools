@@ -58,11 +58,10 @@
                apothem
                (tan (quotient qub:::m.PI nsides))))
                                  
-(defmethod qub:::nextCoordinate 
-           ((shape qub:::RegularPolygon)
-            (pos qub:::Point2D)
-            ; Either 'clockwise or 'anticlockwise
-            (rotation_direction symbol))
+(defmethod qub:::nextCoordinate ((shape qub:::RegularPolygon)
+											           (pos qub:::Point2D)
+											           ; Either 'clockwise or 'anticlockwise
+											           (rotation_direction symbol))
   (letseq ((in_angle (qub:::internal_angle shape))
            (rot (makeInstance 'qub:::Rotation
                               ?angle in_angle

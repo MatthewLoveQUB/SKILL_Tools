@@ -1,3 +1,5 @@
+; The geometry functions use polar coordinates for the angle
+; This makes east 0 degrees, north 90 degrees etc
 (load "qub_2d_geometry.ils")
 (load "qub_2d_navigation.ils")
 (load "qub_line.ils")
