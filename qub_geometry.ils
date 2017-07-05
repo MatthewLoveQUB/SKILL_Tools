@@ -1,2 +1,4 @@
 (load "qub_2d_geometry.ils")
+(load "qub_2d_navigation.ils")
+(load "qub_line.ils")
 (load "qub_shapes.ils")

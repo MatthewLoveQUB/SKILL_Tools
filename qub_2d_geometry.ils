@@ -26,25 +26,6 @@
               @writer set_direction
               @reader get_direction)))
 
-; A point in 2D space with a direction
-(defclass qub:::State2D ()
-  ((angle @initarg angle
-          @writer set_angle
-          @reader get_angle)
-   (pos @initarg pos
-        @writer set_pos
-        @reader get_pos)))
-
-; Helper methods to create a State2D either using a 
-; Point2D or just a two element list
-(defgeneric qub:::makeState2D (angle pos))
-(defmethod makeState2D ((angle number) (pos qub:::Point2D))
-  (makeInstance 'State2D ?angle angle ?pos pos))
-(defmethod makeState2D ((angle number) (pos list))
-  (makeInstance 'State2D 
-                ?angle angle
-                ?pos (makePoint2D (car pos) (cadr pos))))
-                     
 ; Applies a rotation to a state              
 (defgeneric qub:::rotate (target rotation))
 (defmethod rotate ((target State2D) (rotation Rotation))
@@ -55,61 +36,5 @@
                          (get_angle rotation))))
     (makeState2D new_angle (get_pos target))))                                   
                   
-; Finds the gradient of two lines                        
-(defmethod qub:::gradient ((a Point2D) (b Point2D))
-	(let ((diff_x (difference (get_x b) (get_x a)))
-	 			(diff_y (difference (get_x b) (get_x a))))
-	  (if (or (zerop diff_x)
-	  				(zerop diff_y))
-	  		0
-	  		(quotient diff_y diff_x))))                        
+                      
                      
-; Checks if all points are collinear
-; i.e. lie on the same straight line                                  
-(defmethod qub:::collinear? ((points list))
-  (let ((ref_point (car points))
-        (ref_slope (gradient (car points) (cadr points))))
-    (prog ()
-      (foreach point (cddr points)
-        (when (nequal ref_slope 
-                      (gradient ref_point point))
-          (return)))
-      (return t))))
-
-; Using two reference points that are known to be collinear
-; and an x or y coordinate, return a coordinate that is 
-; also on the same line
-(defmethod qub:::find_collinear_point ((unknown Point2D)
-			                                 (ref1 Point2D)
-			                                 (ref2 Point2D))
-  (letseq ((coords (list unknown ref1 ref2))
-           (x_values (mapcar get_x coords))
-           (y_values (mapcar get_y coords))
-           (getn (lambda (lst n) (nth (sub1 n) lst)))
-           ; Core is just a variable that needs to be caculated
-           ; regardless of whether we're looking for x or y
-           (core (difference (times (getn x_values 2) 
-           													(getn y_values 3))
-                             (times (getn x_values 3) 
-                             				(getn y_values 2)))))
-     (defun find_collinear_helper (f a b)
-       (quotient (f core
-                    (times (getn a 1)
-                    			 ; My derivation says that it
-                    			 ; should be b3 - b2 but it gives
-                    			 ; the wrong answer otherwise...
-                           (difference (getn b 2)
-                                       (getn b 3))))
-                 (difference (getn a 3)
-                             (getn a 2))))
-     (cond ((null (get_x unknown))
-            (makePoint2D (find_collinear_helper plus 
-									                              y_values 
-									                              x_values)
-                         (get_y unknown)))
-           ((null (get_y unknown))
-            (makePoint2D (get_x unknown)
-            						 (find_collinear_helper difference 
-									                              x_values 
-									                              y_values)))
-           (t (err "Both coordinates shouldn't be unknown.")))))                             
