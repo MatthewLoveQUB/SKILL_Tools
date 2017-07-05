@@ -1,0 +1,46 @@
+; Classes
+; -------
+
+(defclass Shape () ())
+
+(defclass RegularPolygon 
+  (Shape)
+  ((side_length @initarg side_length
+                @reader get_side_length
+                @writer set_side_length)
+   (num_sides @initarg num_sides
+              @reader get_num_sides
+              @writer set_num_sides)))
+              
+; Don't set num-sides
+(defclass Octagon
+  (RegularPolygon)
+  ((num_sides @initform 8)))
+  
+; Methods
+; -------  
+  
+(defgeneric perimeter (shape))
+(defmethod perimeter ((shape RegularPolygon))
+  (times (get_side_length shape) (get_num_sides shape)))
+
+(defgeneric circumradius (shape))
+(defmethod circumradius ((shape RegularPolygon))
+  (quotient (get_side_length shape)
+            (times 2 (sin (quotient m.PI (get_num_sides shape))))))
+
+(defgeneric area (shape))
+(defmethod area ((shape RegularPolygon))
+  (times 0.5
+         (get_num_sides shape)
+         (expt (circumradius shape) 2)
+         (sin (quotient (times 2.0 m.PI) (get_num_sides shape)))))
+
+(defgeneric apothem (shape))
+(defmethod apothem ((shape RegularPolygon))
+  (times (circumradius shape)
+         (cos (quotient m.PI (get_num_sides shape)))))
+
+(defgeneric internal_angle (shape))
+(defmethod internal_angle ((shape RegularPolygon))
+  (quotient 360.0 (get_num_sides shape)))

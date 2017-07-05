@@ -2,11 +2,8 @@
 (setSkillPath (cons "/user/mlove/Projects/p_outpa/mlove/code"
 										(getSkillPath)))
 
-(defmacro create_module (module_root module_name @rest body)
-	`(let ((module qub))
-		(if (listp ,m_name)
-				(foreach nested_module ,m_name
-					(setq module (get module (quote nested_module))))
-				(setq module ,m_name))
-		(putprop module 
-		,@body))
+; For mathematics
+(defMathConstants 'm)
+
+(load "qub_prelude.ils")
+(load "qub_geometry.ils")

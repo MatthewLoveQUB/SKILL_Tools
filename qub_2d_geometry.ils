@@ -1,0 +1,107 @@
+; Using polar coordinates so east is 0 degrees, north 90 etc
+
+
+(defun fix_angle (angle "n")
+  (mod angle 360))
+  
+(defclass Point2D ()
+  ((x @initarg x
+      @writer set_x
+      @reader get_x)
+   (y @initarg y
+      @writer set_y
+      @reader get_y)))
+      
+(defun makePoint2D (x y)
+	(makeInstance 'Point2D ?x x ?y y))     
+
+(defclass Rotation ()
+  ((angle @initarg angle
+          @writer set_angle
+          @reader get_angle)
+   (direction @initarg direction
+              @writer set_direction
+              @reader get_direction)))
+
+(defclass State2D ()
+  ((angle @initarg angle
+          @writer set_angle
+          @reader get_angle)
+   (pos @initarg pos
+        @writer set_pos
+        @reader get_pos)))
+
+(defgeneric makeState2D (angle pos))
+(defmethod makeState2D ((angle number) (pos Pos2D))
+  (makeInstance 'State2D ?angle angle ?pos pos))
+(defmethod makeState2D ((angle number) (pos list))
+  (makeInstance 'State2D 
+                ?angle angle
+                ?pos (makeInstance 'Pos2D
+                                   ?x (car pos)
+                                   ?y (cadr pos))))
+                                   
+(defgeneric rotate (target rotation))
+(defmethod rotate ((target State2D) (rotation Rotation))
+  (letseq ((f (case (get_direction rotation)
+                ('clockwise difference)
+                ('anticlockwise plus)))
+           (new_angle (f (get_angle target)
+                         (get_angle rotation))))
+    (makeState2D new_angle (get_pos target))))                                   
+                        
+(defmethod gradient ((a Point2D) (b Point2D))
+	(let ((diff_x (difference (get_x b) (get_x a)))
+	 			(diff_y (difference (get_x b) (get_x a))))
+	  (if (or (zerop diff_x)
+	  				(zerop diff_y))
+	  		0
+	  		(quotient diff_y diff_x))))                        
+                                  
+(defmethod collinear? ((points list))
+  (let ((ref_point (car points))
+        (ref_slope (gradient (car points) (cadr points))))
+    (prog ()
+      (foreach point (cddr points)
+        (when (nequal ref_slope 
+                      (gradient ref_point point))
+          (return nil)))
+      (return t))))
+
+; Unknown should either have an x or y coordinate
+; The other will be calculated by the function
+; in order to make the point collinear with the 
+; other two points
+;
+; It just uses the gradients to find the collinear point
+(defmethod find_collinear_point ((unknown Point2D)
+                                 (ref1 Point2D)
+                                 (ref2 Point2D))
+  (letseq ((coords (list unknown ref1 ref2))
+           (x_values (mapcar get_x coords))
+           (y_values (mapcar get_y coords))
+           (getn (lambda (lst n) (nth (sub1 n) lst)))
+           ; Core is just a variable that needs to be caculated
+           ; regardless of whether we're looking for x or y
+           (core (difference (times (getn x_values 2) 
+           													(getn y_values 3))
+                             (times (getn x_values 3) 
+                             				(getn y_values 2)))))
+     (defun find_collinear_helper (f a b)
+       (quotient (f core
+                    (times (getn a 1)
+                           (difference (getn b 2)
+                                       (getn b 3))))
+                 (difference (getn a 3)
+                             (getn a 2))))
+     (cond ((null (get_x unknown))
+            (makePoint2D (find_collinear_helper plus 
+									                              y_values 
+									                              x_values)
+                         (get_y unknown)))
+           ((null (get_y unknown))
+            (makePoint2D (get_x unknown)
+            						 (find_collinear_helper difference 
+									                              x_values 
+									                              y_values)))
+           (t (err "Both coordinates shouldn't be unknown.")))))                                 
