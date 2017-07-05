@@ -1,0 +1,167 @@
+(defclass Shape () ())
+
+(defclass RegularPolygon 
+  (Shape)
+  ((side_length @initarg side_length
+                @reader get_side_length
+                @writer set_side_length)
+   (num_sides @initarg num_sides
+              @reader get_num_sides
+              @writer set_num_sides)))
+
+(setq oct (makeInstance 'RegularPolygon ?side_length 10 
+                                        ?num_sides 8))
+(print (get_side_length oct))
+
+(defun fix_angle (angle "n")
+  (mod angle 360))
+
+; Don't set num-sides
+(defclass Octagon
+  (RegularPolygon)
+  ((num_sides @initform 8)))
+
+; For mathematics
+(defMathConstants 'm)
+
+(defgeneric perimeter (shape))
+(defmethod perimeter ((shape RegularPolygon))
+  (times (get_side_length shape) (get_num_sides shape)))
+
+(defgeneric circumradius (shape))
+(defmethod circumradius ((shape RegularPolygon))
+  (quotient (get_side_length shape)
+            (times 2 (sin (quotient m.PI (get_num_sides shape))))))
+
+(defgeneric area (shape))
+(defmethod area ((shape RegularPolygon))
+  (times 0.5
+         (get_num_sides shape)
+         (expt (circumradius shape) 2)
+         (sin (quotient (times 2.0 m.PI) (get_num_sides shape)))))
+
+(defgeneric apothem (shape))
+(defmethod apothem ((shape RegularPolygon))
+  (times (circumradius shape)
+         (cos (quotient m.PI (get_num_sides shape)))))
+
+(defgeneric internal_angle (shape))
+(defmethod internal_angle ((shape RegularPolygon))
+  (quotient 360.0 (get_num_sides shape)))
+
+(defclass Point2D ()
+  ((x @initarg x
+      @writer set_x
+      @reader get_x)
+   (y @initarg y
+      @writer set_y
+      @reader get_y)))
+
+; Using polar coordinates so east is 0 degrees, north 90 etc
+
+(defclass Rotation ()
+  ((angle @initarg angle
+          @writer set_angle
+          @reader get_angle)
+   (direction @initarg direction
+              @writer set_direction
+              @reader get_direction)))
+
+(defclass State2D ()
+  ((angle @initarg angle
+          @writer set_angle
+          @reader get_angle)
+   (pos @initarg pos
+        @writer set_pos
+        @reader get_pos)))
+
+(defgeneric makeState2D (angle pos))
+(defmethod makeState2D ((angle number) (pos Pos2D))
+  (makeInstance 'State2D ?angle angle ?pos pos))
+(defmethod makeState2D ((angle number) (pos list))
+  (makeInstance 'State2D 
+                ?angle angle
+                ?pos (makeInstance 'Pos2D
+                                   ?x (car pos)
+                                   ?y (cadr pos))))
+
+(defun check_type (instance expected_type)
+  (unless (classp instance expected_type)
+          (error "Expected a %s\n" (get_pname expected_type))))
+
+(defgeneric rotate (target rotation))
+(defmethod rotate ((target State2D) (rotation Rotation))
+  (letseq ((f (case (get_direction rotation)
+                ('clockwise difference)
+                ('anticlockwise plus)))
+           (new_angle (f (get_angle target)
+                         (get_angle rotation))))
+    (makeState2D new_angle (get_pos target))))
+
+(defmethod gradient ((a Point2D) (b Point2D))
+	(let ((diff_x (difference (get_x b) (get_x a)))
+	 			(diff_y (difference (get_x b) (get_x a))))
+	  (if (or (zerop diff_x)
+	  				(zerop diff_y))
+	  		0
+	  		(quotient diff_y diff_x))))
+
+(defmethod collinear? ((points list))
+  (let ((ref_point (car points))
+        (ref_slope (gradient (car points) (cadr points))))
+    (prog ()
+      (foreach point (cddr points)
+        (when (nequal ref_slope 
+                      (gradient ref_point point))
+          (return nil)))
+      (return t))))
+
+(defun makePoint2D (x y)
+	(makeInstance 'Point2D ?x x ?y y))
+
+; Unknown should either have an x or y coordinate
+; The other will be calculated by the function
+; in order to make the point collinear with the 
+; other two points
+;
+; It just uses the gradients to find the collinear point
+(defmethod find_collinear_point ((unknown Point2D)
+                                 (ref1 Point2D)
+                                 (ref2 Point2D))
+  (letseq ((coords (list unknown ref1 ref2))
+           (x_values (mapcar get_x coords))
+           (y_values (mapcar get_y coords))
+           (getn (lambda (lst n) (nth (sub1 n) lst)))
+           ; Core is just a variable that needs to be caculated
+           ; regardless of whether we're looking for x or y
+           (core (difference (times (getn x_values 2) 
+           													(getn y_values 3))
+                             (times (getn x_values 3) 
+                             				(getn y_values 2)))))
+     (defun find_collinear_helper (f a b)
+       (quotient (f core
+                    (times (getn a 1)
+                           (difference (getn b 2)
+                                       (getn b 3))))
+                 (difference (getn a 3)
+                             (getn a 2))))
+     (cond ((null (get_x unknown))
+            (makePoint2D (find_collinear_helper plus 
+									                              y_values 
+									                              x_values)
+                         (get_y unknown)))
+           ((null (get_y unknown))
+            (makePoint2D (get_x unknown)
+            						 (find_collinear_helper difference 
+									                              x_values 
+									                              y_values)))
+           (t (err "Both coordinates shouldn't be unknown.")))))
+
+
+(define myunknown (makePoint2D 5 nil))
+(define myref1 (makePoint2D 3 0))
+(define myref2 (makePoint2D 4 0))
+
+(define fnd (find_collinear_point myunknown myref1 myref2))
+(printf "%d %d\n" (get_x fnd) (get_y fnd))
+(print (collinear? (list fnd myref1 myref2)))
