@@ -1,0 +1,36 @@
+(unless (findNamespace "qtest")
+				(makeNamespace "qtest"))
+				
+(defclass qtest:::Result ()
+	; Result can be 'Pass or 'Fail
+	((result @initform result
+					 @reader get_result
+					 @writer set_result)
+	 (msg	@initform msg
+	 			@reader get_msg
+	 			@writer set_msg)))
+	 
+; Create function and return a list of its name and
+; the function object. To be used inside qtest:::TestRunner
+(defmacro qtest:::TestCase (fn_name @rest body)
+`(let ((f (lambda () ,@body)))
+		(list ',fn_name f)))
+			
+; Assertion Functions
+(defun qtest:::assert (a b @optional (msg nil))
+	t)
+			
+(defun qtest:::assertEqual (a b)
+	(assert (equal a b)))
+	
+(defun qtest:::assertNotEqual (a b)
+	(assert (nequal a b)))
+			
+(defun qtest:::TestSuite (@rest tests)
+	(printf "%L\n" tests)
+	(foreach test tests
+		(funcall (cadr test))))
+	
+(qtest:::TestSuite 
+	(qtest:::TestCase t1 () (qtest:::assertEqual 2 2))
+	(qtest:::TestCase t2 () (qtest:::assertEqual 1 2)))
