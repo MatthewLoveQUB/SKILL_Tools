@@ -43,10 +43,12 @@
 			
 (defun qtest:::TestSuite (@rest tests)
 	(let ((ntests (length tests))
-				(failures nil))
+				(failures (list)))
 		(foreach test tests
 			(pushf (qtest:::runTest test failures) failures))
-		(printf "%L" failures)))
+		(printf "%n of %n tests failed.\n" 
+						(sub1 (length failures))
+						ntests)))
 			
 	
 (qtest:::TestSuite 
