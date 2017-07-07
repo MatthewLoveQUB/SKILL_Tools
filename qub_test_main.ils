@@ -33,22 +33,22 @@
 (defun qtest:::assertNotEqual (a b @optional (msg "No msg."))
 	(assert (nequal a b) msg))
 			
-(defun qtest:::runTest (test result_list)
-	(let ((test_result (funcall (cadr test))))
-		(when (eq 'Fail (get_result test_result))
-					(sprintf nil 
-									 "%s failed: %s"
-									 (car test)
-									 (get_msg test_result)))))
-			
+(defun qtest:::runTests (tests)
+	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
+					 (fails (setof x results (eq 'Fail (get_result (cadr x)))))
+					 (formatted_results (mapcar (lambda (x) (sprintf nil 
+					 																								 "%s failed: %s" 
+					 																								 (car x) 
+					 																								 (get_msg (cadr x))))
+					 														fails)))
+		formatted_results))
+
 (defun qtest:::TestSuite (@rest tests)
-	(let ((ntests (length tests))
-				(failures (list)))
-		(foreach test tests
-			(pushf (qtest:::runTest test failures) failures))
-		(printf "%n of %n tests failed.\n" 
-						(sub1 (length failures))
-						ntests)))
+	(letseq ((ntests (length tests))
+				   (failures (qtest:::runTests tests))
+				   (nfailures (length failures)))
+		(printf "%n of %n tests failed.\n" nfailures ntests)
+		(mapc (lambda (x) (printf "%s\n" x)) failures)))
 			
 	
 (qtest:::TestSuite 
