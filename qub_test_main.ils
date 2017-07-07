@@ -33,6 +33,7 @@
 (defun qtest:::assertNotEqual (a b @optional (msg "No msg."))
 	(assert (nequal a b) msg))
 			
+; Test runner. Automatically called by the test suite
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 					 (fails (setof x results (eq 'Fail (get_result (cadr x)))))
@@ -43,6 +44,7 @@
 					 														fails)))
 		formatted_results))
 
+; Runs each of the tests defined in the body
 (defun qtest:::TestSuite (@rest tests)
 	(letseq ((ntests (length tests))
 				   (failures (qtest:::runTests tests))
