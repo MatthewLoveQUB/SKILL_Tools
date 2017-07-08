@@ -33,4 +33,4 @@
 		(qtest:::TestCase rotate_45acw
 			(qtest:::assertEqual 45 (f 0 (qub:::makeRotation 45 'anticlockwise))))
 		(qtest:::TestCase invalid_rot_direction
-			(qtest:::assertRaises f (list 0 (qub:::makeRotation 45 'foo)) "Should fail."))))
+			(qtest:::assertRaises f (list 0 (qub:::makeRotation 45 'clockwise)) "Should fail."))))

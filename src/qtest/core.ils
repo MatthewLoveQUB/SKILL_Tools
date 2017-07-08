@@ -27,7 +27,7 @@
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
 					 (formatted_results (mapcar (lambda (x) (sprintf nil 
-					 																								 "Test failure: %s\nMsg: %s\nInputs:%N" 
+					 																								 "Test failure: %s\nMsg: %s\nInputs:%A" 
 					 																								 (car x) 
 					 																								 (get_msg (cadr x))
 					 																								 (get_inputs (cadr x))))
