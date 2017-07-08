@@ -28,30 +28,35 @@
 
 (defmethod printself ((obj qub:::Rotation))
 	(sprintf nil "Rotation: %n degrees %s" 
-							 (get_angle obj) 
-							 (get_direction obj)))
+                     (get_angle obj) 
+		     (get_direction obj)))
 
 (defun qub:::makeRotation (angle direction)
 	(makeInstance 'qub:::Rotation
-		 						?angle angle
-		 						?direction direction))
+		      ?angle angle
+		      ?direction direction))
 
 ; Applies a rotation to a state              
-(defgeneric qub:::rotate (target rotation))
-(defmethod rotate ((target State2D) (rotation Rotation))
+(defmethod qub:::rotate ((target qub:::State2D) (rotation qub:::Rotation))
   (letseq ((f (caseq (get_direction rotation)
                 (clockwise difference)
                 (anticlockwise plus)))
-           (new_angle (f (get_angle target)
-                         (get_angle rotation))))
-    (makeState2D new_angle (get_pos target))))                                   
-                  
+           (new_angle (f (get_angle target) (get_angle rotation))))
+    (qub:::makeState2D new_angle (get_pos target))))
+                                      
+(defmethod qub:::rotate ((target number) (rotation qub:::Rotation))
+  (letseq ((f (caseq (get_direction rotation)
+                (clockwise difference)
+                (anticlockwise plus)
+                (t (err "Invalid rotation direction provided."))))
+           (new_angle (f target (get_angle rotation))))
+    new_angle))
+
 (defun qub:::degreesToRadians (value "n")
 	(times qub:::m.PI (quotient value 180.0)))
 	
 (defun qub:::radiansToDegrees (value "n")
-	(times 180.0
-				 (quotient value qub:::m.PI)))
+	(times 180.0 (quotient value qub:::m.PI)))
                   
 ; Macro for the use of directions
 ; Contains relative and absolute results so be careful

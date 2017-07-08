@@ -1,4 +1,5 @@
 (qtest:::runSuites 
+	; Testing fix_angle
 	(qtest:::TestSuite ((f qub:::fix_angle))
 		(qtest:::TestCase within_range
 			(qtest:::assertEqual 45 (f 45) "Between 0-360 should return itself"))
@@ -16,6 +17,18 @@
 			(qtest:::assertEqual 0 (f -360)))
 		(qtest:::TestCase much_much_below_0
 			(qtest:::assertEqual 1 (f -719))))
+	; Testing Point2D class
 	(qtest:::TestSuite ((f qub:::makePoint2D) (cls 'qub:::Point2D))
 		(qtest:::TestCase check_initialisation
-			(qtest:::assertIsInstance (f 0 0) cls))))
+			(qtest:::assertIsInstance (f 0 0) cls)))
+	; Testing Rotation class
+	(qtest:::TestSuite ((f qub:::makeRotation) (cls 'qub:::Rotation))
+		(qtest:::TestCase check_initialisation
+			(qtest:::assertIsInstance (f 0 0) cls)))
+	; Test applying a rotation
+	(qtest:::TestSuite ((f qub:::rotate) (state (qub:::makeState2D 45 (list 0 0))))
+		; Test rotating numbers first
+		(qtest:::TestCase rotate_45cw
+			(qtest:::assertEqual -45 (f 0 (qub:::makeRotation 45 'clockwise))))
+		(qtest:::TestCase rotate_45acw
+			(qtest:::assertEqual 45 (f 0 (qub:::makeRotation 45 'anticlockwise))))))
