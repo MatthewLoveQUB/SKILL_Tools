@@ -42,5 +42,4 @@
 	(not (classp obj cls)))
 	
 (qtest:::defassert Raises (fn args)
-	; use apply with a catch block
-	t)
+	(not (null (errset (apply fn args)))))
