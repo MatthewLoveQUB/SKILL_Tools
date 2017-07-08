@@ -35,8 +35,9 @@
 		formatted_results))
 
 ; Runs each of the tests defined in the body
-(defun qtest:::TestSuite (@rest tests)
-	tests)
+(defmacro qtest:::TestSuite (let_lst @rest tests)
+	`(let ,let_lst
+		(list ,@tests)))
 
 (defun qtest:::runSuites (@rest suites)
 	(letseq ((tests (qub:::join_lists suites))
