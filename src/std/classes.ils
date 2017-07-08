@@ -1,0 +1,23 @@
+; Used to compare objects
+(defgeneric qub:::equal (a b) ())
+
+(defun qub:::nequal (a b)
+	(not (qub:::equal a b)))
+
+; Should only be in the format (defun fn (a b))
+(defmacro qub:::eqfn (class @rest body)
+	`(defmethod qub:::equal ((a ,class) (b ,class))
+		,@body))
+
+(qub:::eqfn number (equal a b))
+	
+(qub:::eqfn qub:::Point2D
+	(and (equal (get_x a) (get_x b))
+			 (equal (get_y a) (get_y b))))
+			 
+(qub:::eqfn qub:::State2D
+	(and (equal (get_angle a) (get_angle b))
+			 (qub:::equal (get_pos a) (get_pos b))))
+	
+(defun qub:::all_equal (@rest values)
+	(forall x (cdr values) (qub:::equal (car values) x)))

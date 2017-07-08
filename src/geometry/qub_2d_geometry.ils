@@ -13,6 +13,9 @@
       @writer set_y
       @reader get_y)))
       
+(defmethod printself ((obj qub:::Point2D))
+	(sprintf nil "[Point2D x: %n y: %n]" (get_x obj) (get_y obj)))      
+      
 ; Helper function      
 (defun qub:::makePoint2D (x y)
 	(makeInstance 'qub:::Point2D ?x x ?y y))     

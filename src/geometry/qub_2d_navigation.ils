@@ -17,6 +17,12 @@
                 ?angle angle
                 ?pos (qub:::makePoint2D (car pos) (cadr pos))))
        
+(defmethod printself ((obj qub:::State2D))
+	(sprintf nil 
+					 "[State2D Angle: %n Pos: %A]" 
+					 (get_angle obj)
+					 (get_pos obj)))
+       
 ;(defgeneric qub:::move2D (currentState distance direction))        
 ;(defmethod qub:::move2D ((currentState qub:::State2D)
 ;												 (distance number)

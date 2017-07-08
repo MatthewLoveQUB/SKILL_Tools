@@ -4,10 +4,10 @@
 			(qtest:::makeResult 'Fail msg test_inputs)))
 
 (defun qtest:::assertEqual (a b @optional (msg "No msg."))
-	(qtest:::assert (equal a b) (list a b) msg))
+	(qtest:::assert (qub:::equal a b) (list a b) msg))
 	
 (defun qtest:::assertNotEqual (a b @optional (msg "No msg."))
-	(qtest:::assert (nequal a b) (list a b)))
+	(qtest:::assert (qub:::nequal a b) (list a b)))
 		
 (defun qtest:::assertTrue (x @optional (msg "No msg."))
 	(qtest:::assert (not (null x)) x))
