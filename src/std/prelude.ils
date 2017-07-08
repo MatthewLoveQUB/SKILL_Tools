@@ -1,5 +1,3 @@
 (defun qub:::check_type (instance expected_type)
   (unless (classp instance expected_type)
           (error "Expected a %s\n" (get_pname expected_type))))
-          
-(load "qub_functional.ils")

@@ -1,0 +1,3 @@
+(qub:::create_module "qub" "std/"
+	(modload "prelude.ils")
+	(modload "functional.ils"))

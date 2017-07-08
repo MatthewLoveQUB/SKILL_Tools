@@ -1,0 +1,46 @@
+(defun qtest:::assert (test @optional (msg "No msg."))
+	(if test
+			(qtest:::makeResult 'Pass msg)
+			(qtest:::makeResult 'Fail msg)))
+
+(defmacro qtest:::defassert (fn_name args test)
+	`(defun ,(makeSymbol (sprintf nil "qtest:::assert%s" fn_name)) 
+					(,@args @optional (msg "No msg."))
+		(qtest:::assert ,test msg)))
+
+(defun qtest:::assertEqual (a b @optional (msg "No msg."))
+	(qtest:::assert (equal a b) msg))
+	
+(qtest:::defassert Equal (a b)
+	(equal a b))
+	
+(qtest:::defassert NotEqual (a b)
+	(nequal a b))
+		
+(qtest:::defassert True (x)
+	(not (null x)))
+	
+(qtest:::defassert Nil (x)
+	(null x))
+	
+(qtest:::defassert Eq (a b)
+	(eq a b))
+	
+(qtest:::defassert NotEq (a b)
+	(neq a b))
+	
+(qtest:::defassert Member (value lst)
+	(member value lst))
+	
+(qtest:::defassert NotMember (value lst)
+	(not (member value lst)))
+	
+(qtest:::defassert IsInstance (obj cls)
+	(classp obj cls))
+	
+(qtest:::defassert NotIsInstance (obj cls)
+	(not (classp obj cls)))
+	
+(qtest:::defassert Raises (fn args)
+	; use apply with a catch block
+	t)

@@ -1,6 +1,3 @@
-(unless (findNamespace "qtest")
-				(makeNamespace "qtest"))
-				
 (defclass qtest:::Result ()
 	; Result can be 'Pass or 'Fail
 	((result @initarg result
@@ -20,19 +17,7 @@
 (defmacro qtest:::TestCase (fn_name @rest body)
 `(let ((f (lambda () ,@body)))
 		(list ',fn_name f)))
-			
-; Assertion Functions
-(defun qtest:::assert (test @optional (msg "No msg."))
-	(if test
-			(qtest:::makeResult 'Pass msg)
-			(qtest:::makeResult 'Fail msg)))
-
-(defun qtest:::assertEqual (a b @optional (msg "No msg."))
-	(qtest:::assert (equal a b) msg))
-	
-(defun qtest:::assertNotEqual (a b @optional (msg "No msg."))
-	(assert (nequal a b) msg))
-			
+				
 ; Test runner. Automatically called by the test suite
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
@@ -52,9 +37,3 @@
 		(printf "%n of %n tests failed.\n" nfailures ntests)
 		(mapc (lambda (x) (printf "%s\n" x)) failures)))
 			
-	
-(qtest:::TestSuite 
-	(qtest:::TestCase t1 () 
-		(qtest:::assertEqual 2 2 "Checking equality"))
-	(qtest:::TestCase t2 () 
-		(qtest:::assertEqual 1 2 "Should fail.")))

@@ -16,7 +16,7 @@
               
 ; A regular octagon
 (defclass qub:::Octagon
-  (RegularPolygon)
+  (qub:::RegularPolygon)
   ((num_sides @initform 8)))
   
 ; Methods

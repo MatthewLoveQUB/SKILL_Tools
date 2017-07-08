@@ -17,10 +17,10 @@
                 ?angle angle
                 ?pos (makePoint2D (car pos) (cadr pos))))
        
-(defgeneric qub:::move2D (currentState distance direction))        
-(defmethod qub:::move2D ((currentState qub:::State2D)
-												 (distance number)
-												 @key
-												 (direction number))
-	t)		 
+;(defgeneric qub:::move2D (currentState distance direction))        
+;(defmethod qub:::move2D ((currentState qub:::State2D)
+;												 (distance number)
+;												 @key
+;												 (direction number))
+;	t)		 
 																
