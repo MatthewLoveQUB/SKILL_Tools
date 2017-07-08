@@ -1,0 +1,9 @@
+(let ((f qub:::fix_angle))
+	(qtest:::runSuites 
+		(qtest:::TestSuite
+			(qtest:::TestCase within_range
+				(qtest:::assertEqual 45 (f 45) "Between 0-360 should return itself"))
+			(qtest:::TestCase full_circle
+				(qtest:::assertEqual 0 (f 360) "360 should be converted to 0"))
+			(qtest:::TestCase Zero
+				(qtest:::assertEqual 0 (f 0) "A zero input should return zero")))))
