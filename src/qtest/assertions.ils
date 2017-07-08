@@ -1,7 +1,7 @@
-(defun qtest:::assert (test @optional (msg "No msg."))
+(defun qtest:::assert (test test_inputs @optional (msg "No msg."))
 	(if test
-			(qtest:::makeResult 'Pass msg)
-			(qtest:::makeResult 'Fail msg)))
+			(qtest:::makeResult 'Pass msg test_inputs)
+			(qtest:::makeResult 'Fail msg test_inputs)))
 
 (defmacro qtest:::defassert (fn_name args test)
 	`(defun ,(makeSymbol (sprintf nil "qtest:::assert%s" fn_name)) 
@@ -9,7 +9,7 @@
 		(qtest:::assert ,test msg)))
 
 (defun qtest:::assertEqual (a b @optional (msg "No msg."))
-	(qtest:::assert (equal a b) msg))
+	(qtest:::assert (equal a b) (list a b) msg))
 	
 (qtest:::defassert Equal (a b)
 	(equal a b))

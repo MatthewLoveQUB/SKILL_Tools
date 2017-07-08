@@ -5,12 +5,16 @@
 					 @writer set_result)
 	 (msg	@initarg msg
 	 			@reader get_msg
-	 			@writer set_msg)))
+	 			@writer set_msg)
+	 (inputs @initarg inputs
+	 				 @reader get_inputs
+	 				 @writer set_inputs)))
 	 
-(defun qtest:::makeResult (result msg)
+(defun qtest:::makeResult (result msg inputs)
 	(makeInstance 'qtest:::Result 
 								?result result 
-								?msg msg))
+								?msg msg
+								?inputs inputs))
 	 
 ; Create function and return a list of its name and
 ; the function object. To be used inside qtest:::TestRunner
@@ -21,11 +25,12 @@
 ; Test runner. Automatically called by the test suite
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
-					 (fails (setof x results (eq 'Fail (get_result (cadr x)))))
+					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
 					 (formatted_results (mapcar (lambda (x) (sprintf nil 
-					 																								 "%s failed: %s" 
+					 																								 "%s failed\nMsg: %s\nInputs:%N" 
 					 																								 (car x) 
-					 																								 (get_msg (cadr x))))
+					 																								 (get_msg (cadr x))
+					 																								 (get_inputs (cadr x))))
 					 														fails)))
 		formatted_results))
 
@@ -34,10 +39,13 @@
 	tests)
 
 (defun qtest:::runSuites (@rest suites)
-	(letseq ((tests (append suites))
+	(letseq ((tests (qub:::join_lists suites))
 					 (ntests (length tests))
 				   (failures (qtest:::runTests tests))
 				   (nfailures (length failures)))
-		(printf "%n of %n tests failed.\n" nfailures ntests)
+		(printf "%n of %n tests passed.(%n failures)" 
+						(difference ntests nfailures)
+						ntests
+						nfailures)
 		(mapc (lambda (x) (printf "%s\n" x)) failures)))
 			
