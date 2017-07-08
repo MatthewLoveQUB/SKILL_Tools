@@ -31,7 +31,11 @@
 
 ; Runs each of the tests defined in the body
 (defun qtest:::TestSuite (@rest tests)
-	(letseq ((ntests (length tests))
+	tests)
+
+(defun qtest:::runSuites (@rest suites)
+	(letseq ((tests (append suites))
+					 (ntests (length tests))
 				   (failures (qtest:::runTests tests))
 				   (nfailures (length failures)))
 		(printf "%n of %n tests failed.\n" nfailures ntests)
