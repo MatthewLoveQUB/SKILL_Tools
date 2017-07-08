@@ -15,4 +15,7 @@
 		(qtest:::TestCase minus_360
 			(qtest:::assertEqual 0 (f -360)))
 		(qtest:::TestCase much_much_below_0
-			(qtest:::assertEqual 1 (f -719)))))
+			(qtest:::assertEqual 1 (f -719))))
+	(qtest:::TestSuite ((f qub:::makePoint2D) (cls 'qub:::Point2D))
+		(qtest:::TestCase check_initialisation
+			(qtest:::assertIsInstance (f 0 0) cls))))

@@ -15,7 +15,7 @@
       
 ; Helper function      
 (defun qub:::makePoint2D (x y)
-	(makeInstance 'Point2D ?x x ?y y))     
+	(makeInstance 'qub:::Point2D ?x x ?y y))     
 
 ; Represents a rotation action
 (defclass qub:::Rotation ()
