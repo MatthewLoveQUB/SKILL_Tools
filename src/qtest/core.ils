@@ -43,7 +43,7 @@
 					 (ntests (length tests))
 				   (failures (qtest:::runTests tests))
 				   (nfailures (length failures)))
-		(printf "%n of %n tests passed.(%n failures)" 
+		(printf "%n of %n tests passed.(%n failures)\n" 
 						(difference ntests nfailures)
 						ntests
 						nfailures)

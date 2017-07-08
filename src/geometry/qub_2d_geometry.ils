@@ -2,7 +2,7 @@
 
 ; Ensures an angle can't go beyond 360 degrees
 (defun qub:::fix_angle (angle "n")
-  (mod angle 360))
+  (modulo angle 360))
   
 ; Represents a point in 2D space
 (defclass qub:::Point2D ()

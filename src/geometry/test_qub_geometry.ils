@@ -6,4 +6,14 @@
 			(qtest:::TestCase full_circle
 				(qtest:::assertEqual 0 (f 360) "360 should be converted to 0"))
 			(qtest:::TestCase Zero
-				(qtest:::assertEqual 0 (f 0) "A zero input should return zero")))))
+				(qtest:::assertEqual 0 (f 0) "A zero input should return zero"))
+			(qtest:::TestCase above_360
+				(qtest:::assertEqual 1 (f 361) "Should remove 360"))
+			(qtest:::TestCase below_0 
+				(qtest:::assertEqual 359 (f -1) "Negative angles"))
+			(qtest:::TestCase much_below_0
+				(qtest:::assertEqual 1 (f -359) "Should give 1 degree"))
+			(qtest:::TestCase minus_360
+				(qtest:::assertEqual 0 (f -360)))
+			(qtest:::TestCase much_much_below_0
+				(qtest:::assertEqual 1 (f -719))))))
