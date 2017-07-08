@@ -1,0 +1,2 @@
+(defun qub:::join_lists (lst)
+	(qub:::foldl append (list) lst))

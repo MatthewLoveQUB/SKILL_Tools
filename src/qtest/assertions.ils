@@ -3,40 +3,40 @@
 			(qtest:::makeResult 'Pass msg test_inputs)
 			(qtest:::makeResult 'Fail msg test_inputs)))
 
-(defmacro qtest:::defassert (fn_name args test)
+(defmacro qtest:::defassert (fn_name args @rest test)
 	`(defun ,(makeSymbol (sprintf nil "qtest:::assert%s" fn_name)) 
-					(,@args @optional (msg "No msg."))
-		(qtest:::assert ,test msg)))
+					(,@args @optional (msg "No msg"))
+		(qtest:::assert ,@test msg)))
 
-(qtest:::defassert Equal (a b @optional (msg "No msg."))
-	(qtest:::assert (equal a b) (list a b) msg))
+(qtest:::defassert Equal (a b)
+	(equal a b) (list a b))
 	
-(qtest:::defassert NotEqual (a b @optional (msg "No msg."))
-	(qtest:::assert (nequal a b) (list a b) msg))
+(qtest:::defassert NotEqual (a b)
+	(nequal a b) (list a b))
 		
-(qtest:::defassert True (x @optional (msg "No msg."))
-	(qtest:::assert (not (null x)) x msg))
+(qtest:::defassert True (x)
+	(not (null x)) x)
 	
-(qtest:::defassert Nil (x @optional (msg "No msg."))
-	(qtest:::assert (null x) x msg))
+(qtest:::defassert Nil (x)
+	(null x) x)
 	
-(qtest:::defassert Eq (a b @optional (msg "No msg."))
-	(qtest:::assert (eq a b) (list a b) msg))
+(qtest:::defassert Eq (a b)
+	(eq a b) (list a b) msg)
 	
-(qtest:::defassert NotEq (a b @optional (msg "No msg."))
-	(qtest:::assert (neq a b) (list a b) msg))
+(qtest:::defassert NotEq (a b)
+	(neq a b) (list a b) msg)
 	
-(qtest:::defassert Member (value lst @optional (msg "No msg."))
-	(qtest:::assert (member value lst) (list value lst) msg))
+(qtest:::defassert Member (value lst)
+	(member value lst) (list value lst) msg)
 	
-(qtest:::defassert NotMember (value lst @optional (msg "No msg."))
-	(qtest:::assert (not (member value lst)) (list value lst) msg))
+(qtest:::defassert NotMember (value lst)
+	(not (member value lst)) (list value lst) msg)
 	
-(qtest:::defassert IsInstance (obj cls @optional (msg "No msg."))
-	(qtest:::assert (classp obj cls) (list obj cls) msg)
+(qtest:::defassert IsInstance (obj cls)
+	(classp obj cls) (list obj cls) msg)
 	
-(qtest:::defassert NotIsInstance (obj cls @optional (msg "No msg."))
-	(qtest:::assert (not (classp obj cls)) (list obj cls) msg)
+(qtest:::defassert NotIsInstance (obj cls)
+	(not (classp obj cls)) (list obj cls) msg)
 	
-(qtest:::defassert Raises (fn args @optional (msg "No msg."))
-	(qtest:::assert (not (null (errset (apply fn args)))) (list fn args) msg))
+(qtest:::defassert Raises (fn args)
+	(not (null (errset (apply fn args)))) (list fn args))
