@@ -1,3 +1,0 @@
-(qub:::create_module "qtest" "qtest/" 
-	(modload "core.ils")				
-	(modload "assertions.ils"))

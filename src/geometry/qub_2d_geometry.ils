@@ -84,7 +84,3 @@
 		 	 (southwest 225)
 		 	 (west 180)
 		 	 (northwest 135)))))
-		 	 
-(printf "%d\n" (qub:::parseDirection 90 degrees))
-(printf "%f\n" (qub:::parseDirection (times 2 qub:::m.PI) radians))
-(printf "%s\n" (printself (qub:::parseDirection turn 90 degrees 'clockwise)))
