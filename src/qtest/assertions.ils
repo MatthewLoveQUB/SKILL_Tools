@@ -34,4 +34,4 @@
 	(qtest:::assert (not (classp obj (findClass cls))) (list obj cls) msg))
 	
 (defun qtest:::assertRaises (fn args @optional (msg "No msg."))
-	(not (null (errset (apply fn args)))) (list fn args))
+	(qtest:::assert (null (errset (apply fn args))) (list fn args) msg))

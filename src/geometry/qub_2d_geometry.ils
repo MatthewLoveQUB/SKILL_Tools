@@ -47,8 +47,7 @@
 (defmethod qub:::rotate ((target number) (rotation qub:::Rotation))
   (letseq ((f (caseq (get_direction rotation)
                 (clockwise difference)
-                (anticlockwise plus)
-                (t (err "Invalid rotation direction provided."))))
+                (anticlockwise plus)))
            (new_angle (f target (get_angle rotation))))
     new_angle))
 
