@@ -2,4 +2,5 @@
 	(modload "prelude.ils")
 	(modload "list.ils")
 	(modload "functional.ils")
-	(modload "classes.ils"))
+	(modload "classes.ils")
+	(modload "math.ils"))

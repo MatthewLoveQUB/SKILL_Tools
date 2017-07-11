@@ -38,10 +38,16 @@
 		(qtest:::TestCase rotate_45acw
 			(qtest:::assertEqual 45 (f 0 (qub:::makeRotation 45 'anticlockwise))))
 		(qtest:::TestCase invalid_rot_direction
-			(qtest:::assertRaises f (list 0 (qub:::makeRotation 45 'foo)) "Should fail."))
+			(qtest:::assertRaises (f 0 (qub:::makeRotation 45 'foo)) "Should fail."))
 		(qtest:::TestCase invalid_angle
-			(qtest:::assertRaises f (list "s" (qub:::makeRotation 45 'clockwise) 
-														"Can't rotate by a letter")))
+			(qtest:::assertRaises (f "s" (qub:::makeRotation 45 'clockwise))
+														"Can't rotate by a letter"))
 		; Rotating state objects
-		(qtest:::TestCase rotating_a_state
-			(qtest:::assertEqual end (f start (qub:::makeRotation 45 'anticlockwise))))))
+		(qtest:::TestCase rotate_state_acw
+			(qtest:::assertEqual end (f start (qub:::makeRotation 45 'anticlockwise))))
+		(qtest:::TestCase rotate_state_cw
+			(qtest:::assertEqual start (f end (qub:::makeRotation 45 'clockwise)))))
+			
+	(qtest:::TestSuite ((f qub:::degreesToRadians))
+		(qtest:::TestCase zero_input
+			(qtest:::assertEqual 0 (f 0)))))

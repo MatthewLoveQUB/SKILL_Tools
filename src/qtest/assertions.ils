@@ -33,5 +33,5 @@
 (defun qtest:::assertNotIsInstance (obj cls @optional (msg "No msg."))
 	(qtest:::assert (not (classp obj (findClass cls))) (list obj cls) msg))
 	
-(defun qtest:::assertRaises (fn args @optional (msg "No msg."))
-	(qtest:::assert (null (errset (apply fn args))) (list fn args) msg))
+(defmacro qtest:::assertRaises (fn @optional (msg "No msg."))
+	`(qtest:::assert (null (errset (,fn))) (list (quote ,fn)) ,msg)))

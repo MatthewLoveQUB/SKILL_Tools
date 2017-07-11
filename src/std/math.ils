@@ -1,0 +1,11 @@
+; Should be used on floats
+(defun qub:::almostEqual (a b @key (rel_tol 1u) (abs_tol 0))
+	(when (or (negativep rel_tol)
+					 (negativep abs_tol))
+		(err "Can't have negative tolerance"))
+	(if (equal a b)
+		t
+		(let ((diff (abs (difference a b))))
+			(cond ((leqp diff rel_tol) t)
+					 ((leqp diff abs_tol) t)
+					 (t nil)))))
