@@ -4,8 +4,7 @@
           (error "Expected a %s\n" (get_pname expected_type))))
 
 ; Used to compare objects
-(defgeneric qub:::equal (a b) 
-	(equal a b))
+(defgeneric qub:::equal (a b))
 
 (defun qub:::nequal (a b)
 	(not (qub:::equal a b)))
@@ -14,6 +13,9 @@
 (defmacro qub:::eqfn (class @rest body)
 	`(defmethod qub:::equal ((a ,class) (b ,class))
 		,@body))
+
+(qub:::eqfn fixnum (equal a b))
+(qub:::eqfn flonum (equal a b))
 		
 (defun qub:::all_equal (@rest values)
 	(forall x (cdr values) (qub:::equal (car values) x)))

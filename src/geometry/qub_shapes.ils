@@ -14,6 +14,10 @@
               @reader get_num_sides
               @writer set_num_sides)))
           
+(defun qub:::makeRegularPolygon (num_sides side_length) 
+	(makeInstance 'qub:::RegularPolygon ?side_length side_length
+																			?num_sides num_sides))          
+          
 (qub:::eqfn qub:::RegularPolygon
 	(let ((num_sides_equal (equal (get_num_sides a) (get_num_sides b)))
 			(side_length_equal (equal (get_side_length a) (get_side_length b))))
@@ -34,6 +38,11 @@
 (defun qub:::makeOctagon (side_length) 
 	(makeInstance 'qub:::Octagon ?side_length side_length))
   
+(qub:::eqfn qub:::Octagon
+	(let ((num_sides_equal (equal (get_num_sides a) (get_num_sides b)))
+			(side_length_equal (equal (get_side_length a) (get_side_length b))))
+	(and num_sides_equal side_length_equal))) 
+  
 ; Methods
 ; -------  
   
@@ -47,21 +56,21 @@
 (defgeneric qub:::circumradius (shape))
 (defmethod qub:::circumradius ((shape qub:::RegularPolygon))
   (quotient (get_side_length shape)
-            (times 2 (sin (quotient m.PI (get_num_sides shape))))))
+            (times 2 (sin (quotient qub:::m.PI (get_num_sides shape))))))
 
 ; Area of the shape
 (defgeneric qub:::area (shape))
 (defmethod qub:::area ((shape qub:::RegularPolygon))
   (times 0.5
          (get_num_sides shape)
-         (expt (circumradius shape) 2)
-         (sin (quotient (times 2.0 m.PI) (get_num_sides shape)))))
+         (expt (qub:::circumradius shape) 2)
+         (sin (quotient (times 2.0 qub:::m.PI) (get_num_sides shape)))))
 
 ; Apothem: Distance from the midpoint of a side to the centre
 (defgeneric qub:::apothem (shape))
 (defmethod qub:::apothem ((shape qub:::RegularPolygon))
   (times (circumradius shape)
-         (cos (quotient m.PI (get_num_sides shape)))))
+         (cos (quotient qub:::m.PI (get_num_sides shape)))))
 
 ; Find the internal angle of the shape
 (defgeneric qub:::internal_angle (shape))
