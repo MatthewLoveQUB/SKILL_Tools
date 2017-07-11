@@ -8,12 +8,12 @@
 			(setq result (fn result value)))
 		result))
 
-(defmacro qub:::foldr (fn init lst)
-	`(foldl ,fn ,init ,(reverse lst)))
+(defun qub:::foldr (fn init lst)
+	(qub:::foldl fn init (reverse lst)))
 
 ; Sums a list
 (defmacro qub:::sum (lst)
-	`(foldl plus 0 ,lst))
+	`(qub:::foldl plus 0 ,lst))
         
 ; List comprehension modelled after pythons
 (define_syntax qub:::lcmp

@@ -1,5 +1,5 @@
 ; Used to compare objects
-(defgeneric qub:::equal (a b) ())
+(defgeneric qub:::equal (a b) (equal a b))
 
 (defun qub:::nequal (a b)
 	(not (qub:::equal a b)))

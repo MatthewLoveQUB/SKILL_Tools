@@ -8,21 +8,30 @@
 	 			@writer set_msg)
 	 (inputs @initarg inputs
 	 				 @reader get_inputs
-	 				 @writer set_inputs)))
+	 				 @writer set_inputs)
+	 (evaluated_inputs @initarg evaluated_inputs
+	 									 @reader get_evaluated_inputs
+	 				 					 @writer set_evaluated_inputs)))
 	 
 (defmethod printself ((obj qtest:::Result))
 	(sprintf nil 
-				"Test Result\nResult: %s\nMessage: %s\nInputs (%n):%A" 
+				"Test Result\n
+Result: %s\n
+Message: %s\n
+Inputs (%n):%A\n
+Evualuated Inputs: %A\n"
 				(get_result obj)
 				(get_msg obj)
 				(length (get_inputs obj))
-				(get_inputs obj)))
+				(get_inputs obj)
+				(get_evaluated_inputs obj)))
 	 
-(defun qtest:::makeResult (result msg inputs)
+(defun qtest:::makeResult (result msg inputs evaluated_inputs)
 	(makeInstance 'qtest:::Result 
 								?result result 
 								?msg msg
-								?inputs inputs))
+								?inputs inputs
+								?evaluated_inputs evaluated_inputs))
 	 
 ; Create function and return a list of its name and
 ; the function object. To be used inside qtest:::TestRunner
@@ -34,12 +43,7 @@
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
-					 (formatted_results (mapcar (lambda (x) (sprintf nil 
-					 																								 "Test failure: %s\nMsg: %s\nInputs:%A" 
-					 																								 (car x) 
-					 																								 (get_msg (cadr x))
-					 																								 (get_inputs (cadr x))))
-					 														fails)))
+					 (formatted_results (mapcar (lambda (x) (printself (cadr x))) fails)))
 		formatted_results))
 
 ; Runs each of the tests defined in the body

@@ -61,5 +61,7 @@
 	(qtest:::TestSuite ((f qub:::radiansToDegrees))
 		(qtest:::TestCase zero_input
 			(qtest:::assertEqual 0 (f 0)))
-		(qtest:::TestCase three_sixty
-			(qtest:::assertAlmostEqual 180.0 (f qub:::m.PI)))))
+		(qtest:::TestCase one_eighty
+			(qtest:::assertAlmostEqual 180.0 (f qub:::m.PI)))
+		(qtest:::TestCase neg_one_eighty
+			(qtest:::assertAlmostEqual -180.0 (f (minus (qub:::m.PI)))))))
