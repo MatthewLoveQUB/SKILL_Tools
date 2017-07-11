@@ -1,8 +1,0 @@
-; Core functions which all other modules will use
-
-(defun qub:::check_type (instance expected_type)
-  (unless (classp instance expected_type)
-          (error "Expected a %s\n" (get_pname expected_type))))
-
-; For mathematics
-(defMathConstants 'qub:::m)

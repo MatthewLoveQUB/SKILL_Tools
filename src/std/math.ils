@@ -1,3 +1,6 @@
+; For mathematics
+(defMathConstants 'qub:::m)
+
 ; Should be used on floats
 (defun qub:::almostEqual (a b @key (rel_tol 1u))
 	(when (negativep rel_tol)
