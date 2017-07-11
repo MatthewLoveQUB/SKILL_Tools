@@ -18,11 +18,10 @@
 				"Test Result\n
 Result: %s\n
 Message: %s\n
-Inputs (%n):%A\n
+Inputs: %A\n
 Evualuated Inputs: %A\n"
 				(get_result obj)
 				(get_msg obj)
-				(length (get_inputs obj))
 				(get_inputs obj)
 				(get_evaluated_inputs obj)))
 	 
