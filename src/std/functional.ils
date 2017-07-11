@@ -12,8 +12,8 @@
 	(qub:::foldl fn init (reverse lst)))
 
 ; Sums a list
-(defmacro qub:::sum (lst)
-	`(qub:::foldl plus 0 ,lst))
+(defun qub:::sum (lst)
+	(qub:::foldl plus 0 lst))
         
 ; List comprehension modelled after pythons
 (define_syntax qub:::lcmp
