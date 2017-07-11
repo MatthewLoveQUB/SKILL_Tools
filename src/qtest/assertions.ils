@@ -36,8 +36,8 @@
 (defmacro qtest:::assertRaises (fn @key (msg "No msg."))
 	`(qtest:::assert (null (errset (,fn))) (list ',fn) ?msg ,msg)))
 
-(defmacro qtest:::assertAlmostEqual (a b @key ((rel_tol 1u) (msg "No msg")))
+(defmacro qtest:::assertAlmostEqual (a b @key (rel_tol 1u) (msg "No msg"))
 	`(qtest:::assert (qub:::almostEqual ,a ,b ?rel_tol ,rel_tol) (list ',a ',b ',rel_tol) ?msg ,msg))
 	
-(defmacro qtest:::assertNotAlmostEqual (a b @key ((rel_tol 1u) (msg "No msg")))
+(defmacro qtest:::assertNotAlmostEqual (a b @key (rel_tol 1u) (msg "No msg"))
 	`(qtest:::assert (qub:::notAlmostEqual ,a ,b ?rel_tol ,rel_tol) (list ',a ',b ',rel_tol) ?msg ,msg))

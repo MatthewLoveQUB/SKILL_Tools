@@ -2,17 +2,17 @@
 	; Testing fix_angle
 	(qtest:::TestSuite ((f qub:::fix_angle))
 		(qtest:::TestCase within_range
-			(qtest:::assertEqual 45 (f 45) "Between 0-360 should return itself"))
+			(qtest:::assertEqual 45 (f 45) ?msg "Between 0-360 should return itself"))
 		(qtest:::TestCase full_circle
-			(qtest:::assertEqual 0 (f 360) "360 should be converted to 0"))
+			(qtest:::assertEqual 0 (f 360) ?msg "360 should be converted to 0"))
 		(qtest:::TestCase Zero
-			(qtest:::assertEqual 0 (f 0) "A zero input should return zero"))
+			(qtest:::assertEqual 0 (f 0) ?msg "A zero input should return zero"))
 		(qtest:::TestCase above_360
-			(qtest:::assertEqual 1 (f 361) "Should remove 360"))
+			(qtest:::assertEqual 1 (f 361) ?msg "Should remove 360"))
 		(qtest:::TestCase below_0 
-			(qtest:::assertEqual 359 (f -1) "Negative angles"))
+			(qtest:::assertEqual 359 (f -1) ?msg "Negative angles"))
 		(qtest:::TestCase much_below_0
-			(qtest:::assertEqual 1 (f -359) "Should give 1 degree"))
+			(qtest:::assertEqual 1 (f -359) ?msg "Should give 1 degree"))
 		(qtest:::TestCase minus_360
 			(qtest:::assertEqual 0 (f -360)))
 		(qtest:::TestCase much_much_below_0
@@ -38,10 +38,10 @@
 		(qtest:::TestCase rotate_45acw
 			(qtest:::assertEqual 45 (f 0 (qub:::makeRotation 45 'anticlockwise))))
 		(qtest:::TestCase invalid_rot_direction
-			(qtest:::assertRaises (f 0 (qub:::makeRotation 45 'foo)) "Should fail."))
+			(qtest:::assertRaises (f 0 (qub:::makeRotation 45 'foo)) ?msg "Should fail."))
 		(qtest:::TestCase invalid_angle
 			(qtest:::assertRaises (f "s" (qub:::makeRotation 45 'clockwise))
-														"Can't rotate by a letter"))
+														?msg "Can't rotate by a letter"))
 		; Rotating state objects
 		(qtest:::TestCase rotate_state_acw
 			(qtest:::assertEqual end (f start (qub:::makeRotation 45 'anticlockwise))))
@@ -56,4 +56,10 @@
 		(qtest:::TestCase one_pi
 			(qtest:::assertAlmostEqual (f 180.0) qub:::m.PI ?rel_tol 1p))
 		(qtest:::TestCase neg_pi
-			(qtest:::assertAlmostEqual (f -180.0) (minus qub:::m.PI) ?rel_tol 1p))))
+			(qtest:::assertAlmostEqual (f -180.0) (minus qub:::m.PI) ?rel_tol 1p)))
+			
+	(qtest:::TestSuite ((f qub:::radiansToDegrees))
+		(qtest:::TestCase zero_input
+			(qtest:::assertEqual 0 (f 0)))
+		(qtest:::TestCase three_sixty
+			(qtest:::assertAlmostEqual 180.0 (f qub:::m.PI)))))
