@@ -12,4 +12,8 @@
 		(qtest:::TestCase equal_string
 			(qtest:::assertTrue (f "hello" "hello")))
 		(qtest:::TestCase nequal_string
-			(qtest:::assertNil (f "hello" "world")))))
+			(qtest:::assertNil (f "hello" "world"))))
+	(qtest:::TestSuite ((f qub:::all_equal))
+		; Integers
+		(qtest:::TestCase pos_ints
+			(qtest:::assertTrue (f 1 1 1 1 1 1)))))
