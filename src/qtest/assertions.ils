@@ -35,3 +35,9 @@
 	
 (defmacro qtest:::assertRaises (fn @optional (msg "No msg."))
 	`(qtest:::assert (null (errset (,fn))) (list ',fn) ,msg)))
+
+(defmacro qtest:::assertAlmostEqual (a b @optional (msg "No msg"))
+	`(qtest:::assert (qub:::almostEqual ,a ,b) (list ',a ',b) ,msg))
+	
+(defmacro qtest:::assertNotAlmostEqual (a b @optional (msg "No msg"))
+	`(qtest:::assert (qub:::notAlmostEqual ,a ,b) (list ',a ',b) ,msg))

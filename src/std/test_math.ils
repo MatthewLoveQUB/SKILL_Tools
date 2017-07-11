@@ -25,7 +25,7 @@
 		; Checking for bad inputs
 		(qtest:::TestCase neg_rel_tol
 			(qtest:::assertRaises (f 0 0 ?rel_tol -1)))
-		(qtest:::TestCase neg_abs_tol
-			(qtest:::assertRaises (f 0 0 ?abs_tol -1)))
 		(qtest:::TestCase difference_types
 			(qtest:::assertRaises (f 0 "a")))))
+			
+			
