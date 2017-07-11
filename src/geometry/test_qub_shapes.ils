@@ -9,5 +9,12 @@
 	; Check polygon equality
 	(qtest:::TestSuite ((f qub:::equal) (mk qub:::makeOctagon))
 		(qtest:::TestCase check_octagons
-			(qtest:::assertTrue (f (mk 10) (mk 10))))))
+			(qtest:::assertTrue (f (mk 10) (mk 10))))
+		(qtest:::TestCase different_sides
+			(qtest:::assertNil (f (mk 10) 
+														(makeInstance 'qub:::RegularPolygon 
+																					?num_sides 10 
+																					?side_length 10))))
+		(qtest:::TestCase different_lengths
+			(qtest:::assertNil (f (mk 10) (mk 20))))))																
 	;(qtest:::TestSuite ((f qub:::perimeter) (oct (
