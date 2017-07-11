@@ -1,43 +1,43 @@
-(defun qtest:::assert (test test_inputs @optional (msg "No msg."))
+(defun qtest:::assert (test test_inputs @key (msg "No msg."))
 	(if test
 			(qtest:::makeResult 'Pass msg test_inputs)
 			(qtest:::makeResult 'Fail msg test_inputs)))
 
-(defmacro qtest:::assertEqual (a b @optional (msg "No msg."))
-	`(qtest:::assert (qub:::equal ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertEqual (a b @key (msg "No msg."))
+	`(qtest:::assert (qub:::equal ,a ,b) (list ',a ',b) ?msg ,msg))
 	
-(defmacro qtest:::assertNotEqual (a b @optional (msg "No msg."))
-	`(qtest:::assert (qub:::nequal ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertNotEqual (a b @key (msg "No msg."))
+	`(qtest:::assert (qub:::nequal ,a ,b) (list ',a ',b) ?msg ,msg))
 		
-(defmacro qtest:::assertTrue (x @optional (msg "No msg."))
-	`(qtest:::assert (not (null ,x)) (list ',x) ,msg))
+(defmacro qtest:::assertTrue (x @key (msg "No msg."))
+	`(qtest:::assert (not (null ,x)) (list ',x) ?msg ,msg))
 	
-(defmacro qtest:::assertNil (x @optional (msg "No msg."))
-	`(qtest:::assert (null ,x) (list ',x) ,msg))
+(defmacro qtest:::assertNil (x @key (msg "No msg."))
+	`(qtest:::assert (null ,x) (list ',x) ?msg ,msg))
 	
-(defmacro qtest:::assertEq (a b @optional (msg "No msg."))
-	`(qtest:::assert (eq ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertEq (a b @key (msg "No msg."))
+	`(qtest:::assert (eq ,a ,b) (list ',a ',b) ?msg ,msg))
 	
-(defmacro qtest:::assertNotEq (a b @optional (msg "No msg."))
-	`(qtest:::assert (neq ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertNotEq (a b @key (msg "No msg."))
+	`(qtest:::assert (neq ,a ,b) (list ',a ',b) ?msg ,msg))
 	
-(defmacro qtest:::assertMember (value lst @optional (msg "No msg."))
-	`(qtest:::assert (member ,value ,lst) (list ',value ',lst) ,msg))
+(defmacro qtest:::assertMember (value lst @key (msg "No msg."))
+	`(qtest:::assert (member ,value ,lst) (list ',value ',lst) ?msg ,msg))
 	
-(defmacro qtest:::assertNotMember (value lst @optional (msg "No msg."))
-	`(qtest:::assert (not (member ,value ,lst)) (list ',value ',lst) ,msg))
+(defmacro qtest:::assertNotMember (value lst @key (msg "No msg."))
+	`(qtest:::assert (not (member ,value ,lst)) (list ',value ',lst) ?msg ,msg))
 	
-(defmacro qtest:::assertIsInstance (obj cls @optional (msg "No msg."))
-	`(qtest:::assert (classp ,obj (findClass ,cls)) (list ',obj ',cls) ,msg))
+(defmacro qtest:::assertIsInstance (obj cls @key (msg "No msg."))
+	`(qtest:::assert (classp ,obj (findClass ,cls)) (list ',obj ',cls) ?msg ,msg))
 	
-(defmacro qtest:::assertNotIsInstance (obj cls @optional (msg "No msg."))
-	`(qtest:::assert (not (classp ,obj (findClass ,cls))) (list ',obj ',cls) ,msg))
+(defmacro qtest:::assertNotIsInstance (obj cls @key (msg "No msg."))
+	`(qtest:::assert (not (classp ,obj (findClass ,cls))) (list ',obj ',cls) ?msg ,msg))
 	
-(defmacro qtest:::assertRaises (fn @optional (msg "No msg."))
-	`(qtest:::assert (null (errset (,fn))) (list ',fn) ,msg)))
+(defmacro qtest:::assertRaises (fn @key (msg "No msg."))
+	`(qtest:::assert (null (errset (,fn))) (list ',fn) ?msg ,msg)))
 
-(defmacro qtest:::assertAlmostEqual (a b @optional (msg "No msg"))
-	`(qtest:::assert (qub:::almostEqual ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertAlmostEqual (a b @key ((rel_tol 1u) (msg "No msg")))
+	`(qtest:::assert (qub:::almostEqual ,a ,b ?rel_tol ,rel_tol) (list ',a ',b ',rel_tol) ?msg ,msg))
 	
-(defmacro qtest:::assertNotAlmostEqual (a b @optional (msg "No msg"))
-	`(qtest:::assert (qub:::notAlmostEqual ,a ,b) (list ',a ',b) ,msg))
+(defmacro qtest:::assertNotAlmostEqual (a b @key ((rel_tol 1u) (msg "No msg")))
+	`(qtest:::assert (qub:::notAlmostEqual ,a ,b ?rel_tol ,rel_tol) (list ',a ',b ',rel_tol) ?msg ,msg))
