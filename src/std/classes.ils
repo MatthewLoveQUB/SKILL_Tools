@@ -1,4 +1,5 @@
-(defun qub:::check_type (instance expected_type)
+; Throws an error if it doesn't receive the expected type
+(defun qub:::checkType (instance expected_type)
   (unless (classp instance expected_type)
           (error "Expected a %s\n" (get_pname expected_type))))
 

@@ -70,7 +70,7 @@
 	`(qtest:::assert (null (errset (,fn))) 
 									 (list ',fn) 
 									 (list "Can't include it as it's meant to fail") 
-									 ?msg ,msg)))
+									 ?msg ,msg))
 
 (defmacro qtest:::assertAlmostEqual (a b @key (rel_tol 1u) (msg "No msg"))
 	`(qtest:::assert (qub:::almostEqual ,a ,b ?rel_tol ,rel_tol) 
