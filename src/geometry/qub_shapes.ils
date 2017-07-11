@@ -13,11 +13,25 @@
    (num_sides @initarg num_sides
               @reader get_num_sides
               @writer set_num_sides)))
+          
+(qub:::eqfn qub:::RegularPolygon
+	(and (equal (get_side_length a) (get_side_length b))
+			 (equal (get_num_sides a) (get_side_length b))))
+			
+(defmethod printself ((obj qub:::RegularPolygon))
+	(sprintf nil 
+				"[RegularPolygon Sides: %n Length: %n]"
+				(get_num_sides obj)
+				(get_side_length obj)))
+		
               
 ; A regular octagon
 (defclass qub:::Octagon
   (qub:::RegularPolygon)
   ((num_sides @initform 8)))
+  
+(defun qub:::makeOctagon (side_length)
+	(makeInstance 'qub:::Octagon ?side_length side_length))
   
 ; Methods
 ; -------  

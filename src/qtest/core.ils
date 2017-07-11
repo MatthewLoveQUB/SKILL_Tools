@@ -15,11 +15,10 @@
 	 
 (defmethod printself ((obj qtest:::Result))
 	(sprintf nil 
-				"Test Result\n
-Result: %s\n
+"Result: %s\n
 Message: %s\n
 Inputs: %A\n
-Evualuated Inputs: %A\n"
+Evaluated Inputs: %A\n"
 				(get_result obj)
 				(get_msg obj)
 				(get_inputs obj)
@@ -42,7 +41,7 @@ Evualuated Inputs: %A\n"
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
-					 (formatted_results (mapcar (lambda (x) (printself (cadr x))) fails)))
+					 (formatted_results (mapcar (lambda (x) (strcat (sprintf nil "Test: %s\n" (car x)) (printself (cadr x)))) fails)))
 		formatted_results))
 
 ; Runs each of the tests defined in the body

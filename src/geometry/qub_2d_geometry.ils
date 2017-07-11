@@ -20,6 +20,10 @@
 (defun qub:::makePoint2D (x y)
 	(makeInstance 'qub:::Point2D ?x x ?y y))     
 
+(qub:::eqfn qub:::Point2D
+	(and (equal (get_x a) (get_x b))
+			 (equal (get_y a) (get_y b))))
+
 ; Represents a rotation action
 (defclass qub:::Rotation ()
   ((angle @initarg angle

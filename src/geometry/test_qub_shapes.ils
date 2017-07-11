@@ -1,0 +1,13 @@
+(qtest:::runSuites
+	(qtest:::TestSuite ((f qub:::makeOctagon))
+		(qtest:::TestCase basic_creation
+			(qtest:::assertIsInstance (f 10) 'qub:::Octagon))
+		(qtest:::TestCase check_length
+			(qtest:::assertEqual 10 (get_side_length (f 10))))
+		(qtest:::TestCase check_actually_octagon
+			(qtest:::assertEqual 8 (get_num_sides (f 10)))))
+	; Check polygon equality
+	(qtest:::TestSuite ((f qub:::equal) (mk qub:::makeOctagon))
+		(qtest:::TestCase check_octagons
+			(qtest:::assertTrue (f (mk 10) (mk 10))))))
+	;(qtest:::TestSuite ((f qub:::perimeter) (oct (
