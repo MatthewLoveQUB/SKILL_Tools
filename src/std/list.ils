@@ -1,10 +1,10 @@
 (defun qub:::join_lists (lst)
-	(qub:::foldl append (list) lst))
-	
+  (qub:::foldl append (list) lst))
+
 (defun qub:::flatten_list (lst)
-	(letseq ((output_list (list)))
-		(labels  ((helper (a) 
-							(mapcar (lambda (x) (if (atom x) (pushf x output_list) (helper x))) a)))
-			(helper lst)
-		(reverse output_list))))
-		
+  (letseq ((output_list (list)))
+    (labels  ((helper (a)
+              (mapcar (lambda (x) (if (atom x) (pushf x output_list) (helper x))) a)))
+      (helper lst)
+    (reverse output_list))))
+

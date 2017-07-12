@@ -7,24 +7,24 @@
 (defgeneric qub:::equal (a b))
 
 (defun qub:::nequal (a b)
-	(not (qub:::equal a b)))
+  (not (qub:::equal a b)))
 
 ; Should only be in the format (defun fn (a b))
 (defmacro qub:::eqfn (class @rest body)
-	`(defmethod qub:::equal ((a ,class) (b ,class))
-		,@body))
+  `(defmethod qub:::equal ((a ,class) (b ,class))
+    ,@body))
 
 (qub:::eqfn fixnum (equal a b))
 (qub:::eqfn flonum (equal a b))
-		
+
 (defmethod qub:::equal ((a fixnum) (b flonum))
-	(equal a b))
-	
+  (equal a b))
+
 (defmethod qub:::equal ((a flonum) (b fixnum))
-	(equal a b))
-		
-(qub:::eqfn list (equal a b))		
+  (equal a b))
+
+(qub:::eqfn list (equal a b))
 (qub:::eqfn string (equal a b))
 
 (defun qub:::all_equal (@rest values)
-	(forall x (cdr values) (qub:::equal (car values) x)))
+  (forall x (cdr values) (qub:::equal (car values) x)))

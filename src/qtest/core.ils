@@ -1,68 +1,80 @@
 (defclass qtest:::Result ()
-	; Result can be 'Pass or 'Fail
-	((result @initarg result
-					 @reader get_result
-					 @writer set_result)
-	 (msg	@initarg msg
-	 			@reader get_msg
-	 			@writer set_msg)
-	 (inputs @initarg inputs
-	 				 @reader get_inputs
-	 				 @writer set_inputs)
-	 (evaluated_inputs @initarg evaluated_inputs
-	 									 @reader get_evaluated_inputs
-	 				 					 @writer set_evaluated_inputs)))
-	 
+  ; Result can be 'Pass or 'Fail
+  ((result @initarg result
+           @reader get_result
+           @writer set_result)
+   (msg @initarg msg
+        @reader get_msg
+        @writer set_msg)
+   (inputs @initarg inputs
+           @reader get_inputs
+           @writer set_inputs)
+   (evaluated_inputs @initarg evaluated_inputs
+                     @reader get_evaluated_inputs
+                     @writer set_evaluated_inputs)))
+   
 (defmethod printself ((obj qtest:::Result))
-	(sprintf nil 
+  (sprintf nil 
 "Result: %s\n
 Message: %s\n
 Inputs: %A\n
 Evaluated Inputs: %A\n"
-				(get_result obj)
-				(get_msg obj)
-				(get_inputs obj)
-				(get_evaluated_inputs obj)))
-	 
+        (get_result obj)
+        (get_msg obj)
+        (get_inputs obj)
+        (get_evaluated_inputs obj)))
+   
 (defun qtest:::makeResult (result msg inputs evaluated_inputs)
-	(makeInstance 'qtest:::Result 
-								?result result 
-								?msg msg
-								?inputs inputs
-								?evaluated_inputs evaluated_inputs))
-	 
+  (makeInstance 'qtest:::Result 
+                ?result result 
+                ?msg msg
+                ?inputs inputs
+                ?evaluated_inputs evaluated_inputs))
+   
 ; Create function and return a list of its name and
 ; the function object. To be used inside qtest:::TestRunner
 (defmacro qtest:::TestCase (fn_name @rest body)
 `(let ((f (lambda () ,@body)))
-		(list ',fn_name f)))
-				
+    (list ',fn_name f)))
+        
 ; Test runner. Automatically called by the test suite
 (defun qtest:::runTests (tests)
-	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
-					 (fails (setof r results (eq 'Fail (get_result (cadr r))))))
-		; Format and return the results
-		(mapcar (lambda (x) (strcat (sprintf nil "Test: %s\n" (car x)) (printself (cadr x)))) fails)))
+  (letseq ((results (mapcar (lambda (x) 
+                              (list (car x) 
+                                    (funcall (cadr x))))
+                            tests))
+           (fails (setof r results (eq 'Fail (get_result (cadr r))))))
+    ; Format and return the results
+    (mapcar (lambda (x) 
+              (strcat (sprintf nil 
+                               "Test: %s\n" 
+                               (car x)) 
+                               (printself (cadr x))))
+            fails)))
 
 ; Runs each of the tests defined in the body
 (defmacro qtest:::TestSuite (let_lst @rest tests)
-	`(let ,let_lst
-		(list ,@tests)))
+  `(let ,let_lst
+    (list ,@tests)))
 
 (defun qtest:::runSuites (@rest suites)
-	(letseq ((tests (qub:::join_lists suites))
-					 (ntests (length tests))
-				   (failures (qtest:::runTests tests))
-				   (nfailures (length failures)))
-		(printf "%n of %n tests passed (%n failures).\n" 
-						(difference ntests nfailures)
-						ntests
-						nfailures)
-		(mapc (lambda (x) (printf "%s\n" x)) failures)))
+  (letseq ((tests (qub:::join_lists suites))
+           (ntests (length tests))
+           (failures (qtest:::runTests tests))
+           (nfailures (length failures)))
+    (printf "%n of %n tests passed (%n failures).\n" 
+            (difference ntests nfailures)
+            ntests
+            nfailures)
+    (mapc (lambda (x) (printf "%s\n" x)) failures)))
 
 (defun qtest:::runAllTests (rel_path)
-	(letseq ((files_in_dir (qub:::listFileRec rel_path))
-					 (test_files (setof x 
-					 									files_in_dir 
-					 									(qub:::starts_with (car (last (parseString x "/"))) "test_"))))
-		(mapc (lambda (x) (printf "Running: %s\n" x) (load x)) test_files)))
+  (letseq ((files_in_dir (qub:::listFileRec rel_path))
+           (get_file_name (lambda (x) (car (last (parseString x "/")))))
+           (test_files (setof x 
+                              files_in_dir 
+                              (qub:::starts_with (get_file_name x) "test_"))))
+    (mapc (lambda (x) 
+            (printf "Running: %s\n" x) 
+            (load x)) 
+          test_files)))

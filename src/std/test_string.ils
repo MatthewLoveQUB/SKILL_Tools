@@ -1,7 +1,7 @@
 (qtest:::runSuites
-	(qtest:::TestSuite ((f qub:::starts_with))
-		(qtest:::TestCase normal_prefix
-			(qtest:::assertTrue (f "test_jjjj" "test")))
-		(qtest:::TestCase no_prefix
-			(qtest:::assertNil (f "test_jjjj" "kmmm")))))
-		
+  (qtest:::TestSuite ((f qub:::starts_with))
+    (qtest:::TestCase normal_prefix
+      (qtest:::assertTrue (f "test_jjjj" "test")))
+    (qtest:::TestCase no_prefix
+      (qtest:::assertNil (f "test_jjjj" "kmmm")))))
+

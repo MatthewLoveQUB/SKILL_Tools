@@ -1,51 +1,57 @@
 (let ((mk qub:::makeRegularPolygon))
-	(qtest:::runSuites
-		(qtest:::TestSuite ((f qub:::makeOctagon))
-			(qtest:::TestCase basic_creation
-				(qtest:::assertIsInstance (f 10) 'qub:::Octagon))
-			(qtest:::TestCase check_length
-				(qtest:::assertEqual 10 (get_side_length (f 10))))
-			(qtest:::TestCase check_actually_octagon
-				(qtest:::assertEqual 8 (get_num_sides (f 10)))))
-		; Check polygon equality
-		(qtest:::TestSuite ((f qub:::equal) (mk qub:::makeOctagon))
-			(qtest:::TestCase check_octagons
-				(qtest:::assertTrue (f (mk 10) (mk 10))))
-			(qtest:::TestCase different_sides
-				(qtest:::assertNil (f (mk 10) 
-															(makeInstance 'qub:::RegularPolygon 
-																						?num_sides 10 
-																						?side_length 10))))
-			(qtest:::TestCase different_lengths
-				(qtest:::assertNil (f (mk 10) (mk 20)))))
-		; Perimeter										
-		(qtest:::TestSuite ((f qub:::perimeter) (mk qub:::makeOctagon))
-			(qtest:::TestCase simple_summation
-				(qtest:::assertEqual 80 (f (mk 10)))))
-		; Circumradius
-		(qtest:::TestSuite ((f qub:::circumradius))
-			; Comparison values taken from here
-			; http://www.cleavebooks.co.uk/scol/caltriag.htm
-			(qtest:::TestCase ten_triangle
-				(qtest:::assertAlmostEqual 5.77 (f (mk 3 10)) ?abs_tol 10m)))
-		; Area
-		(qtest:::TestSuite ((f qub:::area))
-			(qtest:::TestCase square_area
-				(qtest:::assertAlmostEqual 100.0 (f (mk 4 10)) ?abs_tol 1p)))
-		; Apothem
-		(qtest:::TestSuite ((f qub:::apothem))
-			(qtest:::TestCase square_apothem
-				(qtest:::assertAlmostEqual 5 (f (mk 4 10)) ?rel_tol 0.001)))
-		; Internal Angle
-		(qtest:::TestSuite ((f qub:::internal_angle))
-			(qtest:::TestCase square_internal_angle
-				(qtest:::assertEqual 90 (f (mk 4 10))))
-			(qtest:::TestCase triangle_internal_angle
-				(qtest:::assertEqual 60 (f (mk 3 10))))
-			(qtest:::TestCase octagon_internal_angle
-				(qtest:::assertEqual 135 (f (mk 8 10)))))
-		; External angle
-		(qtest:::TestSuite ((f qub:::external_angle))
-			(qtest:::TestCase octagon_external_angle
-				(qtest:::assertEqual 45 (f (mk 8 10)))))))
-		
+  (qtest:::runSuites
+    (qtest:::TestSuite ((f qub:::makeOctagon))
+      (qtest:::TestCase basic_creation
+        (qtest:::assertIsInstance (f 10) 'qub:::Octagon))
+      (qtest:::TestCase check_length
+        (qtest:::assertEqual 10 (get_side_length (f 10))))
+      (qtest:::TestCase check_actually_octagon
+        (qtest:::assertEqual 8 (get_num_sides (f 10)))))
+    ; Check polygon equality
+    (qtest:::TestSuite ((f qub:::equal) (mk qub:::makeOctagon))
+      (qtest:::TestCase check_octagons
+        (qtest:::assertTrue (f (mk 10) (mk 10))))
+      (qtest:::TestCase different_sides
+        (qtest:::assertNil (f (mk 10)
+                              (makeInstance 'qub:::RegularPolygon
+                                            ?num_sides 10
+                                            ?side_length 10))))
+      (qtest:::TestCase different_lengths
+        (qtest:::assertNil (f (mk 10) (mk 20)))))
+    ; Perimeter
+    (qtest:::TestSuite ((f qub:::perimeter) (mk qub:::makeOctagon))
+      (qtest:::TestCase simple_summation
+        (qtest:::assertEqual 80 (f (mk 10)))))
+    ; Circumradius
+    (qtest:::TestSuite ((f qub:::circumradius))
+      ; Comparison values taken from here
+      ; http://www.cleavebooks.co.uk/scol/caltriag.htm
+      (qtest:::TestCase ten_triangle
+        (qtest:::assertAlmostEqual 5.77 (f (mk 3 10)) ?abs_tol 10m)))
+    ; Area
+    (qtest:::TestSuite ((f qub:::area))
+      (qtest:::TestCase square_area
+        (qtest:::assertAlmostEqual 100.0 (f (mk 4 10)) ?abs_tol 1p)))
+    ; Apothem
+    (qtest:::TestSuite ((f qub:::apothem))
+      (qtest:::TestCase square_apothem
+        (qtest:::assertAlmostEqual 5 (f (mk 4 10)) ?rel_tol 0.001)))
+    ; Internal Angle
+    (qtest:::TestSuite ((f qub:::internal_angle))
+      (qtest:::TestCase square_internal_angle
+        (qtest:::assertEqual 90 (f (mk 4 10))))
+      (qtest:::TestCase triangle_internal_angle
+        (qtest:::assertEqual 60 (f (mk 3 10))))
+      (qtest:::TestCase octagon_internal_angle
+        (qtest:::assertEqual 135 (f (mk 8 10)))))
+    ; External angle
+    (qtest:::TestSuite ((f qub:::external_angle))
+      (qtest:::TestCase octagon_external_angle
+        (qtest:::assertEqual 45 (f (mk 8 10)))))
+    ; Apothem to side
+    (qtest:::TestSuite ((f qub:::apothemToSide))
+      (qtest:::TestCase square_apothem_to_side
+        (qtest:::assertAlmostEqual 10 (f 5 4) ?rel_tol 0.0001)))
+    (qtest:::TestSuite ((f qub:::nextCoordinate))
+      (qtest
+

@@ -7,30 +7,30 @@
         @writer set_pos
         @reader get_pos)))
 
-; Helper methods to create a State2D either using a 
+; Helper methods to create a State2D either using a
 ; Point2D or just a two element list
 (defgeneric qub:::makeState2D (angle pos))
 (defmethod qub:::makeState2D ((angle number) (pos qub:::Point2D))
   (makeInstance 'qub:::State2D ?angle angle ?pos pos))
 (defmethod qub:::makeState2D ((angle number) (pos list))
-  (makeInstance 'qub:::State2D 
+  (makeInstance 'qub:::State2D
                 ?angle angle
                 ?pos (qub:::makePoint2D (car pos) (cadr pos))))
-       
+
 (defmethod printself ((obj qub:::State2D))
-	(sprintf nil 
-					 "[State2D Angle: %n Pos: %A]" 
-					 (get_angle obj)
-					 (get_pos obj)))
-       
+  (sprintf nil
+           "[State2D Angle: %n Pos: %A]"
+           (get_angle obj)
+           (get_pos obj)))
+
 (qub:::eqfn qub:::State2D
-	(and (equal (get_angle a) (get_angle b))
-			 (qub:::equal (get_pos a) (get_pos b))))       
-       
-;(defgeneric qub:::move2D (currentState distance direction))        
+  (and (equal (get_angle a) (get_angle b))
+       (qub:::equal (get_pos a) (get_pos b))))
+
+;(defgeneric qub:::move2D (currentState distance direction))
 ;(defmethod qub:::move2D ((currentState qub:::State2D)
-;												 (distance number)
-;												 @key
-;												 (direction number))
-;	t)		 
-																
+;                        (distance number)
+;                        @key
+;                        (direction number))
+; t)
+
