@@ -39,5 +39,13 @@
 		; Internal Angle
 		(qtest:::TestSuite ((f qub:::internal_angle))
 			(qtest:::TestCase square_internal_angle
-				(qtest:::assertEqual 90 (f (mk 4 10)))))))
+				(qtest:::assertEqual 90 (f (mk 4 10))))
+			(qtest:::TestCase triangle_internal_angle
+				(qtest:::assertEqual 60 (f (mk 3 10))))
+			(qtest:::TestCase octagon_internal_angle
+				(qtest:::assertEqual 135 (f (mk 8 10)))))
+		; External angle
+		(qtest:::TestSuite ((f qub:::external_angle))
+			(qtest:::TestCase octagon_external_angle
+				(qtest:::assertEqual 45 (f (mk 8 10)))))))
 		

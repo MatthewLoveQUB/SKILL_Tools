@@ -75,7 +75,12 @@
 ; Find the internal angle of the shape
 (defgeneric qub:::internal_angle (shape))
 (defmethod qub:::internal_angle ((shape qub:::RegularPolygon))
-  (quotient 360.0 (get_num_sides shape)))
+	(let ((n (get_num_sides shape)))
+	  (times (difference n 2) (quotient 180.0 n))))
+	  
+(defgeneric qub:::external_angle (shape))
+(defmethod qub:::external_angle ((shape qub:::RegularPolygon))
+	(quotient 360.0 (get_num_sides shape)))
   
 (defun qub:::apothemToSide (apothem nsides "nn")
         (times 2
