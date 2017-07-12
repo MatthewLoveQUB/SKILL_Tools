@@ -1,0 +1,10 @@
+(defun qub:::listFileRec (rel_path)
+	(if (isFile rel_path)
+		rel_path		
+		(mapcar (lambda (x) (qub:::listFileRec (strcat rel_path "/" x) ))
+					 (qub:::filter_unwanted (getDirFiles rel_path)))))
+													
+; Removes . .. and dotted files from list														 
+(defun qub:::filter_unwanted (files)
+	(setof x files (and (nequal x ".") (nequal x "..") (nequal (getchar x 1) '\.))))
+		 
