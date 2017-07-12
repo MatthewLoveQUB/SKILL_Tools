@@ -68,7 +68,8 @@ Evaluated Inputs: %A\n"
             ntests
             nfails
             nskipped)
-    (mapc (lambda (x) (printf "%s\n" x)) fails)))
+    (mapc (lambda (x) (printf "%s\n" x)) fails)
+    (printf "\n")))
 
 (defun qtest:::runAllTests (rel_path)
   (letseq ((files_in_dir (qub:::listFileRec rel_path))

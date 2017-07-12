@@ -73,6 +73,6 @@
   (letseq ((example_testcase (qtest::TestCase 'foo ?skip t ()))
            (example_result ((cadr example_testcase))))
     (assertSkip 'assert_skipped_test example_result))
-  (printf "Unit Test Self-Test Finished.\n%n of %n Passed\n" 
+  (printf "Unit Test Self-Test Finished.\n%n of %n Passed\n\n" 
        (difference num_tests num_fails) 
        num_tests))
