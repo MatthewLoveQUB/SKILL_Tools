@@ -1,4 +1,5 @@
 ; Run this file twice to fix all "unknown object" errors
+(toplevel 'ils)
 (qub_create_module "qub" ""
 	(modload "std/init.ils")
 	(modload "geometry/init.ils")
