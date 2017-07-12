@@ -1,0 +1,3 @@
+(defun qub:::starts_with (str prefix)
+	(equal 0 (strncmp str prefix (strlen prefix))))
+		

@@ -59,3 +59,10 @@ Evaluated Inputs: %A\n"
 						ntests
 						nfailures)
 		(mapc (lambda (x) (printf "%s\n" x)) failures)))
+
+(defun qtest:::runAllTests (rel_path)
+	(letseq ((files_in_dir (qub:::listFileRec rel_path))
+					 (test_files (setof x 
+					 									files_in_dir 
+					 									(qub:::starts_with (car (last (parseString x "/"))) "test_"))))
+		(mapc (lambda (x) (printf "Running: %s\n" x) (load x)) test_files)))
