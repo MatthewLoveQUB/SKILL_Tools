@@ -41,7 +41,11 @@ Evaluated Inputs: %A\n"
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
-					 (formatted_results (mapcar (lambda (x) (strcat (sprintf nil "Test: %s\n" (car x)) (printself (cadr x)))) fails)))
+					 (formatted_results (mapcar (lambda (x) (strcat (sprintf nil 
+					 																									"Test: %s\n" 
+					 																									(car x))
+					 																						 (printself (cadr x)))) 
+					 														fails)))
 		formatted_results))
 
 ; Runs each of the tests defined in the body
