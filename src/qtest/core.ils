@@ -33,16 +33,29 @@ Evaluated Inputs: %A\n"
    
 ; Create function and return a list of its name and
 ; the function object. To be used inside qtest:::TestRunner
-(defmacro qtest:::TestCase (fn_name @key (skip nil) @rest body)
+(defmacro qtest:::TestCase (fn_name 
+                            @key (skip nil) 
+                                 (expect_fail nil) 
+                            @rest body)
   (if skip
-    `(list ',fn_name
-           (lambda () 
-             (qtest:::makeResult 'Skip
-                                 "Test was skipped"
-                                 ()
-                                 ())))
-    `(let ((f (lambda () ,@body)))
-        (list ',fn_name f))))
+    ; If we're skipping it then just create a function
+    ; which returns a skipped result
+    `(list ',fn_name 
+           (lambda () (qtest:::makeResult 'Skip "Test was skipped" () ())))
+    (if expect_fail
+      ; If we expect a failure then wrap the function in a lambda
+      ; that checks the output of the result
+      ; If it was 'Fail then change it to 'ExpF (expected Fail)
+      `(list ',fn_name
+             (lambda ()
+               (let ((result ,@body))
+                 (if (eq 'Fail (get_result result))
+                     (qtest:::makeResult 'ExpF 
+                                         (get_msg result)
+                                         (get_inputs result)
+                                         (get_evaluated_inputs result))
+                     result))))
+      `(list ',fn_name (lambda () ,@body)))))
         
 ; Test runner. Automatically called by the test suite
 ; Returns a list containing (fn name (symbol), qub::Result)
@@ -62,12 +75,19 @@ Evaluated Inputs: %A\n"
            (nfails (length fails))
            (skipped (setof x results (eq 'Skip (get_result (cadr x)))))
            (nskipped (length skipped))
-           (npassed (difference ntests nfails nskipped)))
-    (printf "%n of %n tests passed (%n failures) (%n skipped).\n" 
+           (expfails (setof x results (eq 'ExpF (get_result (cadr x)))))
+           (nexpfails (length expfails))
+           (passed (setof x results (eq 'Pass (get_result (cadr x)))))
+           (npassed (length passed)))
+    (printf "%n of %n tests passed
+(%n failures)
+(%n skipped)
+(%n expected failures)\n" 
             npassed
             ntests
             nfails
-            nskipped)
+            nskipped
+            nexpfails)
     (mapc (lambda (x) (printf "%s\n" x)) fails)
     (printf "\n")))
 

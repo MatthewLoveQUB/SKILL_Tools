@@ -34,9 +34,7 @@
               @reader get_direction)))
 
 (defmethod printself ((obj qub:::Rotation))
-  (sprintf nil "[Rotation: %n degrees %s]" 
-                     (get_angle obj) 
-         (get_direction obj)))
+  (sprintf nil "[Rotation: %n degrees %n]" (get_angle obj) (get_direction obj)))
 
 (defun qub:::makeRotation (angle direction)
   (makeInstance 'qub:::Rotation
