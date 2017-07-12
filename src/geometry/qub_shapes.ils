@@ -69,7 +69,7 @@
 ; Apothem: Distance from the midpoint of a side to the centre
 (defgeneric qub:::apothem (shape))
 (defmethod qub:::apothem ((shape qub:::RegularPolygon))
-  (times (circumradius shape)
+  (times (qub:::circumradius shape)
          (cos (quotient qub:::m.PI (get_num_sides shape)))))
 
 ; Find the internal angle of the shape

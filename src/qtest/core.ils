@@ -40,13 +40,9 @@ Evaluated Inputs: %A\n"
 ; Test runner. Automatically called by the test suite
 (defun qtest:::runTests (tests)
 	(letseq ((results (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
-					 (fails (setof r results (eq 'Fail (get_result (cadr r)))))
-					 (formatted_results (mapcar (lambda (x) (strcat (sprintf nil 
-					 																									"Test: %s\n" 
-					 																									(car x))
-					 																						 (printself (cadr x)))) 
-					 														fails)))
-		formatted_results))
+					 (fails (setof r results (eq 'Fail (get_result (cadr r))))))
+		; Format and return the results
+		(mapcar (lambda (x) (strcat (sprintf nil "Test: %s\n" (car x)) (printself (cadr x)))) fails)))
 
 ; Runs each of the tests defined in the body
 (defmacro qtest:::TestSuite (let_lst @rest tests)
