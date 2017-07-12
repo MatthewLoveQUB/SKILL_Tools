@@ -4,15 +4,15 @@
       (qtest::assertEqual 9 (f (list 4 5))))
     (qtest::TestCase letters_fail
       (qtest::assertRaises (qub::sum (list 1 "s")))))
-  (qtest::TestSuite ((f qub:::foldl))
-    (qtest::TestCase basic_sum
+  (qtest::TestSuite ((f qub::foldl))
+    (qtest::TestCase basic_sum_foldl
       (qtest::assertEqual 9 (f plus 0 (list 5 4))))
-    (qtest::TestCase join_letters
+    (qtest::TestCase join_letters_foldl
       (qtest::assertEqual "abc" (f strcat "" (list "a" "b" "c")))))
   (qtest::TestSuite ((f qub::foldr))
-    (qtest::TestCase basic_sum
+    (qtest::TestCase basic_sum_foldr
       (qtest::assertEqual 9 (f plus 0 (list 5 4))))
-    (qtest::TestCase join_letters
+    (qtest::TestCase join_letters_foldr
       (qtest::assertEqual "cba" (f strcat "" (list "a" "b" "c")))))
   ; Testing the list comprehension macro
   (qtest::TestSuite ()

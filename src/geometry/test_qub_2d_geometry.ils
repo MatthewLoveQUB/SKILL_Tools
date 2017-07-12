@@ -1,70 +1,70 @@
-(qtest:::runSuites
+(qtest::runSuites
   ; Testing fix_angle
-  (qtest:::TestSuite ((f qub:::fix_angle))
-    (qtest:::TestCase within_range
-      (qtest:::assertEqual 45 (f 45) ?msg "Between 0-360 should return itself"))
-    (qtest:::TestCase full_circle
-      (qtest:::assertEqual 0 (f 360) ?msg "360 should be converted to 0"))
-    (qtest:::TestCase Zero
-      (qtest:::assertEqual 0 (f 0) ?msg "A zero input should return zero"))
-    (qtest:::TestCase above_360
-      (qtest:::assertEqual 1 (f 361) ?msg "Should remove 360"))
-    (qtest:::TestCase below_0
-      (qtest:::assertEqual 359 (f -1) ?msg "Negative angles"))
-    (qtest:::TestCase much_below_0
-      (qtest:::assertEqual 1 (f -359) ?msg "Should give 1 degree"))
-    (qtest:::TestCase minus_360
-      (qtest:::assertEqual 0 (f -360)))
-    (qtest:::TestCase much_much_below_0
-      (qtest:::assertEqual 1 (f -719))))
+  (qtest::TestSuite ((f qub::fixAngle))
+    (qtest::TestCase within_range
+      (qtest::assertEqual 45 (f 45) ?msg "Between 0-360 should return itself"))
+    (qtest::TestCase full_circle
+      (qtest::assertEqual 0 (f 360) ?msg "360 should be converted to 0"))
+    (qtest::TestCase Zero
+      (qtest::assertEqual 0 (f 0) ?msg "A zero input should return zero"))
+    (qtest::TestCase above_360
+      (qtest::assertEqual 1 (f 361) ?msg "Should remove 360"))
+    (qtest::TestCase below_0
+      (qtest::assertEqual 359 (f -1) ?msg "Negative angles"))
+    (qtest::TestCase much_below_0
+      (qtest::assertEqual 1 (f -359) ?msg "Should give 1 degree"))
+    (qtest::TestCase minus_360
+      (qtest::assertEqual 0 (f -360)))
+    (qtest::TestCase much_much_below_0
+      (qtest::assertEqual 1 (f -719))))
 
   ; Testing Point2D class
-  (qtest:::TestSuite ((f qub:::makePoint2D) (cls 'qub:::Point2D))
-    (qtest:::TestCase check_initialisation
-      (qtest:::assertIsInstance (f 0 0) cls)))
+  (qtest::TestSuite ((f qub::makePoint2D) (cls 'qub::Point2D))
+    (qtest::TestCase check_initialisation
+      (qtest::assertIsInstance (f 0 0) cls)))
 
   ; Testing Rotation class
-  (qtest:::TestSuite ((f qub:::makeRotation) (cls 'qub:::Rotation))
-    (qtest:::TestCase check_initialisation
-      (qtest:::assertIsInstance (f 0 0) cls)))
+  (qtest::TestSuite ((f qub::makeRotation) (cls 'qub::Rotation))
+    (qtest::TestCase check_initialisation
+      (qtest::assertIsInstance (f 0 0) cls)))
 
   ; Test applying a rotation
-  (qtest:::TestSuite ((f qub:::rotate)
-                      (start (qub:::makeState2D 45 (list 0 0)))
-                      (end (qub:::makeState2D 90 (list 0 0))))
+  (qtest::TestSuite ((f qub::rotate)
+                      (start (qub::makeState2D 45 (list 0 0)))
+                      (end (qub::makeState2D 90 (list 0 0))))
     ; Test rotating numbers first
-    (qtest:::TestCase rotate_45cw
-      (qtest:::assertEqual -45 (f 0 (qub:::makeRotation 45 'clockwise))))
-    (qtest:::TestCase rotate_45acw
-      (qtest:::assertEqual 45 (f 0 (qub:::makeRotation 45 'anticlockwise))))
-    (qtest:::TestCase invalid_rot_direction
-      (qtest:::assertRaises (f 0
-                               (qub:::makeRotation 45 'foo))
+    (qtest::TestCase rotate_45cw
+      (qtest::assertEqual -45 (f 0 (qub::makeRotation 45 'clockwise))))
+    (qtest::TestCase rotate_45acw
+      (qtest::assertEqual 45 (f 0 (qub::makeRotation 45 'anticlockwise))))
+    (qtest::TestCase invalid_rot_direction
+      (qtest::assertRaises (f 0
+                               (qub::makeRotation 45 'foo))
                                ?msg "Should fail."))
-    (qtest:::TestCase invalid_angle
-      (qtest:::assertRaises (f "s" (qub:::makeRotation 45 'clockwise))
+    (qtest::TestCase invalid_angle
+      (qtest::assertRaises (f "s" (qub::makeRotation 45 'clockwise))
                             ?msg "Can't rotate by a letter"))
     ; Rotating state objects
-    (qtest:::TestCase rotate_state_acw
-      (qtest:::assertEqual end (f start
-                                  (qub:::makeRotation 45 'anticlockwise))))
-    (qtest:::TestCase rotate_state_cw
-      (qtest:::assertEqual start (f end (qub:::makeRotation 45 'clockwise)))))
+    (qtest::TestCase rotate_state_acw
+      (qtest::assertEqual end (f start
+                                  (qub::makeRotation 45 'anticlockwise))))
+    (qtest::TestCase rotate_state_cw
+      (qtest::assertEqual start (f end (qub::makeRotation 45 'clockwise)))))
 
-  (qtest:::TestSuite ((f qub:::degreesToRadians))
-    (qtest:::TestCase zero_input
-      (qtest:::assertEqual 0 (f 0)))
-    (qtest:::TestCase two_pi
-      (qtest:::assertAlmostEqual (f 360.0) (times 2.0 qub:::m.PI) ?rel_tol 1p))
-    (qtest:::TestCase one_pi
-      (qtest:::assertAlmostEqual (f 180.0) qub:::m.PI ?abs_tol 1p))
-    (qtest:::TestCase neg_pi
-      (qtest:::assertAlmostEqual (f -180.0) (minus qub:::m.PI) ?abs_tol 1p)))
+  (qtest::TestSuite ((f qub::degreesToRadians))
+    (qtest::TestCase zero_input
+      (qtest::assertEqual 0 (f 0)))
+    (qtest::TestCase two_pi
+      (qtest::assertAlmostEqual (f 360.0) (times 2.0 qub::m.PI) ?rel_tol 1p))
+    (qtest::TestCase one_pi
+      (qtest::assertAlmostEqual (f 180.0) qub::m.PI ?abs_tol 1p))
+    (qtest::TestCase neg_pi
+      (qtest::assertAlmostEqual (f -180.0) (minus qub::m.PI) ?abs_tol 1p)))
 
-  (qtest:::TestSuite ((f qub:::radiansToDegrees))
-    (qtest:::TestCase zero_input
-      (qtest:::assertEqual 0 (f 0)))
-    (qtest:::TestCase one_eighty
-      (qtest:::assertAlmostEqual 180.0 (f qub:::m.PI)))
-    (qtest:::TestCase neg_one_eighty
-      (qtest:::assertAlmostEqual -180.0 (f (minus (qub:::m.PI)))))))
+  (qtest::TestSuite ((f qub::radiansToDegrees))
+    (qtest::TestCase zero_input
+      (qtest::assertEqual 0 (f 0)))
+    (qtest::TestCase one_eighty
+      (qtest::assertAlmostEqual 180.0 (f qub::m.PI)))
+    (qtest::TestCase neg_one_eighty
+      (qtest::assertAlmostEqual -180.0 (f (minus (qub::m.PI)))))))

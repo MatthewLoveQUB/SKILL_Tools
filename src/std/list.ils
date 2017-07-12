@@ -1,14 +1,15 @@
-(defun qub:::join_lists (lst)
-  (qub:::foldl append (list) lst))
+(addToExportList '(qub:::joinLists
+                   qub:::flattenList))
 
-(defun qub:::flatten_list (lst)
-  (letseq ((output_list (list)))
+(defun qub::joinLists (lst)
+  (qub::foldl append (list) lst))
+
+(defun qub::flattenList (lst)
+  (letseq ((outputList (list)))
     (labels  ((helper (a)
               (mapcar (lambda (x) 
-                        (if (atom x) (pushf x output_list) (helper x))) 
+                        (if (atom x) (pushf x outputList) (helper x))) 
                       a)))
       (helper lst)
-    (reverse output_list))))
+    (reverse outputList))))
 
-(addToExportList '(qub:::join_lists
-                   qub:::flatten_list))

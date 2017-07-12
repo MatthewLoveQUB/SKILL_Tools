@@ -1,3 +1,17 @@
+(addToExportList '(qtest:::assertEqual
+                   qtest:::assertNotEqual
+                   qtest:::assertTrue
+                   qtest:::assertNil
+                   qtest:::assertEq
+                   qtest:::assertNotEq
+                   qtest:::assertMember
+                   qtest:::assertNotMember
+                   qtest:::assertIsInstance
+                   qtest:::assertNotIsInstance
+                   qtest:::assertRaises
+                   qtest:::assertAlmostEqual
+                   qtest:::assertNotAlmostEqual))
+
 (defun qtest:::assert (test 
                        quoted_inputs 
                        evaluated_inputs  
@@ -11,7 +25,7 @@
             (y (gensym)))
     (setq x ,a)
     (setq y ,b)
-    (qtest:::assert (qub:::equal x y) 
+    (qtest:::assert (qub::equal x y) 
                     (list ',a ',b)
                     (list x y)
                     ?msg ,msg)))
@@ -21,7 +35,7 @@
             (y (gensym)))
     (setq x ,a)
     (setq y ,b)
-    (qtest:::assert (qub:::nequal ,a ,b) 
+    (qtest:::assert (qub::nequal ,a ,b) 
                     (list ',a ',b) 
                     (list ,a ,b) 
                     ?msg ,msg)))
@@ -121,7 +135,7 @@
             (y (gensym)))
     (setq x ,a)
     (setq y ,b)
-    (qtest:::assert (qub:::almostEqual x y ?rel_tol ,rel_tol ?abs_tol ,abs_tol) 
+    (qtest:::assert (qub::almostEqual x y ?rel_tol ,rel_tol ?abs_tol ,abs_tol) 
                     (list ',a ',b ',rel_tol ',abs_tol) 
                     (list x y ,rel_tol ,abs_tol) 
                     ?msg ,msg)))
@@ -131,21 +145,8 @@
             (y (gensym)))
     (setq x ,a)
     (setq y ,b)
-    (qtest:::assert (qub:::notAlmostEqual x y ?rel_tol ,rel_tol ?abs_tol ,abs_tol) 
+    (qtest:::assert (qub::notAlmostEqual x y ?rel_tol ,rel_tol ?abs_tol ,abs_tol) 
                     (list ',a ',b ',rel_tol ',abs_tol) 
                     (list x y ,rel_tol ,abs_tol) 
                     ?msg ,msg)))
 
-(addToExportList '(qtest:::assertEqual
-                   qtest:::assertNotEqual
-                   qtest:::assertTrue
-                   qtest:::assertNil
-                   qtest:::assertEq
-                   qtest:::assertNotEq
-                   qtest:::assertMember
-                   qtest:::assertNotMember
-                   qtest:::assertIsInstance
-                   qtest:::assertNotIsInstance
-                   qtest:::assertRaises
-                   qtest:::assertAlmostEqual
-                   qtest:::assertNotAlmostEqual))

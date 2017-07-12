@@ -1,4 +1,4 @@
-(qub_create_module "qub" "std/"
+(qubCreateModule "qub" "std/"
   (modload "list.ils")
   (modload "functional.ils")
   (modload "classes.ils")

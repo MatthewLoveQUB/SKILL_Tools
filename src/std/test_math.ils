@@ -1,5 +1,5 @@
 (qtest::runSuites
-  (qtest::TestSuite ((f qub:::almostEqual))
+  (qtest::TestSuite ((f qub::almostEqual))
     ; Checking integers first
     (qtest::TestCase compare_zero_int
       (qtest::assertTrue (f 0 0)))

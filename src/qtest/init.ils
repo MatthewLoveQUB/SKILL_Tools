@@ -1,3 +1,3 @@
-(qub_create_module "qtest" "qtest/" 
+(qubCreateModule "qtest" "qtest/" 
   (modload "core.ils")        
   (modload "assertions.ils"))

@@ -1,35 +1,36 @@
+(addToExportList '(qub:::checkType
+                   qub:::equal
+                   qub:::nequal
+                   qub:::eqfn
+                   qub:::allEqual))
+
 ; Throws an error if it doesn't receive the expected type
-(defun qub:::checkType (instance expected_type)
+(defun qub::checkType (instance expected_type)
   (unless (classp instance expected_type)
           (error "Expected a %s\n" (get_pname expected_type))))
 
 ; Used to compare objects
-(defgeneric qub:::equal (a b))
+(defgeneric qub::equal (a b))
 
-(defun qub:::nequal (a b)
-  (not (qub:::equal a b)))
+(defun qub::nequal (a b)
+  (not (qub::equal a b)))
 
 ; Should only be in the format (defun fn (a b))
-(defmacro qub:::eqfn (class @rest body)
-  `(defmethod qub:::equal ((a ,class) (b ,class))
+(defmacro qub::eqfn (class @rest body)
+  `(defmethod qub::equal ((a ,class) (b ,class))
     ,@body))
 
-(qub:::eqfn fixnum (equal a b))
-(qub:::eqfn flonum (equal a b))
+(qub::eqfn fixnum (equal a b))
+(qub::eqfn flonum (equal a b))
 
-(defmethod qub:::equal ((a fixnum) (b flonum))
+(defmethod qub::equal ((a fixnum) (b flonum))
   (equal a b))
 
-(defmethod qub:::equal ((a flonum) (b fixnum))
+(defmethod qub::equal ((a flonum) (b fixnum))
   (equal a b))
 
-(qub:::eqfn list (equal a b))
-(qub:::eqfn string (equal a b))
+(qub::eqfn list (equal a b))
+(qub::eqfn string (equal a b))
 
-(defun qub:::all_equal (@rest values)
-  (forall x (cdr values) (qub:::equal (car values) x)))
-
-(addToExportList '(qub:::checkType
-                   qub:::equal
-                   qub:::eqfn
-                   qub:::all_equal))
+(defun qub::allEqual (@rest values)
+  (forall x (cdr values) (qub::equal (car values) x)))

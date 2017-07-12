@@ -1,30 +1,30 @@
-;map = mapcar
-;filter = setof
+(addToExportList '(qub:::foldl
+                   qub:::foldr
+                   qub:::sum
+                   qub:::lcmp))
+
 
 ; Rough versions of haskell's fold functions
-(defun qub:::foldl (fn init lst)
+(defun qub::foldl (fn init lst)
   (let ((result init))
     (foreach value lst
       (setq result (fn result value)))
     result))
 
-(defun qub:::foldr (fn init lst)
-  (qub:::foldl fn init (reverse lst)))
+(defun qub::foldr (fn init lst)
+  (qub::foldl fn init (reverse lst)))
 
 ; Sums a list
-(defun qub:::sum (lst)
-  (qub:::foldl plus 0 lst))
+(defun qub::sum (lst)
+  (qub::foldl plus 0 lst))
 
 ; List comprehension modelled after pythons
-(define_syntax qub:::lcmp
+(define_syntax qub::lcmp
   (syntax_rules (for in if)
     ((lcmp expression for element in list)
      (mapcar (lambda (element) expression) list))
     ((lcmp expression for element in list if predicate)
      (mapcar (lambda (element) expression) (setof element list predicate)))))
      
-(addToExportList '(qub:::foldl
-                   qub:::foldr
-                   qub:::sum
-                   qub:::lcmp))
+
 

@@ -1,12 +1,23 @@
-; Classes
-; -------
+(addToExportList '(qub:::Shape
+                   qub:::RegularPolygon
+                   qub:::makeRegularPolygon
+                   qub:::Octagon
+                   qub:::makeOctagon
+                   qub:::perimeter
+                   qub:::circumradius
+                   qub:::area
+                   qub:::apothem
+                   qub:::interiorAngle
+                   qub:::exteriorAngle
+                   qub:::apothemToSide
+                   qub:::nextCoordinate))
 
 ; Top level class
-(defclass qub:::Shape () ())
+(defclass qub::Shape () ())
 
 ; Represents any regular polygon
-(defclass qub:::RegularPolygon
-  (qub:::Shape)
+(defclass qub::RegularPolygon
+  (qub::Shape)
   ((side_length @initarg side_length
                 @reader get_side_length
                 @writer set_side_length)
@@ -14,16 +25,16 @@
               @reader get_num_sides
               @writer set_num_sides)))
 
-(defun qub:::makeRegularPolygon (num_sides side_length)
-  (makeInstance 'qub:::RegularPolygon ?side_length side_length
+(defun qub::makeRegularPolygon (num_sides side_length)
+  (makeInstance 'qub::RegularPolygon ?side_length side_length
                                       ?num_sides num_sides))
 
-(qub:::eqfn qub:::RegularPolygon
+(qub::eqfn qub::RegularPolygon
   (let ((num_sides_equal (equal (get_num_sides a) (get_num_sides b)))
       (side_length_equal (equal (get_side_length a) (get_side_length b))))
   (and num_sides_equal side_length_equal)))
 
-(defmethod printself ((obj qub:::RegularPolygon))
+(defmethod printself ((obj qub::RegularPolygon))
   (sprintf nil
         "[RegularPolygon Sides: %n Length: %n]"
         (get_num_sides obj)
@@ -31,14 +42,14 @@
 
 
 ; A regular octagon
-(defclass qub:::Octagon
-  (qub:::RegularPolygon)
+(defclass qub::Octagon
+  (qub::RegularPolygon)
   ((num_sides @initform 8)))
 
-(defun qub:::makeOctagon (side_length)
-  (makeInstance 'qub:::Octagon ?side_length side_length))
+(defun qub::makeOctagon (side_length)
+  (makeInstance 'qub::Octagon ?side_length side_length))
 
-(qub:::eqfn qub:::Octagon
+(qub::eqfn qub::Octagon
   (let ((num_sides_equal (equal (get_num_sides a) (get_num_sides b)))
       (side_length_equal (equal (get_side_length a) (get_side_length b))))
   (and num_sides_equal side_length_equal)))
@@ -47,52 +58,52 @@
 ; -------
 
 ; Calculates the perimeter
-(defgeneric qub:::perimeter (shape))
-(defmethod qub:::perimeter ((shape qub:::RegularPolygon))
+(defgeneric qub::perimeter (shape))
+(defmethod qub::perimeter ((shape qub::RegularPolygon))
   (times (get_side_length shape) (get_num_sides shape)))
 
 ; Finds the circumradius
 ; i.e. the radius from the furthest point
-(defgeneric qub:::circumradius (shape))
-(defmethod qub:::circumradius ((shape qub:::RegularPolygon))
+(defgeneric qub::circumradius (shape))
+(defmethod qub::circumradius ((shape qub::RegularPolygon))
   (quotient (get_side_length shape)
-            (times 2 (sin (quotient qub:::m.PI (get_num_sides shape))))))
+            (times 2 (sin (quotient qub::m.PI (get_num_sides shape))))))
 
 ; Area of the shape
-(defgeneric qub:::area (shape))
-(defmethod qub:::area ((shape qub:::RegularPolygon))
+(defgeneric qub::area (shape))
+(defmethod qub::area ((shape qub::RegularPolygon))
   (times 0.5
          (get_num_sides shape)
-         (expt (qub:::circumradius shape) 2)
-         (sin (quotient (times 2.0 qub:::m.PI) (get_num_sides shape)))))
+         (expt (qub::circumradius shape) 2)
+         (sin (quotient (times 2.0 qub::m.PI) (get_num_sides shape)))))
 
 ; Apothem: Distance from the midpoint of a side to the centre
-(defgeneric qub:::apothem (shape))
-(defmethod qub:::apothem ((shape qub:::RegularPolygon))
-  (times (qub:::circumradius shape)
-         (cos (quotient qub:::m.PI (get_num_sides shape)))))
+(defgeneric qub::apothem (shape))
+(defmethod qub::apothem ((shape qub::RegularPolygon))
+  (times (qub::circumradius shape)
+         (cos (quotient qub::m.PI (get_num_sides shape)))))
 
 ; Find the internal angle of the shape
-(defgeneric qub:::internal_angle (shape))
-(defmethod qub:::internal_angle ((shape qub:::RegularPolygon))
+(defgeneric qub::interiorAngle (shape))
+(defmethod qub::interiorAngle ((shape qub::RegularPolygon))
   (let ((n (get_num_sides shape)))
     (times (difference n 2) (quotient 180.0 n))))
 
-(defgeneric qub:::external_angle (shape))
-(defmethod qub:::external_angle ((shape qub:::RegularPolygon))
+(defgeneric qub::exteriorAngle (shape))
+(defmethod qub::exteriorAngle ((shape qub::RegularPolygon))
   (quotient 360.0 (get_num_sides shape)))
 
-(defun qub:::apothemToSide (apothem nsides "nn")
+(defun qub::apothemToSide (apothem nsides "nn")
         (times 2
                apothem
-               (tan (quotient qub:::m.PI nsides))))
+               (tan (quotient qub::m.PI nsides))))
 
-(defmethod qub:::nextCoordinate ((shape qub:::RegularPolygon)
-                                 (pos qub:::State2D)
+(defmethod qub::nextCoordinate ((shape qub::RegularPolygon)
+                                 (pos qub::State2D)
                                  ; Either 'clockwise or 'anticlockwise
                                  (rotation_direction symbol))
-  (letseq ((in_angle (qub:::external_angle shape))
-           (rot (makeInstance 'qub:::Rotation
+  (letseq ((in_angle (qub::exteriorAngle shape))
+           (rot (makeInstance 'qub::Rotation
                               ?angle in_angle
                               ?direction rotation_direction)))
     t))
