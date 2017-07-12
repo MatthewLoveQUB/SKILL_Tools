@@ -34,3 +34,6 @@
 ;                        (direction number))
 ; t)
 
+(addToExportList '(qub:::State2D
+                   qub:::makeState2D))
+

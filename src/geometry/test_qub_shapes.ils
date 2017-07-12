@@ -52,6 +52,11 @@
     (qtest:::TestSuite ((f qub:::apothemToSide))
       (qtest:::TestCase square_apothem_to_side
         (qtest:::assertAlmostEqual 10 (f 5 4) ?rel_tol 0.0001)))
-    (qtest:::TestSuite ((f qub:::nextCoordinate))
-      (qtest
+    ; Next co-ordinate
+    (qtest:::TestSuite ((f qub:::nextCoordinate)
+                        (ms qub:::makeState2D))
+      (qtest:::TestCase start_east_square ?skip t
+        (let ((shape (mk 4 10))
+              (state (ms 0 (list 0 0)))
+        (qtest:::assertTrue t)))))))
 

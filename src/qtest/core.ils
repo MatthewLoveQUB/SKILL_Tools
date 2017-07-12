@@ -33,24 +33,21 @@ Evaluated Inputs: %A\n"
    
 ; Create function and return a list of its name and
 ; the function object. To be used inside qtest:::TestRunner
-(defmacro qtest:::TestCase (fn_name @rest body)
-`(let ((f (lambda () ,@body)))
-    (list ',fn_name f)))
+(defmacro qtest:::TestCase (fn_name @key (skip nil) @rest body)
+  (if skip
+    `(list ',fn_name
+           (lambda () 
+             (qtest:::makeResult 'Skip
+                                 "Test was skipped"
+                                 ()
+                                 ())))
+    `(let ((f (lambda () ,@body)))
+        (list ',fn_name f))))
         
 ; Test runner. Automatically called by the test suite
+; Returns a list containing (fn name (symbol), qub::Result)
 (defun qtest:::runTests (tests)
-  (letseq ((results (mapcar (lambda (x) 
-                              (list (car x) 
-                                    (funcall (cadr x))))
-                            tests))
-           (fails (setof r results (eq 'Fail (get_result (cadr r))))))
-    ; Format and return the results
-    (mapcar (lambda (x) 
-              (strcat (sprintf nil 
-                               "Test: %s\n" 
-                               (car x)) 
-                               (printself (cadr x))))
-            fails)))
+  (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
 
 ; Runs each of the tests defined in the body
 (defmacro qtest:::TestSuite (let_lst @rest tests)
@@ -59,14 +56,19 @@ Evaluated Inputs: %A\n"
 
 (defun qtest:::runSuites (@rest suites)
   (letseq ((tests (qub:::join_lists suites))
+           (results (qtest:::runTests tests))
            (ntests (length tests))
-           (failures (qtest:::runTests tests))
-           (nfailures (length failures)))
-    (printf "%n of %n tests passed (%n failures).\n" 
-            (difference ntests nfailures)
+           (fails (setof x results (eq 'Fail (get_result (cadr x)))))
+           (nfails (length fails))
+           (skipped (setof x results (eq 'Skip (get_result (cadr x)))))
+           (nskipped (length skipped))
+           (npassed (difference ntests nfails nskipped)))
+    (printf "%n of %n tests passed (%n failures) (%n skipped).\n" 
+            npassed
             ntests
-            nfailures)
-    (mapc (lambda (x) (printf "%s\n" x)) failures)))
+            nfails
+            nskipped)
+    (mapc (lambda (x) (printf "%s\n" x)) fails)))
 
 (defun qtest:::runAllTests (rel_path)
   (letseq ((files_in_dir (qub:::listFileRec rel_path))
@@ -78,3 +80,9 @@ Evaluated Inputs: %A\n"
             (printf "Running: %s\n" x) 
             (load x)) 
           test_files)))
+
+(addToExportList '(qtest:::TestCase
+                   qtest:::runTests
+                   qtest:::TestSuite
+                   qtest:::runSuites
+                   qtest:::runAllTests))

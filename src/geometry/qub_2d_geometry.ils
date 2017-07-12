@@ -95,3 +95,12 @@
        (southwest 225)
        (west 180)
        (northwest 135)))))
+
+(addToExportList '(qub:::fix_angle
+                   qub:::Point2D
+                   qub:::makePoint2D
+                   qub:::Rotation
+                   qub:::makeRotation
+                   qub:::rotate
+                   qub:::degreesToRadians
+                   qub:::radiansToDegrees))
