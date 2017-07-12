@@ -54,9 +54,9 @@
 		(qtest:::TestCase two_pi 
 			(qtest:::assertAlmostEqual (f 360.0) (times 2.0 qub:::m.PI) ?rel_tol 1p))
 		(qtest:::TestCase one_pi
-			(qtest:::assertAlmostEqual (f 180.0) qub:::m.PI ?rel_tol 1p))
+			(qtest:::assertAlmostEqual (f 180.0) qub:::m.PI ?abs_tol 1p))
 		(qtest:::TestCase neg_pi
-			(qtest:::assertAlmostEqual (f -180.0) (minus qub:::m.PI) ?rel_tol 1p)))
+			(qtest:::assertAlmostEqual (f -180.0) (minus qub:::m.PI) ?abs_tol 1p)))
 			
 	(qtest:::TestSuite ((f qub:::radiansToDegrees))
 		(qtest:::TestCase zero_input

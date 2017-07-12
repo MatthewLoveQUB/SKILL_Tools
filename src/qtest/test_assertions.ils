@@ -1,0 +1,65 @@
+(letseq ((testCount 0)
+				(num_tests 0)
+				(num_fails 0)
+				(assertPass (lambda (name test) (unless (eq 'Pass (get_result test))
+																							(setq num_fails (add1 num_fails))
+																							(printf "%s Failed.\n" name))
+																				(setq num_tests (add1 num_tests))))
+				(assertFail (lambda (name test) (unless (eq 'Fail (get_result test))
+																							(setq num_fails (add1 num_fails))
+																							(printf "%s Passed (and shouldn't have).\n" name))
+																			 (setq num_tests (add1 num_tests)))))
+	; assertEqual																				
+	(assertPass 'equal_true (qtest:::assertEqual 1 1))
+	(assertFail 'equal_false (qtest:::assertEqual 1 2))
+	; assertNotEqual
+	(assertPass 'nequal_true (qtest:::assertNotEqual 1 2))
+	(assertFail 'nequal_false (qtest:::assertNotEqual 1 1))
+	; assertTrue
+	(assertPass 'asserttrue_true (qtest:::assertTrue (equal 1 1)))
+	(assertFail 'asserttrue_true (qtest:::assertTrue (equal 1 2)))
+	; assertNil
+	(assertPass 'assertnil_true (qtest:::assertNil (equal 1 2)))
+	(assertFail 'assertnil_false (qtest:::assertNil (equal 1 1)))
+	; assertEq
+	(assertPass 'assert_eq_true (qtest:::assertEq 'this 'this))
+	(assertFail 'assert_eq_false (qtest:::assertEq 'this 'that))
+	; assertNotEq
+	(assertPass 'assert_noteq_true (qtest:::assertNotEq 'this 'that))
+	(assertFail 'assert_noteq_false (qtest:::assertNotEq 'this 'this))
+	; assertMember
+	(assertPass 'assert_member_true (qtest:::assertMember 1 (list 1 2 3)))
+	(assertFail 'assert_member_false (qtest:::assertMember 4 (list 1 2 3)))
+	; assertNotMember
+	(assertPass 'assert_notmember_true (qtest:::assertNotMember 4 (list 1 2 3)))
+	(assertFail 'assert_not_member_false (qtest:::assertNotMember 1 (list 1 2 3)))
+	; assertIsInstance
+	(assertPass 'assert_isinstance_true (qtest:::assertIsInstance 1 'fixnum))
+	(assertFail 'assert_isinstance_false (qtest:::assertIsInstance 1 'flonum))
+	; assertNotIsInstance
+	(assertPass 'assert_notisinstance_true (qtest:::assertNotIsInstance 1 'string))
+	(assertFail 'assert_notisinstance_false (qtest:::assertNotIsInstance "2" 'string))
+	; assertRaises
+	(assertPass 'assert_raises_true (qtest:::assertRaises (plus 1 "2")))
+	(assertFail 'assert_raises_false (qtest:::assertRaises (plus 1 2)))
+	; assertAlmostEqual
+	(assertPass 'assert_almost_equal_rel_true 
+							(qtest:::assertAlmostEqual 100 104 ?rel_tol 0.05))
+	(assertFail 'assert_almost_equal_rel_false 
+							(qtest:::assertAlmostEqual 100 106 ?rel_tol 0.05))
+	(assertPass 'assert_almost_equal_abs_true
+							(qtest:::assertAlmostEqual 100 104 ?abs_tol 5))
+	(assertFail 'assert_almost_equal_abs_false
+							(qtest:::assertAlmostEqual 100 106 ?abs_tol 5))
+	; assertNotAlmostEqual
+	(assertPass 'assert_not_almost_equal_rel_true 
+							(qtest:::assertNotAlmostEqual 100 106 ?rel_tol 0.05))
+	(assertFail 'assert_not_almost_equal_rel_false 
+							(qtest:::assertNotAlmostEqual 100 104 ?rel_tol 0.05))
+	(assertPass 'assert_not_almost_equal_abs_true
+							(qtest:::assertNotAlmostEqual 100 106 ?abs_tol 5))
+	(assertFail 'assert_not_almost_equal_abs_false
+							(qtest:::assertNotAlmostEqual 100 104 ?abs_tol 5))
+	(printf "Tests Finished.\n%n of %n Passed\n" 
+			 (difference num_tests num_fails) 
+			 num_tests))

@@ -17,5 +17,11 @@
 (qub:::eqfn fixnum (equal a b))
 (qub:::eqfn flonum (equal a b))
 		
+(defmethod qub:::equal ((a fixnum) (b flonum))
+	(equal a b))
+	
+(defmethod qub:::equal ((a flonum) (b fixnum))
+	(equal a b))
+		
 (defun qub:::all_equal (@rest values)
 	(forall x (cdr values) (qub:::equal (car values) x)))

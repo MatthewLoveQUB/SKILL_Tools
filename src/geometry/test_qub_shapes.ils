@@ -26,12 +26,12 @@
 		; Comparison values taken from here
 		; http://www.cleavebooks.co.uk/scol/caltriag.htm
 		(qtest:::TestCase ten_triangle
-			(qtest:::assertAlmostEqual 5.77 (f (mk 3 10)) ?rel_tol 10m)))
+			(qtest:::assertAlmostEqual 5.77 (f (mk 3 10)) ?abs_tol 10m)))
 	; Area
 	(qtest:::TestSuite ((f qub:::area) (mk qub:::makeRegularPolygon))
 		; Square for simplicity
 		(qtest:::TestCase square_area
-			(qtest:::assertAlmostEqual 100.0 (f (mk 4 10)) ?rel_tol 1p))))
+			(qtest:::assertAlmostEqual 100.0 (f (mk 4 10)) ?abs_tol 1p))))
 	; Apothem
 ;	(qtest:::TestSuite ((f qub::apothem) (mk qub:::makeRegularPolygon)))
 			
