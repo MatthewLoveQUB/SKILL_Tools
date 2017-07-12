@@ -1,39 +1,39 @@
-(qtest:::runSuites
-  (qtest:::TestSuite ((f qub:::almostEqual))
+(qtest::runSuites
+  (qtest::TestSuite ((f qub:::almostEqual))
     ; Checking integers first
-    (qtest:::TestCase compare_zero_int
-      (qtest:::assertTrue (f 0 0)))
-    (qtest:::TestCase pos_int_eq
-      (qtest:::assertTrue (f 1 1)))
-    (qtest:::TestCase neg_int_eq
-      (qtest:::assertTrue (f -1 -1)))
-    (qtest:::TestCase pos_int_neq
-      (qtest:::assertNil (f 1 2)))
-    (qtest:::TestCase neg_int_neq
-      (qtest:::assertNil (f -1 -2)))
+    (qtest::TestCase compare_zero_int
+      (qtest::assertTrue (f 0 0)))
+    (qtest::TestCase pos_int_eq
+      (qtest::assertTrue (f 1 1)))
+    (qtest::TestCase neg_int_eq
+      (qtest::assertTrue (f -1 -1)))
+    (qtest::TestCase pos_int_neq
+      (qtest::assertNil (f 1 2)))
+    (qtest::TestCase neg_int_neq
+      (qtest::assertNil (f -1 -2)))
     ; Checking floats
     ; Checking absolute difference
-    (qtest:::TestCase cmp_zero_float
-      (qtest:::assertTrue (f 0.0 0.0)))
-    (qtest:::TestCase positive_floats_true
-      (qtest:::assertTrue (f 1 1.1 ?abs_tol 0.2)))
-    (qtest:::TestCase positive_floats_nil
-      (qtest:::assertNil (f 1 1.1 ?abs_tol 1u)))
-    (qtest:::TestCase small_difference_true
-      (qtest:::assertTrue (f 1 (plus 1 1n) ?abs_tol 1u)))
-    (qtest:::TestCase small_difference_nil
-      (qtest:::assertNil (f 1 (plus 1 1n) ?abs_tol 1p)))
+    (qtest::TestCase cmp_zero_float
+      (qtest::assertTrue (f 0.0 0.0)))
+    (qtest::TestCase positive_floats_true
+      (qtest::assertTrue (f 1 1.1 ?abs_tol 0.2)))
+    (qtest::TestCase positive_floats_nil
+      (qtest::assertNil (f 1 1.1 ?abs_tol 1u)))
+    (qtest::TestCase small_difference_true
+      (qtest::assertTrue (f 1 (plus 1 1n) ?abs_tol 1u)))
+    (qtest::TestCase small_difference_nil
+      (qtest::assertNil (f 1 (plus 1 1n) ?abs_tol 1p)))
     ; Checking relative difference
-    (qtest:::TestCase small_rel_diff_true
-      (qtest:::assertTrue (f 100 104 ?rel_tol 0.05)))
-    (qtest:::TestCase small_ref_diff_false
-      (qtest:::assertNil (f 100 106 ?rel_tol 0.05)))
+    (qtest::TestCase small_rel_diff_true
+      (qtest::assertTrue (f 100 104 ?rel_tol 0.05)))
+    (qtest::TestCase small_ref_diff_false
+      (qtest::assertNil (f 100 106 ?rel_tol 0.05)))
     ; Checking for bad inputs
-    (qtest:::TestCase neg_abs_tol
-      (qtest:::assertRaises (f 0 0 ?abs_tol -1)))
-    (qtest:::TestCase neg_rel_tol
-      (qtest:::assertRaises (f 0 0 ?rel_tol -1)))
-    (qtest:::TestCase difference_types
-      (qtest:::assertRaises (f 0 "a")))))
+    (qtest::TestCase neg_abs_tol
+      (qtest::assertRaises (f 0 0 ?abs_tol -1)))
+    (qtest::TestCase neg_rel_tol
+      (qtest::assertRaises (f 0 0 ?rel_tol -1)))
+    (qtest::TestCase difference_types
+      (qtest::assertRaises (f 0 "a")))))
 
 

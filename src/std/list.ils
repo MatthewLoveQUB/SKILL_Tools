@@ -4,7 +4,11 @@
 (defun qub:::flatten_list (lst)
   (letseq ((output_list (list)))
     (labels  ((helper (a)
-              (mapcar (lambda (x) (if (atom x) (pushf x output_list) (helper x))) a)))
+              (mapcar (lambda (x) 
+                        (if (atom x) (pushf x output_list) (helper x))) 
+                      a)))
       (helper lst)
     (reverse output_list))))
 
+(addToExportList '(qub:::join_lists
+                   qub:::flatten_list))

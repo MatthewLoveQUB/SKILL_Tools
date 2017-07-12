@@ -1,19 +1,19 @@
-(qtest:::runSuites
-  (qtest:::TestSuite ((f qub:::checkType))
-    (qtest:::TestCase wrong_type
-      (qtest:::assertRaises (f 3 'string))))
-  (qtest:::TestSuite ((f qub:::equal))
+(qtest::runSuites
+  (qtest::TestSuite ((f qub::checkType))
+    (qtest::TestCase wrong_type
+      (qtest::assertRaises (f 3 'string))))
+  (qtest::TestSuite ((f qub::equal))
     ; Integers
-    (qtest:::TestCase integers_true
-      (qtest:::assertTrue (f 2 2)))
-    (qtest:::TestCase integers_false
-      (qtest:::assertNil (f 2 3)))
+    (qtest::TestCase integers_true
+      (qtest::assertTrue (f 2 2)))
+    (qtest::TestCase integers_false
+      (qtest::assertNil (f 2 3)))
     ; Strings
-    (qtest:::TestCase equal_string
-      (qtest:::assertTrue (f "hello" "hello")))
-    (qtest:::TestCase nequal_string
-      (qtest:::assertNil (f "hello" "world"))))
-  (qtest:::TestSuite ((f qub:::all_equal))
+    (qtest::TestCase equal_string
+      (qtest::assertTrue (f "hello" "hello")))
+    (qtest::TestCase nequal_string
+      (qtest::assertNil (f "hello" "world"))))
+  (qtest::TestSuite ((f qub::all_equal))
     ; Integers
-    (qtest:::TestCase pos_ints
-      (qtest:::assertTrue (f 1 1 1 1 1 1)))))
+    (qtest::TestCase pos_ints
+      (qtest::assertTrue (f 1 1 1 1 1 1)))))

@@ -1,25 +1,25 @@
-(qtest:::runSuites
-  (qtest:::TestSuite ((f qub:::sum))
-    (qtest:::TestCase integers
-      (qtest:::assertEqual 9 (f (list 4 5))))
-    (qtest:::TestCase letters_fail
-      (qtest:::assertRaises (qub:::sum (list 1 "s")))))
-  (qtest:::TestSuite ((f qub:::foldl))
-    (qtest:::TestCase basic_sum
-      (qtest:::assertEqual 9 (f plus 0 (list 5 4))))
-    (qtest:::TestCase join_letters
-      (qtest:::assertEqual "abc" (f strcat "" (list "a" "b" "c")))))
-  (qtest:::TestSuite ((f qub:::foldr))
-    (qtest:::TestCase basic_sum
-      (qtest:::assertEqual 9 (f plus 0 (list 5 4))))
-    (qtest:::TestCase join_letters
-      (qtest:::assertEqual "cba" (f strcat "" (list "a" "b" "c")))))
+(qtest::runSuites
+  (qtest::TestSuite ((f qub::sum))
+    (qtest::TestCase integers
+      (qtest::assertEqual 9 (f (list 4 5))))
+    (qtest::TestCase letters_fail
+      (qtest::assertRaises (qub::sum (list 1 "s")))))
+  (qtest::TestSuite ((f qub:::foldl))
+    (qtest::TestCase basic_sum
+      (qtest::assertEqual 9 (f plus 0 (list 5 4))))
+    (qtest::TestCase join_letters
+      (qtest::assertEqual "abc" (f strcat "" (list "a" "b" "c")))))
+  (qtest::TestSuite ((f qub::foldr))
+    (qtest::TestCase basic_sum
+      (qtest::assertEqual 9 (f plus 0 (list 5 4))))
+    (qtest::TestCase join_letters
+      (qtest::assertEqual "cba" (f strcat "" (list "a" "b" "c")))))
   ; Testing the list comprehension macro
-  (qtest:::TestSuite ()
-    (qtest:::TestCase double_numbers
-      (qtest:::assertEqual (list 2 3) 
-                           (qub:::lcmp (add1 x) for x in (list 1 2))))
-    (qtest:::TestCase filter_evens
-      (qtest:::assertEqual (list 1 3 5)
-                           (qub:::lcmp x for x in (list 1 2 3 4 5) 
+  (qtest::TestSuite ()
+    (qtest::TestCase double_numbers
+      (qtest::assertEqual (list 2 3) 
+                           (qub::lcmp (add1 x) for x in (list 1 2))))
+    (qtest::TestCase filter_evens
+      (qtest::assertEqual (list 1 3 5)
+                           (qub::lcmp x for x in (list 1 2 3 4 5) 
                                        if (oddp x))))))

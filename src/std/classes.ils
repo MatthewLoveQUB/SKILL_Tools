@@ -28,3 +28,8 @@
 
 (defun qub:::all_equal (@rest values)
   (forall x (cdr values) (qub:::equal (car values) x)))
+
+(addToExportList '(qub:::checkType
+                   qub:::equal
+                   qub:::eqfn
+                   qub:::all_equal))

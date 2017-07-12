@@ -22,4 +22,9 @@
      (mapcar (lambda (element) expression) list))
     ((lcmp expression for element in list if predicate)
      (mapcar (lambda (element) expression) (setof element list predicate)))))
+     
+(addToExportList '(qub:::foldl
+                   qub:::foldr
+                   qub:::sum
+                   qub:::lcmp))
 
