@@ -1,4 +1,7 @@
-(defun qtest:::assert (test quoted_inputs evaluated_inputs  @key (msg "No msg."))
+(defun qtest:::assert (test 
+                       quoted_inputs 
+                       evaluated_inputs  
+                       @key (msg "No msg."))
   (if test
       (qtest:::makeResult 'Pass msg quoted_inputs evaluated_inputs)
       (qtest:::makeResult 'Fail msg quoted_inputs evaluated_inputs)))

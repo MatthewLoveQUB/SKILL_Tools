@@ -88,7 +88,7 @@ Evaluated Inputs: %A\n"
             nfails
             nskipped
             nexpfails)
-    (mapc (lambda (x) (printf "%s\n" x)) fails)
+    (mapc (lambda (x) (printf "Test: %s\n%s\n" (car x) (cadr x))) fails)
     (printf "\n")))
 
 (defun qtest:::runAllTests (rel_path)
