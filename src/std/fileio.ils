@@ -12,3 +12,5 @@
                       (nequal x "..")
                       (nequal (getchar x 1) '\.))))
 
+(addToExportList '(qub:::listFileRec
+                   qub:::filter_unwanted))

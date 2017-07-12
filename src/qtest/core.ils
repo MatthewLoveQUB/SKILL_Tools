@@ -99,7 +99,7 @@ Evaluated Inputs: %A\n"
                               (qub:::starts_with (get_file_name x) "test_"))))
     (mapc (lambda (x) 
             (printf "Running: %s\n" x) 
-            (load x)) 
+            (load x))
           test_files)))
 
 (addToExportList '(qtest:::TestCase

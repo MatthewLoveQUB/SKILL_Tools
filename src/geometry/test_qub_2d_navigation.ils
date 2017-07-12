@@ -1,0 +1,8 @@
+(let ((ms qub::makeState2D))
+  (qtest::runSuites
+    (qtest::TestSuite ()
+      (qtest::TestCase make_an_instance_w_lst
+        (qtest::assertIsInstance (ms 0 (list 0 0)) 'qub::State2D))
+      (qtest::TestCase make_instance_w_pos
+        (qtest::assertIsInstance (ms 0 (qub::makePoint2D 0 0)) 
+                                 'qub::State2D)))))

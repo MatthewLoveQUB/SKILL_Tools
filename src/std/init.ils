@@ -2,4 +2,6 @@
   (modload "list.ils")
   (modload "functional.ils")
   (modload "classes.ils")
-  (modload "math.ils"))
+  (modload "math.ils")
+  (modload "fileio.ils")
+  (modload "string.ils"))

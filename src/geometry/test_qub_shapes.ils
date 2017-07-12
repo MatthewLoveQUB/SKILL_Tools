@@ -27,7 +27,7 @@
       ; Comparison values taken from here
       ; http://www.cleavebooks.co.uk/scol/caltriag.htm
       (qtest::TestCase ten_triangle
-        (qtest::assertAlmostEqual 5.77 (f (mk 3 10)) ?abs_tol 10m)))
+        (qtest::assertAlmostEqual 5.77 (f (mk 3 10)) ?abs_tol 0.1)))
     ; Area
     (qtest::TestSuite ((f qub:::area))
       (qtest::TestCase square_area
