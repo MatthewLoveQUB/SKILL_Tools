@@ -77,28 +77,47 @@ Checks if two objects are not equal. Uses the `qub::notEqual` method to allow yo
 
 ## `qtest::assertTrue`
 
+Checks that the argument is ```lisp t`.
+
 ## `qtest::assertNil`
 
-## `qtest::assertTrue`
+Checks that the argument is ```lisp nil`
 
 ## `qtest::assertEq`
 
+Both arguments are the same object.
+
 ## `qtest::assertNotEq`
+
+The arguments are different objects.
 
 ## `qtest::assertMember`
 
+The object is a member of the list.
+
 ## `qtest::assertNotMember`
+
+The object is not a member of the list.
 
 ## `qtest::assertIsInstance`
 
+The object is an instance of the class.
+
 ## `qtest::assertNotIsInstance`
+
+The object is not an instance of the class.
 
 ## `qtest::assertRaises`
 
+Checks that the expression raises an error.
+
 ## `qtest::assertAlmostEqual`
+
+Checks that two floats are almost equal. Uses `qub::almostEqual` which is a port of Python's [`math.isclose`](https://docs.python.org/3/library/math.html#math.isclose) and uses the same optional arguments.
 
 ## `qtest::assertNotAlmostEqual`
 
+Checks that two floats are not almost equal.
 
 ## Importing the module
 
