@@ -1,3 +1,6 @@
+(unless (findNamespace "qub")
+        (makeNamespace "qub"))
+
 ; qub_2d_geometry.ils
 (addToExportList '(qub:::fixAngle
                    qub:::Point2D

@@ -1,3 +1,6 @@
+(unless (findNamespace "qub")
+        (makeNamespace "qub"))
+
 ; classes.ils
 (addToExportList '(qub:::checkType
                    qub:::equal
