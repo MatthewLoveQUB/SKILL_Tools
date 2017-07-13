@@ -55,8 +55,13 @@
     ; Next co-ordinate
     (qtest::TestSuite ((f qub::nextCoordinate)
                         (ms qub::makeState2D))
-      (qtest::TestCase start_east_square ?skip t
+      (qtest::TestCase start_east_square
         (let ((shape (mk 4 10))
-              (state (ms 0 (list 0 0)))
-        (qtest::assertTrue t)))))))
+              ; 270 is facing south
+              ; Rotate by 90 as the shape is a square
+              ; End pointing east then move
+              (state (ms 270 (list 0 0))))
+          (let ((end (qub::makeState2D 0 (list 10 0)))
+                (x (qub::nextCoordinate shape state 'clockwise)))
+            (qtest::assertAlmostEqual end x)))))))
 

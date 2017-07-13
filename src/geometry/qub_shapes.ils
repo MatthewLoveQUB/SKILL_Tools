@@ -102,9 +102,7 @@
                                  (startState qub::State2D)
                                  ; Either 'clockwise or 'anticlockwise
                                  (rotation_direction symbol))
-  (letseq ((r (qub::makeRotation 'qub::Rotation
-                                 (qub::exteriorAngle shape)
-                                 rotation_direction))
+  (letseq ((r (qub::makeRotation (qub::exteriorAngle shape) rotation_direction))
            (rotated (qub::rotate startState r)))
     (qub::move2D rotated (get_side_length shape))))
                                
