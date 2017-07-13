@@ -1,0 +1,9 @@
+(qtest::runSuites
+  ; qub::gradient
+  (qtest::TestSuite ((f qub::gradient))
+    (qtest::TestCase vertical_line
+      (qtest::assertEqual 0 (f (qub::makePoint2D 0 0) 
+                               (qub::makePoint2D 0 10))))
+    (qtest::TestCase horizontal_line
+      (qtest::assertEqual 0 (f (qub::makePoint2D 0 0) 
+                               (qub::makePoint2D 10 0))))))
