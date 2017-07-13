@@ -61,5 +61,16 @@
               (state (ms 270 (list 0 0))))
           (let ((end (qub::makeState2D 0 (list 10 0)))
                 (x (qub::nextCoordinate shape state 'clockwise)))
-            (qtest::assertAlmostEqual end x)))))))
+            (qtest::assertAlmostEqual end x)))))
+    (qtest::TestSuite ((f qub::getCoordinates))
+      (qtest::TestCase generate_square
+        (let ((expected (list (qub::makePoint2D 0 0)
+                              (qub::makePoint2D 0 10)
+                              (qub::makePoint2D 10 10)
+                              (qub::makePoint2D 10 0)
+                              (qub::makePoint2D 0 0)))
+              (result (f (mk 4 10))))
+          (qtest::assertAlmostEqual expected 
+                                    (mapcar get_pos result)
+                                    ?abs_tol 1p))))))
 

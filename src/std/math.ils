@@ -26,3 +26,11 @@
                    
 (defun qub::notAlmostEqual (a b @key (rel_tol 0) (abs_tol 0))
   (not (qub::almostEqual a b ?rel_tol rel_tol ?abs_tol abs_tol)))
+
+(defmethod qub::almostEqual ((a list) (b list) @key (rel_tol 0) (abs_tol 0))
+  ; check if each value is equal
+  (if (nequal (length a) (length b))
+      nil
+      (let ((ae (lambda (x y) 
+                  (qub::almostEqual x y ?rel_tol rel_tol ?abs_tol abs_tol))))
+        (qub::foldl (lambda (acc x) (and acc x)) t (mapcar ae a b)))))
