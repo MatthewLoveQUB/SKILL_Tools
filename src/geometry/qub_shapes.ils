@@ -1,18 +1,3 @@
-(addToExportList '(qub:::Shape
-                   qub:::RegularPolygon
-                   qub:::makeRegularPolygon
-                   qub:::Octagon
-                   qub:::makeOctagon
-                   qub:::perimeter
-                   qub:::circumradius
-                   qub:::area
-                   qub:::apothem
-                   qub:::interiorAngle
-                   qub:::exteriorAngle
-                   qub:::apothemToSide
-                   qub:::nextCoordinate
-                   qub:::getCoordinates))
-
 ; Top level class
 (defclass qub::Shape () ())
 

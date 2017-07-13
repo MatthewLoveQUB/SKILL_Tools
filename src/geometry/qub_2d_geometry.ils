@@ -1,15 +1,4 @@
 ; Using polar coordinates so east is 0 degrees, north 90 etc
-(addToExportList '(qub:::fixAngle
-                   qub:::Point2D
-                   qub:::makePoint2D
-                   qub:::Rotation
-                   qub:::makeRotation
-                   qub:::rotate
-                   qub:::degreesToRadians
-                   qub:::radiansToDegrees
-                   qub:::parseDirection))
-
-
 ; Ensures an angle can't go beyond 360 degrees
 (defgeneric qub::fixAngle (angle))
 
@@ -42,7 +31,7 @@
        (qub::almostEqual (get_y a) (get_y b) ?abs_tol 1n)))
 
 (defmethod qub::pointToList ((x qub::Point2D))
-  (list (get_x x) (get_y y)))
+  (list (get_x x) (get_y x)))
        
 (defmethod qub::almostEqual ((a qub::Point2D)
                              (b qub::Point2D)

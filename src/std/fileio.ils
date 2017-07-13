@@ -1,13 +1,10 @@
-(addToExportList '(qub:::listFileRec
-                   qub:::filterUnwanted))
-
 (defun qub::listFileRec (rel_path)
   (labels ((helper (pth)
              (if (isFile pth)
                  pth
                  (mapcar (lambda (x) (helper (strcat pth "/" x)))
                          (qub::filterUnwanted (getDirFiles pth))))))
-    (qub::flatten_list (helper rel_path))))
+    (qub::flattenList (helper rel_path))))
 
 ; Removes . .. and dotted files from list
 (defun qub::filterUnwanted (files)

@@ -1,17 +1,3 @@
-(addToExportList '(qtest:::assertEqual
-                   qtest:::assertNotEqual
-                   qtest:::assertTrue
-                   qtest:::assertNil
-                   qtest:::assertEq
-                   qtest:::assertNotEq
-                   qtest:::assertMember
-                   qtest:::assertNotMember
-                   qtest:::assertIsInstance
-                   qtest:::assertNotIsInstance
-                   qtest:::assertRaises
-                   qtest:::assertAlmostEqual
-                   qtest:::assertNotAlmostEqual))
-
 (defun qtest:::assert (test 
                        quoted_inputs 
                        evaluated_inputs  

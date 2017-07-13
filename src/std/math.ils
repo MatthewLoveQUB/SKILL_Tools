@@ -1,7 +1,3 @@
-(addToExportList '(qub:::m
-                   qub:::almostEqual
-                   qub:::notAlmostEqual))
-
 ; For mathematics
 (defMathConstants 'qub::m)
 

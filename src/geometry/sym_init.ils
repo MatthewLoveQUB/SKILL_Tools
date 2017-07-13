@@ -1,0 +1,37 @@
+; qub_2d_geometry.ils
+(addToExportList '(qub:::fixAngle
+                   qub:::Point2D
+                   qub:::makePoint2D
+                   qub:::pointToList
+                   qub:::Rotation
+                   qub:::makeRotation
+                   qub:::rotate
+                   qub:::degreesToRadians
+                   qub:::radiansToDegrees
+                   qub:::parseDirection))
+                   
+; qub_2d_navigation.ils
+(addToExportList '(qub:::State2D
+                   qub:::makeState2D
+                   qub:::move2D))
+                   
+; qub_line.ils
+(addToExportList '(qub:::gradient
+                   qub:::collinear?
+                   qub:::findCollinearPoint))
+
+; qub_shapes.ils
+(addToExportList '(qub:::Shape
+                   qub:::RegularPolygon
+                   qub:::makeRegularPolygon
+                   qub:::Octagon
+                   qub:::makeOctagon
+                   qub:::perimeter
+                   qub:::circumradius
+                   qub:::area
+                   qub:::apothem
+                   qub:::interiorAngle
+                   qub:::exteriorAngle
+                   qub:::apothemToSide
+                   qub:::nextCoordinate
+                   qub:::getCoordinates))                   

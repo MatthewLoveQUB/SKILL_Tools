@@ -1,0 +1,29 @@
+; classes.ils
+(addToExportList '(qub:::checkType
+                   qub:::equal
+                   qub:::nequal
+                   qub:::eqfn
+                   qub:::allEqual))
+                   
+; fileio.ils
+(addToExportList '(qub:::listFileRec
+                   qub:::filterUnwanted))
+
+; functional.ils
+(addToExportList '(qub:::foldl
+                   qub:::foldr
+                   qub:::sum
+                   qub:::lcmp))
+
+; list.ils
+(addToExportList '(qub:::joinLists
+                   qub:::flattenList
+                   qub:::range))
+
+; math.ils
+(addToExportList '(qub:::m
+                   qub:::almostEqual
+                   qub:::notAlmostEqual))
+
+; string.ils
+(addToExportList '(qub:::startsWith))                   

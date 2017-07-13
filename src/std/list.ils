@@ -1,7 +1,3 @@
-(addToExportList '(qub:::joinLists
-                   qub:::flattenList
-                   qub:::range))
-
 (defun qub::joinLists (lst)
   (qub::foldl append (list) lst))
 

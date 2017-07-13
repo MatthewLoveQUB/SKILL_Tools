@@ -1,9 +1,3 @@
-(addToExportList '(qub:::foldl
-                   qub:::foldr
-                   qub:::sum
-                   qub:::lcmp))
-
-
 ; Rough versions of haskell's fold functions
 ; Function should be in the form (accumulator list-value) => accumulator
 (defun qub::foldl (fn init lst)

@@ -1,7 +1,3 @@
-(addToExportList '(qub:::gradient
-                   qub:::collinear?
-                   qub:::findCollinearPoint))
-
 ; Finds the gradient of two lines
 (defmethod qub::gradient ((a Point2D) (b Point2D))
   (let ((diff_x (difference (get_x b) (get_x a)))

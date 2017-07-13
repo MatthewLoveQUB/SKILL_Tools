@@ -1,9 +1,3 @@
-(addToExportList '(qub:::checkType
-                   qub:::equal
-                   qub:::nequal
-                   qub:::eqfn
-                   qub:::allEqual))
-
 ; Throws an error if it doesn't receive the expected type
 (defun qub::checkType (instance expected_type)
   (unless (classp instance expected_type)
