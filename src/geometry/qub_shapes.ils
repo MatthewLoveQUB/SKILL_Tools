@@ -99,11 +99,15 @@
                (tan (quotient qub::m.PI nsides))))
 
 (defmethod qub::nextCoordinate ((shape qub::RegularPolygon)
-                                 (pos qub::State2D)
+                                 (startState qub::State2D)
                                  ; Either 'clockwise or 'anticlockwise
                                  (rotation_direction symbol))
-  (letseq ((in_angle (qub::exteriorAngle shape))
-           (rot (makeInstance 'qub::Rotation
-                              ?angle in_angle
-                              ?direction rotation_direction)))
-    t))
+  (letseq ((r (qub::makeRotation 'qub::Rotation
+                                 (qub::exteriorAngle shape)
+                                 rotation_direction))
+           (rotated (qub::rotate startState r)))
+    (qub::move2D rotated (get_side_length shape))))
+                               
+                               
+                               
+                               
