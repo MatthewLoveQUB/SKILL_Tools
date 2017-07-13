@@ -31,8 +31,8 @@
   (makeInstance 'qub::Point2D ?x x ?y y))     
 
 (qub::eqfn qub::Point2D
-  (and (equal (get_x a) (get_x b))
-       (equal (get_y a) (get_y b))))
+  (and (qub::almostEqual (get_x a) (get_x b) ?abs_tol 1n)
+       (qub::almostEqual (get_y a) (get_y b) ?abs_tol 1n)))
 
 ; Represents a rotation action
 (defclass qub::Rotation ()

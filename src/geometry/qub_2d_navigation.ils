@@ -1,5 +1,6 @@
 (addToExportList '(qub:::State2D
-                   qub:::makeState2D))
+                   qub:::makeState2D
+                   qub:::move2D))
 
 ; A point in 2D space with a direction
 (defclass qub::State2D ()
@@ -27,13 +28,16 @@
            (get_pos obj)))
 
 (qub::eqfn qub::State2D
-  (and (equal (get_angle a) (get_angle b))
+  (and (qub::almostEqual (get_angle a) (get_angle b) ?abs_tol 1n)
        (qub::equal (get_pos a) (get_pos b))))
 
-;(defgeneric qub::move2D (currentState distance direction))
-;(defmethod qub::move2D ((currentState qub::State2D)
-;                        (distance number)
-;                        @key
-;                        (direction number))
-; t)
-
+; Moves the state "forward" using the angle specified in the State2D instance
+(defgeneric qub::move2D (currentState distance))
+(defmethod qub::move2D ((currentState qub::State2D) (distance number))
+  (let ((dtr qub::degreesToRadians)
+        (x (get_x (get_pos currentState)))
+        (y (get_y (get_pos currentState))))
+    (let ((dx (times distance (cos (dtr (get_angle currentState)))))
+          (dy (times distance (sin (dtr (get_angle currentState))))))
+      (qub::makeState2D (get_angle currentState)
+                        (qub::makePoint2D (plus x dx) (plus y dy))))))
