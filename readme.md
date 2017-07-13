@@ -18,7 +18,7 @@ The unit testing framework is modelled after [Python's `unittest` module](https:
 
 ### Example Test
 
-```
+```lisp
 (qtest::runSuites
   (qtest::TestSuite ((f qub:::join_lists))
     (qtest::TestCase join_three_lists
@@ -30,8 +30,7 @@ The unit testing framework is modelled after [Python's `unittest` module](https:
                            (f (list 1 2 (list 3 (list 4 (list 5 6) 7))))))))
 ```
 
-```
-
+```lisp
 (load "./code/src/std/test_lists.ils")
 1 of 2 tests passed (1 failures) (0 skipped) (0 expected failures)
 Test: join_three_lists
