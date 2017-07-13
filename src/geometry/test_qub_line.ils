@@ -6,4 +6,10 @@
                                (qub::makePoint2D 0 10))))
     (qtest::TestCase horizontal_line
       (qtest::assertEqual 0 (f (qub::makePoint2D 0 0) 
-                               (qub::makePoint2D 10 0))))))
+                               (qub::makePoint2D 10 0))))
+    (qtest::TestCase simple_diagonal
+      (qtest::assertEqual 1 (f (qub::makePoint2D 0 0) 
+                               (qub::makePoint2D 10 10))))
+    (qtest::TestCase negative_diagonal
+      (qtest::assertEqual -1 (f (qub::makePoint2D 0 0) 
+                               (qub::makePoint2D -10 -10))))))
