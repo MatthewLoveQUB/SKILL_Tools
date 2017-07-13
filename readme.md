@@ -77,11 +77,11 @@ Checks if two objects are not equal. Uses the `qub::notEqual` method to allow yo
 
 ## `qtest::assertTrue`
 
-Checks that the argument is ```lisp t`.
+Checks that the argument is true.
 
 ## `qtest::assertNil`
 
-Checks that the argument is ```lisp nil`
+Checks that the argument is `nil`.
 
 ## `qtest::assertEq`
 
