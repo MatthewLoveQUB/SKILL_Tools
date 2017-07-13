@@ -41,6 +41,9 @@
   (and (qub::almostEqual (get_x a) (get_x b) ?abs_tol 1n)
        (qub::almostEqual (get_y a) (get_y b) ?abs_tol 1n)))
 
+(defmethod qub::pointToList ((x qub::Point2D))
+  (list (get_x x) (get_y y)))
+       
 (defmethod qub::almostEqual ((a qub::Point2D)
                              (b qub::Point2D)
                              @key (rel_tol 0)
