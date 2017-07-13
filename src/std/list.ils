@@ -1,5 +1,6 @@
 (addToExportList '(qub:::joinLists
-                   qub:::flattenList))
+                   qub:::flattenList
+                   qub:::range))
 
 (defun qub::joinLists (lst)
   (qub::foldl append (list) lst))
@@ -13,3 +14,12 @@
       (helper lst)
     (reverse outputList))))
 
+(defun qub::range (@key (start 0) (stop -1) (step 1))
+  (if (lessp stop start)
+      (error "End value is lower than start value")
+      (let ((values nil)
+            (cur_val start))
+        (while (lessp cur_val stop)
+          (pushf cur_val values)
+          (setq cur_val (plus cur_val step)))
+        (reverse values))))
