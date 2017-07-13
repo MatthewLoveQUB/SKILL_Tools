@@ -99,7 +99,7 @@
                                             (car acc) 
                                             'anticlockwise) 
                        acc))
-              (list (qub::makeState2D 0 (list 0 0)))
+              (list (qub::makeState2D (qub::fixAngle (difference 0 (qub::exteriorAngle shape))) (list 0 0)))
               (qub::range ?start 0 ?stop (get_num_sides shape))))
          
 (defun qub:::test (x)
