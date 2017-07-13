@@ -5,10 +5,13 @@
 ; For mathematics
 (defMathConstants 'qub::m)
 
-; Should be used on floats
 ; rel_tol 0.1 = 10% difference
 ; abs_tol is the numerical difference
-(defun qub::almostEqual (a b @key (rel_tol 0) (abs_tol 0))
+
+(defgeneric qub::almostEqual (a b @key (rel_tol 0) (abs_tol 0)))
+(defmethod qub::almostEqual ((a number) 
+                             (b number)
+                             @key (rel_tol 0) (abs_tol 0))
   (when (or (negativep rel_tol)
             (negativep abs_tol))
         (error "Can't have negative tolerance"))
@@ -20,6 +23,6 @@
                    ((leqp diff (abs (times rel_tol a))) t)
                    ((leqp diff abs_tol))
                    (t nil))))))
-
+                   
 (defun qub::notAlmostEqual (a b @key (rel_tol 0) (abs_tol 0))
   (not (qub::almostEqual a b ?rel_tol rel_tol ?abs_tol abs_tol)))
