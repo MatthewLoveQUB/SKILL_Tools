@@ -78,7 +78,8 @@
            (rotated (qub::rotate startState r)))
     (qub::move2D rotated (get_side_length shape))))
     
-(defmethod qub::getCoordinates ((shape qub::RegularPolygon))
+(defgeneric qub::getnCoordinates (shape n))
+(defmethod qub::getnCoordinates ((shape qub::RegularPolygon) (n fixnum))
   (let ((startAngle (qub::fixAngle (difference 0 (qub::exteriorAngle shape))))
         (startPos (qub::makePoint2D 0 0 )))
     (qub::foldl (lambda (acc x) 
@@ -87,4 +88,8 @@
                                               'anticlockwise) 
                          acc))
                 (list (qub::makeState2D  startAngle startPos))
-                (qub::range ?start 0 ?stop (get_num_sides shape)))))
+                (qub::range ?start 0 ?stop n))))
+    
+(defgeneric qub::getCoordinates (shape))
+(defmethod qub::getCoordinates ((shape qub::RegularPolygon))
+  (qub::getnCoordinates shape (get_num_sides shape)))

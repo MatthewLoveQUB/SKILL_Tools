@@ -34,4 +34,5 @@
                    qub:::exteriorAngle
                    qub:::apothemToSide
                    qub:::nextCoordinate
+                   qub:::getnCoordinates
                    qub:::getCoordinates))                   
