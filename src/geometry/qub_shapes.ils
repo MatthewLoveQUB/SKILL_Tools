@@ -10,7 +10,8 @@
                    qub:::interiorAngle
                    qub:::exteriorAngle
                    qub:::apothemToSide
-                   qub:::nextCoordinate))
+                   qub:::nextCoordinate
+                   qub:::getCoordinates))
 
 ; Top level class
 (defclass qub::Shape () ())
@@ -39,20 +40,6 @@
         "[RegularPolygon Sides: %n Length: %n]"
         (get_num_sides obj)
         (get_side_length obj)))
-
-
-; A regular octagon
-(defclass qub::Octagon
-  (qub::RegularPolygon)
-  ((num_sides @initform 8)))
-
-(defun qub::makeOctagon (side_length)
-  (makeInstance 'qub::Octagon ?side_length side_length))
-
-(qub::eqfn qub::Octagon
-  (let ((num_sides_equal (equal (get_num_sides a) (get_num_sides b)))
-      (side_length_equal (equal (get_side_length a) (get_side_length b))))
-  (and num_sides_equal side_length_equal)))
 
 ; Methods
 ; -------
@@ -105,7 +92,20 @@
   (letseq ((r (qub::makeRotation (qub::exteriorAngle shape) rotation_direction))
            (rotated (qub::rotate startState r)))
     (qub::move2D rotated (get_side_length shape))))
-                               
+    
+(defmethod qub::getCoordinates ((shape qub::RegularPolygon))
+  (qub::foldl (lambda (acc x) 
+                (pushf (qub::nextCoordinate shape 
+                                            (car acc) 
+                                            'anticlockwise) 
+                       acc))
+              (list (qub::makeState2D 0 (list 0 0)))
+              (qub::range ?start 0 ?stop (get_num_sides shape))))
+         
+(defun qub:::test (x)
+  (mapc (lambda (x) 
+          (printf "%A\n" x)) 
+        (qub::getCoordinates (qub::makeRegularPolygon x 10))))
                                
                                
                                

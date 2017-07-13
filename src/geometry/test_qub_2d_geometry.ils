@@ -16,7 +16,11 @@
     (qtest::TestCase minus_360
       (qtest::assertEqual 0 (f -360)))
     (qtest::TestCase much_much_below_0
-      (qtest::assertEqual 1 (f -719))))
+      (qtest::assertEqual 1 (f -719)))
+    (qtest::TestCase float_three_sixty
+      (qtest::assertEqual 0 (f 360.0)))
+    (qtest::TestCase float_zero
+      (qtest::assertEqual 0.0 (f 0.0))))
 
   ; Testing Point2D class
   (qtest::TestSuite ((f qub::makePoint2D) (cls 'qub::Point2D))

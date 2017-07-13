@@ -14,11 +14,13 @@
 ; Helper methods to create a State2D either using a
 ; Point2D or just a two element list
 (defgeneric qub::makeState2D (angle pos))
+
 (defmethod qub::makeState2D ((angle number) (pos qub::Point2D))
-  (makeInstance 'qub::State2D ?angle angle ?pos pos))
+  (makeInstance 'qub::State2D ?angle (qub::fixAngle angle) ?pos pos))
+  
 (defmethod qub::makeState2D ((angle number) (pos list))
   (makeInstance 'qub::State2D
-                ?angle angle
+                ?angle (qub::fixAngle angle)
                 ?pos (qub::makePoint2D (car pos) (cadr pos))))
 
 (defmethod printself ((obj qub::State2D))

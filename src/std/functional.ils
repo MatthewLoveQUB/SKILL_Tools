@@ -5,6 +5,7 @@
 
 
 ; Rough versions of haskell's fold functions
+; Function should be in the form (accumulator list-value) => accumulator
 (defun qub::foldl (fn init lst)
   (let ((result init))
     (foreach value lst
