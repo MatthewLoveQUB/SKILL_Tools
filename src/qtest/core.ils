@@ -4,6 +4,7 @@
                    qtest:::runSuites
                    qtest:::runAllTests))
 
+; Represents the result of a single Test Case                   
 (defclass qtest:::Result ()
   ; Result can be 'Pass or 'Fail
   ((result @initarg result
@@ -37,8 +38,8 @@ Evaluated Inputs: %A\n"
                 ?inputs inputs
                 ?evaluated_inputs evaluated_inputs))
    
-; Create function and return a list of its name and
-; the function object. To be used inside qtest::TestRunner
+; Create function and return a list of its name and the function object. 
+; To be used inside qtest::TestRunner
 (defmacro qtest::TestCase (fn_name 
                             @key (skip nil) 
                                  (expect_fail nil) 
@@ -51,11 +52,13 @@ Evaluated Inputs: %A\n"
     (if expect_fail
       ; If we expect a failure then wrap the function in a lambda
       ; that checks the output of the result
-      ; If it was 'Fail then change it to 'ExpF (expected Fail)
+      ; If it was 'Fail then change it to 'ExpF (Expected Fail)
       `(list ',fn_name
              (lambda ()
                (let ((result ,@body))
                  (if (eq 'Fail (get_result result))
+                     ; Creating a new result object
+                     ; to show that the failure was expected
                      (qtest:::makeResult 'ExpF 
                                          (get_msg result)
                                          (get_inputs result)
@@ -63,7 +66,7 @@ Evaluated Inputs: %A\n"
                      result))))
       `(list ',fn_name (lambda () ,@body)))))
         
-; Test runner. Automatically called by the test suite
+; Test runner. Automatically called by runTests
 ; Returns a list containing (fn name (symbol), qub::Result)
 (defun qtest::runTests (tests)
   (mapcar (lambda (x) (list (car x) (funcall (cadr x)))) tests))
@@ -73,6 +76,8 @@ Evaluated Inputs: %A\n"
   `(let ,let_lst
     (list ,@tests)))
 
+; Flatten all the suites into a list of tests
+; Run each test and print the results
 (defun qtest::runSuites (@rest suites)
   (letseq ((tests (qub::join_lists suites))
            (results (qtest::runTests tests))
@@ -97,6 +102,7 @@ Evaluated Inputs: %A\n"
     (mapc (lambda (x) (printf "Test: %s\n%s\n" (car x) (cadr x))) fails)
     (printf "\n")))
 
+; Recursively look for all files prefixed with "test_" in a dir and load them    
 (defun qtest::runAllTests (rel_path)
   (letseq ((files_in_dir (qub::listFileRec rel_path))
            (get_file_name (lambda (x) (car (last (parseString x "/")))))

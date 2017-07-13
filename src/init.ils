@@ -5,7 +5,9 @@
   `(let ((modload (lambda (p) (load (strcat ,folder p)))))
     ,@body))
 
-(qubCreateModule "qub" ""
-  (modload "std/init.ils")
-  (modload "geometry/init.ils")
-  (modload "qtest/init.ils"))
+; Running it twice to fix "unknown symbol" errors during compilation
+(for x 0 1
+  (qubCreateModule "qub" ""
+    (modload "std/init.ils")
+    (modload "geometry/init.ils")
+    (modload "qtest/init.ils")))

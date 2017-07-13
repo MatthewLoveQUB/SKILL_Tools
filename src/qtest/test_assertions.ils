@@ -1,3 +1,5 @@
+; A mini unit test for the qtest unit test framework
+; It simply checks that the tests return a Pass, Fail or Skip as expected
 (letseq ((testCount 0)
          (num_tests 0)
          (num_fails 0)
