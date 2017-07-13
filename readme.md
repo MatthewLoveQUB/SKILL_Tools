@@ -41,21 +41,64 @@ Result: Fail
 
 ### Main Functions and Macros
 
-## `runAllTests`
+## `qtest::runAllTests`
 
 Takes a relative folder path and loads all modules prefixed with test_.
 
-## `TestCase`
+## `qtest::TestCase`
 
 Represents a single test. Can contain any code but must return the result of an assertion function. The test name is contained in a list with the function object so tests don't pollute the top level namespace.
 
-## `TestSuite`
+### Skipping a test
+
+To mark a test to be skipped, set the `skip` keyword argument to true.
+
+### Marking a test that you expect to fail
+
+Set the `expect_fail` keyword argument to true. If the test passes it will count as a pass but if it fail it will not be recorded as a fail.
+
+## `qtest::TestSuite`
 
 A collection of test cases. A suite should be used to test a single function or method.
 
-## `runSuites`
+## `qtest::runSuites`
 
 Test suites should be written in the body of this macro. When the module file is loaded in Virtuoso, the tests are initialised and the results are printed in the CIW.
+
+# Assertions
+
+## `qtest::assertEqual`
+
+Checks if two objects are equal. Uses the `qub::equal` method to allow you to implement equality for your own objects as well as numbers, strings etc.
+
+## `qtest::assertNotEqual`
+
+Checks if two objects are not equal. Uses the `qub::notEqual` method to allow you to implement equality for your own objects as well as numbers, strings etc.
+
+## `qtest::assertTrue`
+
+## `qtest::assertNil`
+
+## `qtest::assertTrue`
+
+## `qtest::assertEq`
+
+## `qtest::assertNotEq`
+
+## `qtest::assertMember`
+
+## `qtest::assertNotMember`
+
+## `qtest::assertIsInstance`
+
+## `qtest::assertNotIsInstance`
+
+## `qtest::assertRaises`
+
+## `qtest::assertAlmostEqual`
+
+## `qtest::assertNotAlmostEqual`
+
 
 ## Importing the module
 
