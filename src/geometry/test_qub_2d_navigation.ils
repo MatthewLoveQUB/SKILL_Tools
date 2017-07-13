@@ -13,4 +13,22 @@
       (qtest::TestCase move_backward
         (qtest::assertEqual (ms 0 origin) (f (ms 0 (list 5 0)) -5)))
       (qtest::TestCase move_north
-        (qtest::assertEqual (ms 90 (list 0 5)) (f (ms 90 origin) 5))))))
+        (qtest::assertEqual (ms 90 (list 0 5)) (f (ms 90 origin) 5)))
+      (qtest::TestCase move_north_east
+        (let ((ref (get_pos (ms 45 (list 0.707 0.707))))
+              (tst (get_pos (f (ms 45 origin) 1))))
+          (qtest::assertTrue (and (qub::almostEqual (get_x ref) 
+                                                    (get_x tst) 
+                                                    ?abs_tol 1m)
+                                  (qub::almostEqual (get_y ref) 
+                                                    (get_y tst)
+                                                    ?abs_tol 1m)))))
+      (qtest::TestCase move_south_west
+        (let ((ref (get_pos (ms 225 (list -0.707 -0.707))))
+              (tst (get_pos (f (ms 225 origin) 1))))
+          (qtest::assertTrue (and (qub::almostEqual (get_x ref) 
+                                                    (get_x tst) 
+                                                    ?abs_tol 1m)
+                                  (qub::almostEqual (get_y ref) 
+                                                    (get_y tst)
+                                                    ?abs_tol 1m))))))))
