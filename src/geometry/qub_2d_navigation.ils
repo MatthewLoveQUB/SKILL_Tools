@@ -31,6 +31,19 @@
   (and (qub::almostEqual (get_angle a) (get_angle b) ?abs_tol 1n)
        (qub::equal (get_pos a) (get_pos b))))
 
+(defmethod qub::almostEqual ((a qub::State2D)
+                             (b qub::State2D)
+                             @key (rel_tol 0)
+                                  (abs_tol 0))
+  (and (qub::almostEqual (get_angle a) 
+                         (get_angle b) 
+                         ?rel_tol rel_tol 
+                         ?abs_tol abs_tol)
+       (qub::almostEqual (get_pos a) 
+                         (get_pos b)
+                         ?rel_tol rel_tol
+                         ?abs_tol abs_tol)))
+       
 ; Moves the state "forward" using the angle specified in the State2D instance
 (defgeneric qub::move2D (currentState distance))
 (defmethod qub::move2D ((currentState qub::State2D) (distance number))

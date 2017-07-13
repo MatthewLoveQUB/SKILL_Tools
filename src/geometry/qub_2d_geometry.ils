@@ -34,6 +34,19 @@
   (and (qub::almostEqual (get_x a) (get_x b) ?abs_tol 1n)
        (qub::almostEqual (get_y a) (get_y b) ?abs_tol 1n)))
 
+(defmethod qub::almostEqual ((a qub::Point2D)
+                             (b qub::Point2D)
+                             @key (rel_tol 0)
+                                  (abs_tol 0))
+  (and (qub::almostEqual (get_x a) 
+                         (get_x b) 
+                         ?rel_tol rel_tol 
+                         ?abs_tol abs_tol))
+       (qub::almostEqual (get_y a) 
+                         (get_y b)
+                         ?rel_tol rel_tol 
+                         ?abs_tol abs_tol))
+       
 ; Represents a rotation action
 (defclass qub::Rotation ()
   ((angle @initarg angle
