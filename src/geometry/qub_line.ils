@@ -39,7 +39,10 @@
                               (get_y unknown)))
            ((null (get_y unknown))
             (qub::makePoint2D (get_x unknown)
-                              (findCollinearHelper difference
+            									; needs sign inverted
+            									; i don't know why
+            									; probably a bug hiding here somewhere
+                              (times -1 (findCollinearHelper difference
                                                    x_values
-                                                   y_values)))
+                                                   y_values))))
            (t (error "Both coordinates shouldn't be known/unknown.")))))

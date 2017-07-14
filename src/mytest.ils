@@ -48,44 +48,30 @@
       ; create the polygon
       (setq currentShape (qub::makeRegularPolygon nsides currentSideLength))
       ; Generate its new coordinates
-      (let ((newPts (qub::getCoordinates currentShape 
-                                         ?startPos currentStartPos)))
-        (pushf (mapcar (lambda (p) (qub::pointToList (get_pos p))) newPts) 
-               shapePoints))
+      (let ((newPts (qub::getCoordinates currentShape ?startPos currentStartPos)))
+        (pushf (reverse (mapcar (lambda (p) (qub::pointToList (get_pos p))) newPts)) shapePoints))
       ; Making the next start point
-      (setq currentStartPos (qub:::nsp currentStartPos
-                                       spacing
-                                       width
-                                       currentShape)))
-    ; returning the points
+      (setq currentStartPos (qub:::nsp currentStartPos spacing width currentShape)))
     (setq shapePoints (reverse shapePoints))
-    (let ((finalPoints (list)))
-      (for i 0 2
-        (for j 0 7
-          (let ((newPointX (nth j (nth i shapePoints))))
-            (pushf newPointX finalPoints)))
+
+    (letseq ((finalPoints (list))
+             (mp qub::makePoint2D)
+             (l2p (lambda (n_point n_lst lst)
+                     (let ((point (nth n_point (nth n_lst lst))))
+                       (mp (car point) (cadr point))))))
+      (for i 0 4
+        (for j 0 7 (pushf (nth j (nth i shapePoints)) finalPoints))
         ; add collinear point
-        (let ((ukn (qub::makePoint2D (car (nth 7 (nth i shapePoints))) nil))
-              (ref1 (qub::makePoint2D (car (nth 7 (nth (add1 i) shapePoints)))
-                                      (cadr (nth 7 (nth (add1 i) shapePoints)))))
-              (ref2 (qub::makePoint2D (car (nth 0 (nth (add1 i) shapePoints)))
-                                      (cadr (nth 0 (nth (add1 i) shapePoints))))))
-          (let ((cp (qub::findCollinearPoint ukn ref1 ref2)))
-            (pushf (qub::pointToList cp) finalPoints))))
-      (leCreatePath (geGetEditCellView) 
-                    (list "M1") 
-                    finalPoints
-                    width
-                    "truncateExtend"
-                    0
-                    "left"))))
-    ; (foreach x shapePoints
-      ; (leCreatePath (geGetEditCellView) 
-                    ; (list "M1") 
-                    ; (reverse x)
-                    ; width
-                    ; "truncateExtend"
-                    ; 0
-                    ; "left"))
+        (let ((ukn (mp (car (nth 7 (nth i shapePoints))) nil))
+              (ref1 (l2p 7 (add1 i) shapePoints))
+              (ref2 (l2p 0 (add1 i) shapePoints)))
+          (letseq ((cp (qub::pointToList (qub::findCollinearPoint ukn ref1 ref2)))
+                   (firstNxt (nth 0 (nth (add1 i) shapePoints)))
+                   (pts (list (mp (car cp) (cadr cp)) ref1 ref2))
+                   (lpts (mapcar qub::pointToList pts)))
+            ;(when (null (qub::collinear? pts))
+            ;      (error "..."))
+            (pushf cp finalPoints))))
+      (leCreatePath (geGetEditCellView) (list "M1") finalPoints width "truncateExtend" 0 "left"))))
 
 (qub:::drawTwoTurn)
