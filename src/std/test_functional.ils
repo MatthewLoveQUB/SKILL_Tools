@@ -1,19 +1,26 @@
 (qtest::runSuites
+  ; qub::sum
   (qtest::TestSuite ((f qub::sum))
     (qtest::TestCase integers
       (qtest::assertEqual 9 (f (list 4 5))))
     (qtest::TestCase letters_fail
       (qtest::assertRaises (qub::sum (list 1 "s")))))
+  ; qub::foldl
   (qtest::TestSuite ((f qub::foldl))
     (qtest::TestCase basic_sum_foldl
       (qtest::assertEqual 9 (f plus 0 (list 5 4))))
     (qtest::TestCase join_letters_foldl
       (qtest::assertEqual "abc" (f strcat "" (list "a" "b" "c")))))
+  ; qub::foldl
   (qtest::TestSuite ((f qub::foldr))
     (qtest::TestCase basic_sum_foldr
       (qtest::assertEqual 9 (f plus 0 (list 5 4))))
     (qtest::TestCase join_letters_foldr
-      (qtest::assertEqual "cba" (f strcat "" (list "a" "b" "c")))))
+      (qtest::assertEqual "cba" (f strcat "" (list "a" "b" "c"))))
+    (qtest::TestCase doesnt_mutate_arguments
+      (let ((initval 0))
+        (qub::foldl plus initval (list 1 2 3 4))
+        (qtest::assertEqual 0 initval))))
   ; Testing the list comprehension macro
   (qtest::TestSuite ()
     (qtest::TestCase double_numbers
