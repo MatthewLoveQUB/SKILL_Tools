@@ -38,4 +38,5 @@
                    qub:::apothemToSide
                    qub:::nextCoordinate
                    qub:::getnCoordinates
-                   qub:::getCoordinates))                   
+                   qub:::getCoordinates
+                   qub:::nextSideLength))

@@ -20,10 +20,7 @@
                 ?pos (qub::makePoint2D (car pos) (cadr pos))))
 
 (defmethod printself ((obj qub::State2D))
-  (sprintf nil
-           "[State2D Angle: %n Pos: %A]"
-           (get_angle obj)
-           (get_pos obj)))
+  (sprintf nil "[State2D Angle: %n Pos: %A]" (get_angle obj) (get_pos obj)))
 
 (qub::eqfn qub::State2D
   (and (qub::almostEqual (get_angle a) (get_angle b) ?abs_tol 1n)

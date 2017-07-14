@@ -32,9 +32,7 @@
            (core (difference (times (getn x_values 2) (getn y_values 3))
                              (times (getn x_values 3) (getn y_values 2)))))
      (defun findCollinearHelper (f a b)
-       ; My derivation says it should be 
-       ; b3 - b2 but it gives the wrong answer otherwise...
-       (quotient (f core (times (getn a 1) (difference (getn b 2) (getn b 3))))
+       (quotient (f core (times (getn a 1) (difference (getn b 3) (getn b 2))))
                  (difference (getn a 3) (getn a 2))))
      (cond ((null (get_x unknown))
             (qub::makePoint2D (findCollinearHelper plus y_values x_values)

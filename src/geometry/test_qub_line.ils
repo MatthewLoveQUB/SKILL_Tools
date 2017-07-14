@@ -1,5 +1,5 @@
 (qtest::runSuites
-  ; qub::gradient
+  ; qub::gradien
   (qtest::TestSuite ((f qub::gradient) (mp qub::makePoint2D))
     (qtest::TestCase vertical_line_gradient
       (qtest::assertEqual 0 (f (mp 0 0) (mp 0 10))))
@@ -35,4 +35,9 @@
     (qtest::TestCase both_known
       (qtest::assertRaises (f (mp 0 0) (mp 1 1) (mp 2 2))))
     (qtest::TestCase both_unknown
-      (qtest::assertRaises (f (mp nil nil) (mp 1 1) (mp 2 2))))]
+      (qtest::assertRaises (f (mp nil nil) (mp 1 1) (mp 2 2))))
+    (qtest::TestCase float_diagonal_neg
+      (qtest::assertEqual (mp 20.0 0.0)
+                          (f (mp 20.0 nil)
+                             (mp 10.0 -10.0)
+                             (mp 30.0 10.0))))]

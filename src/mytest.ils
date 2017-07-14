@@ -1,0 +1,91 @@
+(defun qub:::drawShape (nsides radius width spacing layer)
+  (letseq ((XSIDE (qub::apothemToSide radius nsides))
+           (XSHAPE (qub::makeRegularPolygon nsides XSIDE))
+           (side_length (qub::nextSideLength XSHAPE spacing width))
+           (shape (qub::makeRegularPolygon nsides side_length))
+           (npoints (plus 1 (get_num_sides shape)))
+           (points (qub::getnCoordinates shape npoints))
+           (get_pos (lambda (x) (qub::pointToList (get_pos x))))
+           (newPoints (mapcar get_pos points)))
+    (leCreatePath (geGetEditCellView) 
+                  (list "M1") 
+                  (reverse newPoints)
+                  width
+                  "truncateExtend"
+                  0
+                  "left")))
+
+(defun qub:::nsp (prevPnt spacing width shape)            
+  (letseq ((state (qub::makeState2D (difference 270
+                                                (quotient 45.0 2.0))
+                                    prevPnt))
+           (cursl (get_side_length shape))
+           (nxtsl (qub::nextSideLength shape spacing width))
+           (dsl (difference nxtsl cursl))
+           (x (quotient dsl 2.0))
+           (y (plus spacing width))
+           (z (sqrt (plus (times x x) (times y y)))))
+    (get_pos (qub::move2D state z))))
+    
+(defun qub:::drawTwoTurn ()
+  (let ((shapePoints (list)) ; List of list of points
+        (currentShapePoints nil)
+        (currentShape nil)
+        (currentSideLength nil)
+        (width 10)
+        (spacing 10)
+        (nsides 8)
+        (initialRadius 50)
+        (currentStartPos (qub::makePoint2D 0 0)))                      
+    ; Generating four octagons
+    (for i 0 7
+      ; Set the new side length
+      (setq currentSideLength (if (null currentSideLength)
+                                  (qub::apothemToSide initialRadius nsides)
+                                  (qub::nextSideLength currentShape 
+                                                       spacing 
+                                                       width)))
+      ; create the polygon
+      (setq currentShape (qub::makeRegularPolygon nsides currentSideLength))
+      ; Generate its new coordinates
+      (let ((newPts (qub::getCoordinates currentShape 
+                                         ?startPos currentStartPos)))
+        (pushf (mapcar (lambda (p) (qub::pointToList (get_pos p))) newPts) 
+               shapePoints))
+      ; Making the next start point
+      (setq currentStartPos (qub:::nsp currentStartPos
+                                       spacing
+                                       width
+                                       currentShape)))
+    ; returning the points
+    (setq shapePoints (reverse shapePoints))
+    (let ((finalPoints (list)))
+      (for i 0 2
+        (for j 0 7
+          (let ((newPointX (nth j (nth i shapePoints))))
+            (pushf newPointX finalPoints)))
+        ; add collinear point
+        (let ((ukn (qub::makePoint2D (car (nth 7 (nth i shapePoints))) nil))
+              (ref1 (qub::makePoint2D (car (nth 7 (nth (add1 i) shapePoints)))
+                                      (cadr (nth 7 (nth (add1 i) shapePoints)))))
+              (ref2 (qub::makePoint2D (car (nth 0 (nth (add1 i) shapePoints)))
+                                      (cadr (nth 0 (nth (add1 i) shapePoints))))))
+          (let ((cp (qub::findCollinearPoint ukn ref1 ref2)))
+            (pushf (qub::pointToList cp) finalPoints))))
+      (leCreatePath (geGetEditCellView) 
+                    (list "M1") 
+                    finalPoints
+                    width
+                    "truncateExtend"
+                    0
+                    "left"))))
+    ; (foreach x shapePoints
+      ; (leCreatePath (geGetEditCellView) 
+                    ; (list "M1") 
+                    ; (reverse x)
+                    ; width
+                    ; "truncateExtend"
+                    ; 0
+                    ; "left"))
+
+(qub:::drawTwoTurn)
