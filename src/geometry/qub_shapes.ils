@@ -83,7 +83,8 @@
   (shape n @key (startPos (qub::makePoint2D 0 0))))
                                   
 (defmethod qub::getnCoordinates 
-    ((shape qub::RegularPolygon) (n fixnum) 
+    ((shape qub::RegularPolygon) 
+     (n fixnum) 
      @key (startPos (qub::makePoint2D 0 0)))
   (let ((startAngle (qub::fixAngle (difference 0 (qub::exteriorAngle shape)))))
     (qub::foldl (lambda (acc x) 
