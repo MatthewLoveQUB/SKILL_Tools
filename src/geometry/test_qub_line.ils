@@ -12,4 +12,4 @@
                                (qub::makePoint2D 10 10))))
     (qtest::TestCase negative_diagonal
       (qtest::assertEqual -1 (f (qub::makePoint2D 0 0) 
-                               (qub::makePoint2D -10 -10))))))
+                                (qub::makePoint2D 10 -10))))))

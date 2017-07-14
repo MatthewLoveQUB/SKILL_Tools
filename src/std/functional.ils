@@ -11,7 +11,7 @@
 (defun qub::sum (lst)
   (qub::foldl plus 0 lst))
 
-; List comprehension modelled after pythons
+; List comprehension modelled after python's
 (define_syntax qub::lcmp
   (syntax_rules (for in if)
     ((lcmp expression for element in list)
