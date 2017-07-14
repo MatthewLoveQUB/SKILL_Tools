@@ -1,10 +1,8 @@
 ; Rough versions of haskell's fold functions
 ; Function should be in the form (accumulator list-value) => accumulator
-(defun qub::foldl (fn init lst)
-  (let ((result init))
-    (foreach value lst
-      (setq result (fn result value)))
-    result))
+(defun qub::foldl (fn accumulator lst)
+  (mapc (lambda (x) (setq accumulator (fn accumulator x))) lst)
+  accumulator)
 
 (defun qub::foldr (fn init lst)
   (qub::foldl fn init (reverse lst)))
@@ -13,7 +11,7 @@
 (defun qub::sum (lst)
   (qub::foldl plus 0 lst))
 
-; List comprehension modelled after pythons
+; List comprehension modelled after python's
 (define_syntax qub::lcmp
   (syntax_rules (for in if)
     ((lcmp expression for element in list)

@@ -1,10 +1,10 @@
 ; Finds the gradient of two lines
 (defmethod qub::gradient ((a qub::Point2D) (b qub::Point2D))
-  (let ((diff_x (difference (get_x b) (get_x a)))
-        (diff_y (difference (get_y b) (get_y a))))
-    (if (or (zerop diff_x) (zerop diff_y))
+  (let ((dx (difference (get_x b) (get_x a)))
+        (dy (difference (get_y b) (get_y a))))
+    (if (or (zerop dx) (zerop dy))
         0
-        (quotient diff_y diff_x))))
+        (quotient dy dx))))
 
 ; Checks if all points are collinear
 ; i.e. lie on the same straight line
