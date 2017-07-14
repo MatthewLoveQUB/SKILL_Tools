@@ -59,7 +59,7 @@
              (l2p (lambda (n_point n_lst lst)
                      (let ((point (nth n_point (nth n_lst lst))))
                        (mp (car point) (cadr point))))))
-      (for i 0 4
+      (for i 0 2
         (for j 0 7 (pushf (nth j (nth i shapePoints)) finalPoints))
         ; add collinear point
         (let ((ukn (mp (car (nth 7 (nth i shapePoints))) nil))
@@ -72,6 +72,6 @@
             ;(when (null (qub::collinear? pts))
             ;      (error "..."))
             (pushf cp finalPoints))))
-      (leCreatePath (geGetEditCellView) (list "M1") finalPoints width "truncateExtend" 0 "left"))))
+      (leCreatePath (geGetEditCellView) (list "M1") finalPoints width "truncateExtend" 0 "right"))))
 
 (qub:::drawTwoTurn)
