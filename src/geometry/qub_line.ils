@@ -10,10 +10,10 @@
 ; i.e. lie on the same straight line
 (defmethod qub::collinear? ((points list))
   (let ((ref_point (car points))
-        (ref_slope (gradient (car points) (cadr points))))
+        (ref_slope (qub::gradient (car points) (cadr points))))
     (prog ()
       (foreach point (cddr points)
-        (when (nequal ref_slope (gradient ref_point point))
+        (when (nequal ref_slope (qub::gradient ref_point point))
               (return)))
       (return t))))
 
@@ -29,28 +29,19 @@
            (getn (lambda (lst n) (nth (sub1 n) lst)))
            ; Core is just a variable that needs to be caculated
            ; regardless of whether we're looking for x or y
-           (core (difference (times (getn x_values 2)
-                                    (getn y_values 3))
-                             (times (getn x_values 3)
-                                    (getn y_values 2)))))
+           (core (difference (times (getn x_values 2) (getn y_values 3))
+                             (times (getn x_values 3) (getn y_values 2)))))
      (defun findCollinearHelper (f a b)
-       (quotient (f core
-                    (times (getn a 1)
-                           ; My derivation says that it
-                           ; should be b3 - b2 but it gives
-                           ; the wrong answer otherwise...
-                           (difference (getn b 2)
-                                       (getn b 3))))
-                 (difference (getn a 3)
-                             (getn a 2))))
+       ; My derivation says it should be 
+       ; b3 - b2 but it gives the wrong answer otherwise...
+       (quotient (f core (times (getn a 1) (difference (getn b 2) (getn b 3))))
+                 (difference (getn a 3) (getn a 2))))
      (cond ((null (get_x unknown))
-            (makePoint2D (findCollinearHelper plus
-                                                y_values
-                                                x_values)
-                         (get_y unknown)))
+            (qub::makePoint2D (findCollinearHelper plus y_values x_values)
+                              (get_y unknown)))
            ((null (get_y unknown))
-            (makePoint2D (get_x unknown)
-                         (findCollinearHelper difference
-                                                x_values
-                                                y_values)))
-           (t (err "Both coordinates shouldn't be unknown.")))))
+            (qub::makePoint2D (get_x unknown)
+                              (findCollinearHelper difference
+                                                   x_values
+                                                   y_values)))
+           (t (error "Both coordinates shouldn't be known/unknown.")))))

@@ -1,15 +1,38 @@
 (qtest::runSuites
   ; qub::gradient
-  (qtest::TestSuite ((f qub::gradient))
-    (qtest::TestCase vertical_line
-      (qtest::assertEqual 0 (f (qub::makePoint2D 0 0) 
-                               (qub::makePoint2D 0 10))))
-    (qtest::TestCase horizontal_line
-      (qtest::assertEqual 0 (f (qub::makePoint2D 0 0) 
-                               (qub::makePoint2D 10 0))))
-    (qtest::TestCase simple_diagonal
-      (qtest::assertEqual 1 (f (qub::makePoint2D 0 0) 
-                               (qub::makePoint2D 10 10))))
-    (qtest::TestCase negative_diagonal
-      (qtest::assertEqual -1 (f (qub::makePoint2D 0 0) 
-                                (qub::makePoint2D 10 -10))))))
+  (qtest::TestSuite ((f qub::gradient) (mp qub::makePoint2D))
+    (qtest::TestCase vertical_line_gradient
+      (qtest::assertEqual 0 (f (mp 0 0) (mp 0 10))))
+    (qtest::TestCase horizontal_line_gradient
+      (qtest::assertEqual 0 (f (mp 0 0) (mp 10 0))))
+    (qtest::TestCase simple_diagonal_gradient
+      (qtest::assertEqual 1 (f (mp 0 0) (mp 10 10))))
+    (qtest::TestCase negative_diagonal_gradient
+      (qtest::assertEqual -1 (f (mp 0 0) (mp 10 -10)))))
+  ; qub::collinear?
+  (qtest::TestSuite ((f qub::collinear?) (mp qub::makePoint2D))
+    (qtest::TestCase vertical_line_collinearity
+      (qtest::assertTrue (f (list (mp 0 0) (mp 0 1) (mp 0 2)))))
+    (qtest::TestCase horizontal_line_collinearity
+      (qtest::assertTrue (f (list (mp 0 0) (mp 1 0)))))
+    (qtest::TestCase two_vertical_lines
+      (qtest::assertNil (f (list (mp 0 0) (mp 0 1) (mp 1 0) (mp 1 1)))))
+    (qtest::TestCase diagonal_line
+      (qtest::assertTrue (f (list (mp 0 0) (mp 1 1) (mp 2 2) (mp -1 -1))))))
+  (qtest::TestSuite ((f qub::findCollinearPoint) (mp qub::makePoint2D))
+    (qtest::TestCase intersect_diagonal_line_pos
+      (qtest::assertEqual (mp 0 0) (f (mp nil 0) (mp 1 1) (mp 2 2))))
+    (qtest::TestCase intersect_diagonal_line_neg
+      (qtest::assertEqual (mp 0 0) (f (mp nil 0) (mp -1 -1) (mp -2 -2))))
+    (qtest::TestCase pos_vertical_coll_test
+      (qtest::assertEqual (mp 0 0) (f (mp nil 0) (mp 0 1) (mp 0 2))))
+    (qtest::TestCase neg_vertical_coll_test
+      (qtest::assertEqual (mp 0 0) (f (mp nil 0) (mp 0 -1) (mp 0 -2))))
+    (qtest::TestCase horizontal_pos
+      (qtest::assertEqual (mp 0 0) (f (mp 0 nil) (mp 1 0) (mp 2 0))))
+    (qtest::TestCase horizontal_neg
+      (qtest::assertEqual (mp 0 0) (f (mp 0 nil) (mp -1 0) (mp -2 0))))
+    (qtest::TestCase both_known
+      (qtest::assertRaises (f (mp 0 0) (mp 1 1) (mp 2 2))))
+    (qtest::TestCase both_unknown
+      (qtest::assertRaises (f (mp nil nil) (mp 1 1) (mp 2 2))))]
