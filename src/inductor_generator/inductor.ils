@@ -3,37 +3,75 @@
 ; 0 degrees is east. 90 degrees is north
 
 (defun qub::apothemToCircumradius (apothem num_sides)
-  (quotient apothem (cos (quotient 180.0 num_sides))))
+  (\/ apothem (cos (\/ 180.0 num_sides))))
   
+; Finds the internal angle of a regular polygon
 (defun qub::internalAngle (sides)
-  (quotient 360.0 sides))
+  (\/ 360.0 sides))
   
+; Degrees to radians
 (defun qub::degToRad (value)
-  (times qub::m.PI (quotient value 180.0)))
+  (\* qub::m.PI (\/ value 180.0)))
   
+; Radians to degrees
 (defun qub::radToDeg (value)
-  (times 180.0 (quotient value qub::m.PI)))
+  (\* 180.0 (\/ value qub::m.PI)))
   
+; Finds a point at a distance and angle from a reference point
 (defun qub::getPoint (angle dist @key (ref 0.0:0.0))
   (let ((x (xCoord ref))
         (y (yCoord ref))
-        (dx (times dist (cos (qub::degToRad angle))))
-        (dy (times dist (sin (qub::degToRad angle)))))
+        (dx (\* dist (cos (qub::degToRad angle))))
+        (dy (\* dist (sin (qub::degToRad angle)))))
     (plus x dx):(plus y dy)))
   
-(defun qub::generateCoordinates (sides circumradius &key (ref 0.0:0.0))
+; Generates the coordinates of a regular polygon
+(defun qub::mkPolyCoords (sides circumradius &key (ref 0.0:0.0))
   (let ((internalAngle (qub::internalAngle sides)))
     (define (helper angle)
       (if (geqp angle 360.0)
           nil
           (cons (qub::getPoint angle circumradius ?ref ref)
-                (helper (plus angle internalAngle)))))
-    (helper (quotient internalAngle 2.0))))
+                (helper (\+ angle internalAngle)))))
+    (helper (\/ internalAngle 2.0))))
     
-
+; Given two reference points to define a line and a coordinate 
+; with one of its values unknown (e.g. x:12 or 12:y), find the 
+; missing coordinate to place the unknown coordinate on the line
+;
+; e.g. ; ref1 = 0:0, ref2 = 2:1, unknown = 1:x
+; The function would return 1:1
+(defun qub::findCollinearPoint (unknown ref1 ref2)
+  (define (getn lst n)
+    (nth (sub1 n) lst))
+    
+  ; Core is just a variable that needs to be caculated
+  ; regardless of whether we're looking for x or y
+  ;
+  ; Needs sign inverted but I don't know why.
+  ; Probably a bug hiding here somewhere 
+  ; or my derivation was wrong
+  (define (calcCore xCoords yCoords)
+    (\* -1
+        (\- (\* (getn xCoords 2) (getn yCoords 3))
+            (\* (getn xCoords 3) (getn yCoords 2)))))
         
-  
-  
-  
-  
-    
+  ; completes the rest of the equation to find the collinear point
+  (define (findPoint f a b core)
+    (\/ (f core (\* (getn a 1) (\- (getn b 3) (getn b 2))))
+        (\- (getn a 3) (getn a 2))))
+        
+  (letseq ((coords (list unknown ref1 ref2))
+           (xCoords (mapcar xCoord coords))
+           (yCoords (mapcar yCoord coords))
+           (core (calcCore xCoords yCoords)))
+    (cond ((null (xCoord unknown))
+           (let ((x (findPoint plus yCoords xCoords))
+                 (y (yCoord unknown)))
+              x:y))
+           ((null (yCoord unknown))
+            (let ((x (xCoord unknown))
+                  
+                  (y (findPoint difference xCoords yCoords)))
+              x:y))
+           (t (error "Both coordinates shouldn't be known/unknown.")))))
