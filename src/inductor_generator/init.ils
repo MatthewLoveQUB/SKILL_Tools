@@ -1,0 +1,2 @@
+(qubCreateModule "qub" "inductor_generator/"
+  (modload "inductor.ils"))
