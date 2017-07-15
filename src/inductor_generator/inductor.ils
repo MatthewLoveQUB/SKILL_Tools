@@ -13,10 +13,6 @@
 (defun qub::degToRad (value)
   (\* qub::m.PI (\/ value 180.0)))
   
-; Radians to degrees
-(defun qub::radToDeg (value)
-  (\* 180.0 (\/ value qub::m.PI)))
-  
 ; Finds a point at a distance and angle from a reference point
 (defun qub::getPoint (angle dist @key (ref 0.0:0.0))
   (let ((x (xCoord ref))
@@ -24,16 +20,6 @@
         (dx (\* dist (cos (qub::degToRad angle))))
         (dy (\* dist (sin (qub::degToRad angle)))))
     (plus x dx):(plus y dy)))
-  
-; Generates the coordinates of a regular polygon
-(defun qub::mkPolyCoords (sides circumradius &key (ref 0.0:0.0))
-  (let ((internalAngle (qub::internalAngle sides)))
-    (define (helper angle)
-      (if (geqp angle 360.0)
-          nil
-          (cons (qub::getPoint angle circumradius ?ref ref)
-                (helper (\+ angle internalAngle)))))
-    (helper (\/ internalAngle 2.0))))
     
 ; Given two reference points to define a line and a coordinate 
 ; with one of its values unknown (e.g. x:12 or 12:y), find the 
@@ -75,3 +61,14 @@
                   (y (findPoint difference xCoords yCoords)))
               x:y))
            (t (error "Both coordinates shouldn't be known/unknown.")))))
+
+; 0 = half of the internal angle e.g. 45 for a square
+; 1 = next point anticlockwise = 135 for a square
+(defun qub::getPolygonPoint(nPoly nPoint nsides circumradius spacing width
+                            @key (ref 0.0:0.0))
+  (let ((dist (\+ circumradius (\* nPoly (\+ spacing width))))
+        (angle (\+ (\/ (qub::internalAngle nsides) 2.0)
+                   (\* nPoint (qub::internalAngle nsides)))))
+    (qub::getPoint angle dist ?ref ref)))
+      
+  
