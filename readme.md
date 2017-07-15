@@ -193,7 +193,8 @@ The object is not an instance of the class.
 |-----------------|-----------|---|
 | Function Call | msg (`string`) | `qtest::Result` |
 
-Checks that the expression raises an error.
+Checks that the expression raises an error using `error`. 
+It may not catch other errors within the expression.
 
 ### `qtest::assertAlmostEqual`
 
