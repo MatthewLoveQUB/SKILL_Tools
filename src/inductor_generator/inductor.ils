@@ -1,1 +1,39 @@
 ; file for generating spiral inductors
+; only use floats for coordinates                 
+; 0 degrees is east. 90 degrees is north
+
+(defun qub::apothemToCircumradius (apothem num_sides)
+  (quotient apothem (cos (quotient 180.0 num_sides))))
+  
+(defun qub::internalAngle (sides)
+  (quotient 360.0 sides))
+  
+(defun qub::degToRad (value)
+  (times qub::m.PI (quotient value 180.0)))
+  
+(defun qub::radToDeg (value)
+  (times 180.0 (quotient value qub::m.PI)))
+  
+(defun qub::getPoint (angle dist @key (ref 0.0:0.0))
+  (let ((x (xCoord ref))
+        (y (yCoord ref))
+        (dx (times dist (cos (qub::degToRad angle))))
+        (dy (times dist (sin (qub::degToRad angle)))))
+    (plus x dx):(plus y dy)))
+  
+(defun qub::generateCoordinates (sides circumradius &key (ref 0.0:0.0))
+  (let ((internalAngle (qub::internalAngle sides)))
+    (define (helper angle)
+      (if (geqp angle 360.0)
+          nil
+          (cons (qub::getPoint angle circumradius ?ref ref)
+                (helper (plus angle internalAngle)))))
+    (helper (quotient internalAngle 2.0))))
+    
+
+        
+  
+  
+  
+  
+    
