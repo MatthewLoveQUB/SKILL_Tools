@@ -1,5 +1,7 @@
-(addTonNamespace '(qub:::radiusToSide
-                   qub:::generateCoordinates
+(addToExportList '(qub:::apothemToCircumradius
+                   qub:::internalAngle
+                   qub:::degToRad
+                   qub:::getPoint
                    qub:::findCollinearPoint
-                   qub:::getSpiralCoordinates
-                   qub:::drawInductor))
+                   qub:::getPolyPoint
+                   qub:::getSpiralPoints))
