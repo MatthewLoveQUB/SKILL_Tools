@@ -99,13 +99,11 @@
                     (qub::apothemToCircumradius spacing nsides)
                     (qub::apothemToCircumradius width nsides)))))
         (angle (plus 
-                 (quotient 
-                   (qub::internalAngle nsides) 
-                   2.0)
+		             (difference 90.0 (quotient (qub::internalAngle nsides) 2.0))
                  (times 
                    pointIdx 
                    (qub::internalAngle nsides)))))
-    (qub::getPoint angle dist ?ref ref)))
+    (qub::getPoint (qub::fixAngle angle) dist ?ref ref)))
     
 (defun qub::getSpiralPoints (complete_turns
                              additional_segments
@@ -119,7 +117,12 @@
         (error "More additional segments then sides"))
   ; plus width is a hack needed because there is a big with left alignment
   ; right alignment works but needs the apothem increased to compensate
-	(let ((circumradius (qub::apothemToCircumradius (plus width apothem) nsides)))
+	(let ((circumradius (qub::apothemToCircumradius (plus 
+                                                    (quotient 
+                                                      width 
+                                                      2.0) 
+                                                    apothem) 
+                                                  nsides)))
     (let ((points nil)
           (getPoint (lambda (polyIdx pointIdx)
                       (qub::getPolyPoint polyIdx 
@@ -167,12 +170,12 @@
       (reverse rLst))))
                       
      
-(let ((points (qub::getSpiralPoints 3 2 10.0 5.0 70.0 8)))
+(let ((points (qub::getSpiralPoints 2 1 10.0 5.0 70.0 4)))
   (leCreatePath (geGetEditCellView) 
                 (list "M1") 
                 points
                 10.0 
                 "truncateExtend" 
                 0 
-                "right"))
+                "center"))
       
