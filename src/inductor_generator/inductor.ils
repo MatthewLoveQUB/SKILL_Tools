@@ -37,75 +37,73 @@
       (plus x dx)
       (plus y dy)))
     
-; Given two reference points to define a line and a coordinate 
-; with one of its values unknown (e.g. x:12 or 12:y), find the 
-; missing coordinate to place the unknown coordinate on the line
-;
-; e.g. ; ref1 = 0:0, ref2 = 2:1, unknown = 1:x
-; The function would return 1:1
-(defun qub::findCollinearPoint (unknown ref1 ref2)
-  (define (getn lst n)
-    (nth (sub1 n) lst))
-    
-  ; Core is just a variable that needs to be caculated
-  ; regardless of whether we're looking for x or y
-  ;
-  ; Needs sign inverted but I don't know why.
-  ; Probably a bug hiding here somewhere 
-  ; or my derivation was wrong
-  (define (calcCore xCoords yCoords)
-    ; -1*(x2y3 - x3y2)
-    (times 
-      -1 
-      (difference 
-        (times 
-          (getn xCoords 2) 
-          (getn yCoords 3))
-        (times 
-          (getn xCoords 3) 
-          (getn yCoords 2)))))
-        
-  ; completes the rest of the equation to find the collinear point
-  (define (findPoint f a b core)
-    (quotient
-      (f core 
-         (times 
-           (getn a 1) 
-           (difference 
-             (getn b 3) 
-             (getn b 2))))
-      (difference 
-        (getn a 3) 
-        (getn a 2))))
-        
-  (letseq ((coords (list unknown ref1 ref2))
-           (xCoords (mapcar xCoord coords))
-           (yCoords (mapcar yCoord coords))
-           (core (calcCore xCoords yCoords)))
-    (cond ((null (xCoord unknown)) (let ((x (findPoint plus yCoords xCoords))
-                                         (y (yCoord unknown)))
-                                     x:y))
-          ((null (yCoord unknown)) (let ((x (xCoord unknown))
-                                         (y (findPoint difference 
-                                                       xCoords 
-                                                       yCoords)))
-                                     x:y))
-          (t (error "Both coordinates shouldn't be known/unknown.")))))
 
+
+(defun qub::findCollinearPoint (unknown ref1 ref2)
+  (letseq ((coords (list unknown ref1 ref2))
+           (getxCoords (lambda (lst) (mapcar xCoord lst)))
+           (getyCoords (lambda (lst) (mapcar yCoord lst)))
+           (yCoords (getyCoords coords))
+           (xCoords (getxCoords coords))
+           (between (lambda (x a b)
+                      (let ((larger (max a b))
+                            (smaller (min a b)))
+                        (and (leqp x larger)
+                             (geqp x smaller)))))
+           ; Core is just a variable that needs to be caculated
+           ; regardless of whether we're looking for x or y
+           ;
+           ; Needs sign inverted but I don't know why.
+           ; Probably a bug hiding here somewhere 
+           ; or my derivation was wrong
+           (calcCore (lambda (calcCore xCoords yCoords)
+                       ; -1*(x2y3 - x3y2)
+                       (times 
+                         -1 
+                         (difference 
+                           (times 
+                             (getn xCoords 2) 
+                             (getn yCoords 3))
+                           (times 
+                             (getn xCoords 3) 
+                             (getn yCoords 2))))))
+           ; Using the core, calculate the other part of the point
+           (findPoint (lambda (f a b core)
+                        (quotient
+                          (f core 
+                             (times 
+                               (getn a 1) 
+                               (difference 
+                                 (getn b 3) 
+                                 (getn b 2))))
+                          (difference 
+                            (getn a 3) 
+                            (getn a 2))))))
+    ; Does the point lie within the x or y coordinates of the reference points?
+    (if (apply between xCoords)
+        ; X coordinate is within. Find the Y coordinate
+        (let ((x (xCoord unknown))
+              (y (findPoint difference xCoords yCoords)))
+          x:y)
+        ; Y coordinate must be within. Find the X coordinate.
+        (let ((x (findPoint plus yCoords xCoords))
+              (y (yCoord unknown)))
+          x:y))))
+          
 ; 0 = half of the internal angle e.g. 45 for a square
 ; 1 = next point anticlockwise = 135 for a square
-(defun qub::getPolygonPoint(nPoly 
-                            nPoint 
-                            nsides 
-                            circumradius 
-                            spacing 
-                            width
-                            @key 
-                            (ref 0.0:0.0))
+(defun qub::getPolyPoint(polyIdx 
+                         pointIdx 
+                         nsides 
+                         circumradius 
+                         spacing 
+                         width
+                         @key 
+                         (ref 0.0:0.0))
   (let ((dist (plus 
                 circumradius 
                 (times 
-                  nPoly 
+                  polyIdx 
                   (plus 
                     spacing 
                     width))))
@@ -114,7 +112,7 @@
                    (qub::internalAngle nsides) 
                    2.0)
                  (times 
-                   nPoint 
+                   pointIdx 
                    (qub::internalAngle nsides)))))
     (qub::getPoint angle dist ?ref ref)))
     
@@ -125,14 +123,27 @@
                              nsides
                              @key 
                              (ref 0.0:0.0))
-  ; cr = circumradius
-  (let ((cr (qub::apothemToCircumradius apothem))
-        (points nil))
-    (define (getPoint nPoly nPoint)
-      (qub::getPolygonPoint npoly npoint nsides cr spacing width ?ref ref))
-    (for i 0 (sub1 turns)
-      (for j 0 (sub1 nsides)
-        (pushf (getPoint i j) points))
+  (let ((circumradius (qub::apothemToCircumradius apothem))
+        (points nil)
+        (getPoint (lambda (polyIdx pointIdx)
+                    (qub::getPolyPoint polyIdx 
+                                       pointIdx 
+                                       nsides 
+                                       circumradius 
+                                       spacing 
+                                       width 
+                                       ?ref ref)))
+        (maxTurnIdx (sub1 turns))
+        (maxPointIdx (sub1 nsides)))
+    (for turnIdx 0 maxTurnIdx
+      (for pointIdx 0 maxPointIdx
+        (pushf (getPoint turnIdx pointIdx) points))
       ; Adding the bridging point to the next spiral
-      (let ((fcp qub::findCollinearPoint))
-        t))))
+      (let ((fcp qub::findCollinearPoint)
+            (lastPoint (getPoint turnIdx maxPointIdx))
+            ; Get the first and last points of the next spiral
+            ; So we can find the collinear point that intersects them
+            (ref1 (getPoint (add1 turnIdx) 0))
+            (ref2 (getPoint (add1 turnIdx) maxPointIdx)))
+        (pushf (fcp lastPoint ref1 ref2) points)))
+    (reverse points)))
