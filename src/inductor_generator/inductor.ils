@@ -107,13 +107,16 @@
                    (qub::internalAngle nsides)))))
     (qub::getPoint angle dist ?ref ref)))
     
-(defun qub::getSpiralPoints (turns 
+(defun qub::getSpiralPoints (complete_turns
+                             additional_segments
                              width 
                              spacing 
                              apothem 
                              nsides
                              @key 
                              (ref 0.0:0.0))
+  (when (greaterp additional_segments nsides)
+        (error "More additional segments then sides"))
   ; plus width is a hack needed because there is a big with left alignment
   ; right alignment works but needs the apothem increased to compensate
 	(let ((circumradius (qub::apothemToCircumradius (plus width apothem) nsides)))
@@ -126,11 +129,18 @@
                                          spacing 
                                          width 
                                          ?ref ref)))
-          (maxTurnIdx (sub1 turns))
+          (maxTurnIdx (if (zerop additional_segments)
+                          (sub1 complete_turns)
+                          complete_turns))
           (maxPointIdx (sub1 nsides)))
       (for turnIdx 0 maxTurnIdx
-        (for pointIdx 0 maxPointIdx
-          (pushf (getPoint turnIdx pointIdx) points))
+        ; drawing each segment
+        (let ((maxPointIdx (if (and (equal turnIdx maxTurnIdx)
+                                    (not (zerop additional_segments)))
+                               (sub1 additional_segments) 
+                               maxPointIdx)))
+          (for pointIdx 0 maxPointIdx
+            (pushf (getPoint turnIdx pointIdx) points)))
         (unless (equal turnIdx maxTurnIdx)
           ; Adding the bridging point to the next spiral
           (let ((fip qub:::findIntersectPoint)
@@ -157,7 +167,7 @@
       (reverse rLst))))
                       
      
-(let ((points (qub::getSpiralPoints 3 10.0 5.0 70.0 8)))
+(let ((points (qub::getSpiralPoints 3 2 10.0 5.0 70.0 8)))
   (leCreatePath (geGetEditCellView) 
                 (list "M1") 
                 points
