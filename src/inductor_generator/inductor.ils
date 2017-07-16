@@ -38,56 +38,6 @@
       (plus y dy))))
     
 
-
-(defun qub::findCollinearPoint (unknown ref1 ref2)
-  (letseq ((coords (list unknown ref1 ref2))
-           (getxCoords (lambda (lst) (mapcar xCoord lst)))
-           (getyCoords (lambda (lst) (mapcar yCoord lst)))
-           (yCoords (getyCoords coords))
-           (xCoords (getxCoords coords))
-           (between (lambda (x a b)
-                      (let ((larger (max a b))
-                            (smaller (min a b)))
-                        (and (leqp x larger)
-                             (geqp x smaller)))))
-           (getn (lambda (lst n) (nthelem n lst)))
-           ; Core is just a variable that needs to be caculated
-           ; regardless of whether we're looking for x or y
-           ;
-           ; -(x2y3 - x3y2)
-           (core (difference 
-                   (times 
-                     (getn xCoords 2) 
-                     (getn yCoords 3))
-                   (times 
-                     (getn xCoords 3) 
-                     (getn yCoords 2))))
-           ; Using the core, calculate the other part of the point
-           (findPoint (lambda (f a b)
-                        (quotient
-                          (f core (times 
-                                    (getn a 1) 
-                                    (difference 
-                                      (getn b 3) 
-                                      (getn b 2))))
-                          (difference 
-                            (getn a 3) 
-                            (getn a 2))))))
-    ; Does the point lie within the x or y coordinates of the reference points?
-    ;
-    ; Needs sign inverted but I don't know why.
-    ; Probably a bug hiding here somewhere 
-    ; or my derivation was wrong
-    (if (apply between xCoords)
-        ; X coordinate is within. Find the Y coordinate
-        (let ((x (xCoord unknown))
-              (y (times -1.0 (findPoint difference xCoords yCoords))))
-          x:y)
-        ; Y coordinate must be within. Find the X coordinate.
-        (let ((x (times -1.0 (findPoint plus yCoords xCoords)))
-              (y (yCoord unknown)))
-          x:y))))
-          
 ; equation taken from here the Line-Line intersection wiki page
 (defun qub:::findIntersectPoint (a1 a2 b1 b2)
   (let ((x1 (xCoord a1))
@@ -195,7 +145,7 @@
 (defun qub:::takeN (n lst)
   (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
      
-(let ((points (qub:::takeN 30 (qub::getSpiralPoints 80 10.0 5.0 70.0 8))))   
+(let ((points (qub:::takeN 60 (qub::getSpiralPoints 80 10.0 5.0 70.0 8))))   
 	(leCreatePath (geGetEditCellView) 
 	              (list "M1") 
 	              points
