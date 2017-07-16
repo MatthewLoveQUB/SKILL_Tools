@@ -98,7 +98,7 @@
         (y2 (yCoord a2))
         (y3 (yCoord b1))
         (y4 (yCoord b2)))
-    (let ((x1y2 (times x1 y1))
+    (let ((x1y2 (times x1 y2))
           (y1x2 (times y1 x2))
           (x3y4 (times x3 y4))
           (y3x4 (times y3 x4)))
@@ -164,7 +164,9 @@
                              nsides
                              @key 
                              (ref 0.0:0.0))
-  (let ((circumradius (qub::apothemToCircumradius apothem nsides)))
+  ; plus width is a hack needed because there is a big with left alignment
+  ; right alignment works but needs the apothem increased to compensate
+	(let ((circumradius (qub::apothemToCircumradius (plus width apothem) nsides)))
     (let ((points nil)
           (getPoint (lambda (polyIdx pointIdx)
                       (qub::getPolyPoint polyIdx 
@@ -191,13 +193,14 @@
       (reverse points))))
      
 (defun qub:::takeN (n lst)
-  (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n))))
+  (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
      
-(leCreatePath (geGetEditCellView) 
-              (list "M1") 
-              (qub:::takeN 20 (qub::getSpiralPoints 10 10.0 5.0 50.0 8))
-              10.0 
-              "truncateExtend" 
-              0 
-              "left")
+(let ((points (qub:::takeN 30 (qub::getSpiralPoints 80 10.0 5.0 70.0 8))))   
+	(leCreatePath (geGetEditCellView) 
+	              (list "M1") 
+	              points
+	              10.0 
+	              "truncateExtend" 
+	              0 
+	              "right"))
       
