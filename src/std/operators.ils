@@ -1,8 +1,0 @@
-(define \+ plus)
-(define \- difference)
-(define \* times)
-(define \/ quotient)
-(define \> greaterp)
-(define \< lessp)
-(define \>\= geqp)
-(define \<\= leqp)

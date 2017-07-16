@@ -1,25 +1,41 @@
-; file for generating spiral inductors
-; only use floats for coordinates                 
-; 0 degrees is east. 90 degrees is north
+;;;; file for generating spiral inductors
+;;;; only use floats for coordinates                 
+;;;; 0 degrees is east. 90 degrees is north
 
 (defun qub::apothemToCircumradius (apothem num_sides)
-  (\/ apothem (cos (\/ 180.0 num_sides))))
+  (quotient 
+    apothem 
+    (cos (quotient 
+           180.0 
+           num_sides))))
   
 ; Finds the internal angle of a regular polygon
 (defun qub::internalAngle (sides)
-  (\/ 360.0 sides))
+  (quotient 
+    360.0 
+    sides))
   
 ; Degrees to radians
 (defun qub::degToRad (value)
-  (\* qub::m.PI (\/ value 180.0)))
+  (times 
+    qub::m.PI 
+    (quotient 
+      value 
+      180.0)))
   
 ; Finds a point at a distance and angle from a reference point
 (defun qub::getPoint (angle dist @key (ref 0.0:0.0))
   (let ((x (xCoord ref))
         (y (yCoord ref))
-        (dx (\* dist (cos (qub::degToRad angle))))
-        (dy (\* dist (sin (qub::degToRad angle)))))
-    (plus x dx):(plus y dy)))
+        (dx (times 
+              dist 
+              (cos (qub::degToRad angle))))
+        (dy (times 
+              dist 
+              (sin (qub::degToRad angle)))))
+    (range 
+      (plus x dx)
+      (plus y dy)))
     
 ; Given two reference points to define a line and a coordinate 
 ; with one of its values unknown (e.g. x:12 or 12:y), find the 
@@ -38,37 +54,85 @@
   ; Probably a bug hiding here somewhere 
   ; or my derivation was wrong
   (define (calcCore xCoords yCoords)
-    (\* -1
-        (\- (\* (getn xCoords 2) (getn yCoords 3))
-            (\* (getn xCoords 3) (getn yCoords 2)))))
+    ; -1*(x2y3 - x3y2)
+    (times 
+      -1 
+      (difference 
+        (times 
+          (getn xCoords 2) 
+          (getn yCoords 3))
+        (times 
+          (getn xCoords 3) 
+          (getn yCoords 2)))))
         
   ; completes the rest of the equation to find the collinear point
   (define (findPoint f a b core)
-    (\/ (f core (\* (getn a 1) (\- (getn b 3) (getn b 2))))
-        (\- (getn a 3) (getn a 2))))
+    (quotient
+      (f core 
+         (times 
+           (getn a 1) 
+           (difference 
+             (getn b 3) 
+             (getn b 2))))
+      (difference 
+        (getn a 3) 
+        (getn a 2))))
         
   (letseq ((coords (list unknown ref1 ref2))
            (xCoords (mapcar xCoord coords))
            (yCoords (mapcar yCoord coords))
            (core (calcCore xCoords yCoords)))
-    (cond ((null (xCoord unknown))
-           (let ((x (findPoint plus yCoords xCoords))
-                 (y (yCoord unknown)))
-              x:y))
-           ((null (yCoord unknown))
-            (let ((x (xCoord unknown))
-                  
-                  (y (findPoint difference xCoords yCoords)))
-              x:y))
-           (t (error "Both coordinates shouldn't be known/unknown.")))))
+    (cond ((null (xCoord unknown)) (let ((x (findPoint plus yCoords xCoords))
+                                         (y (yCoord unknown)))
+                                     x:y))
+          ((null (yCoord unknown)) (let ((x (xCoord unknown))
+                                         (y (findPoint difference 
+                                                       xCoords 
+                                                       yCoords)))
+                                     x:y))
+          (t (error "Both coordinates shouldn't be known/unknown.")))))
 
 ; 0 = half of the internal angle e.g. 45 for a square
 ; 1 = next point anticlockwise = 135 for a square
-(defun qub::getPolygonPoint(nPoly nPoint nsides circumradius spacing width
-                            @key (ref 0.0:0.0))
-  (let ((dist (\+ circumradius (\* nPoly (\+ spacing width))))
-        (angle (\+ (\/ (qub::internalAngle nsides) 2.0)
-                   (\* nPoint (qub::internalAngle nsides)))))
+(defun qub::getPolygonPoint(nPoly 
+                            nPoint 
+                            nsides 
+                            circumradius 
+                            spacing 
+                            width
+                            @key 
+                            (ref 0.0:0.0))
+  (let ((dist (plus 
+                circumradius 
+                (times 
+                  nPoly 
+                  (plus 
+                    spacing 
+                    width))))
+        (angle (plus 
+                 (quotient 
+                   (qub::internalAngle nsides) 
+                   2.0)
+                 (times 
+                   nPoint 
+                   (qub::internalAngle nsides)))))
     (qub::getPoint angle dist ?ref ref)))
-      
-  
+    
+(defun qub::getSpiralPoints (turns 
+                             width 
+                             spacing 
+                             apothem 
+                             nsides
+                             @key 
+                             (ref 0.0:0.0))
+  ; cr = circumradius
+  (let ((cr (qub::apothemToCircumradius apothem))
+        (points nil))
+    (define (getPoint nPoly nPoint)
+      (qub::getPolygonPoint npoly npoint nsides cr spacing width ?ref ref))
+    (for i 0 (sub1 turns)
+      (for j 0 (sub1 nsides)
+        (pushf (getPoint i j) points))
+      ; Adding the bridging point to the next spiral
+      (let ((fcp qub::findCollinearPoint))
+        t))))

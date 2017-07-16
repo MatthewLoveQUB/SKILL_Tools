@@ -1,6 +1,5 @@
 (qubCreateModule "qub" "std/"
   (modload "sym_init.ils")
-  (modload "operators.ils")
   (modload "list.ils")
   (modload "functional.ils")
   (modload "classes.ils")
