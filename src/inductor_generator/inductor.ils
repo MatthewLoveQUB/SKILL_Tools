@@ -145,12 +145,24 @@
 (defun qub:::takeN (n lst)
   (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
      
-(let ((points (qub:::takeN 60 (qub::getSpiralPoints 80 10.0 5.0 70.0 8))))   
-	(leCreatePath (geGetEditCellView) 
-	              (list "M1") 
-	              points
-	              10.0 
-	              "truncateExtend" 
-	              0 
-	              "right"))
+(defun qub:::truncateFirstLastPoints (lst)
+  (let ((midPoint (lambda (a b)
+                    (range
+                      (quotient (plus (xCoord b) (xCoord a)) 2.0)
+                      (quotient (plus (yCoord b) (yCoord a)) 2.0)))))
+    (rplaca lst (midPoint (car lst) (cadr lst)))
+    (let ((rLst (reverse lst)))
+      (rplaca rLst (midPoint (car rLst) (cadr rLst)))
+      (reverse rLst))))
+                      
+     
+(let ((points (qub:::takeN 60 (qub::getSpiralPoints 80 10.0 5.0 70.0 8))))
+  (let ((xPts (qub:::truncateFirstLastPoints points)))
+    (leCreatePath (geGetEditCellView) 
+                  (list "M1") 
+                  xPts
+                  10.0 
+                  "truncateExtend" 
+                  0 
+                  "right"))
       
