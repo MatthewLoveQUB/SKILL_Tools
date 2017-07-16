@@ -137,13 +137,13 @@
         (for pointIdx 0 maxPointIdx
           (pushf (getPoint turnIdx pointIdx) points)))
         ; Adding the bridging point to the next spiral
-        ;(let ((fcp qub::findCollinearPoint)
-        ;      (lastPoint (getPoint turnIdx maxPointIdx))
-        ;      ; Get the first and last points of the next spiral
-        ;      ; So we can find the collinear point that intersects them
-        ;      (ref1 (getPoint (add1 turnIdx) 0))
-        ;      (ref2 (getPoint (add1 turnIdx) maxPointIdx)))
-        ;  (pushf (fcp lastPoint ref1 ref2) points)))
+        (let ((fcp qub::findCollinearPoint)
+              (lastPoint (getPoint turnIdx maxPointIdx))
+              ; Get the first and last points of the next spiral
+              ; So we can find the collinear point that intersects them
+              (ref1 (getPoint (add1 turnIdx) 0))
+              (ref2 (getPoint (add1 turnIdx) maxPointIdx)))
+          (pushf (fcp lastPoint ref1 ref2) points)))
       (reverse points))))
      
 (defun qub:::takeN (n lst)
