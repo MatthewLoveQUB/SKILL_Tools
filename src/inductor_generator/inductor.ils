@@ -135,7 +135,7 @@
           (maxPointIdx (sub1 nsides)))
       (for turnIdx 0 maxTurnIdx
         (for pointIdx 0 maxPointIdx
-          (pushf (getPoint turnIdx pointIdx) points)))
+          (pushf (getPoint turnIdx pointIdx) points))
         ; Adding the bridging point to the next spiral
         (let ((fcp qub::findCollinearPoint)
               (lastPoint (getPoint turnIdx maxPointIdx))
