@@ -4,4 +4,5 @@
                    qub:::getPoint
                    qub:::findCollinearPoint
                    qub:::getPolyPoint
-                   qub:::getSpiralPoints))
+                   qub:::getSpiralPoints
+                   qub:::drawInductor))

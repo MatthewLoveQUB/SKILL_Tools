@@ -174,7 +174,7 @@
       (rplaca rLst (midPoint (car rLst) (cadr rLst)))
       (reverse rLst))))
                       
-(defun qub:::drawInductor (@key 
+(defun qub::drawInductor (@key 
                            (completeTurns 2)
                            (additionalSegments 0)
                            (width 10.0)
@@ -202,7 +202,7 @@
                   offset
                   "center")))
 
-(qub:::drawInductor ?completeTurns 2
+(qub::drawInductor ?completeTurns 2
                     ?additionalSegments 6
                     ?width 10.0
                     ?spacing 5.0
