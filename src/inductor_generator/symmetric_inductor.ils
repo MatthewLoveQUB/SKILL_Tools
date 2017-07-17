@@ -30,29 +30,28 @@
                                            rotation_anticlockwise
                                          ?ref ref)))
           (maxTurnIdx (sub1 turns))
-          (maxPointIdx (sub1 nsides)))
+          (maxPointIdx (sub1 nsides))
+          (addPorts (lambda (lst firstPoint lastPoint)
+                        (let ((p1 (qub::midPoint firstPoint 
+                                                 lastPoint 
+                                                 ?distAlong (2.0 / 3.0)))
+                              (p2 (qub::midPoint firstPoint 
+                                                 lastPoint 
+                                                 ?distAlong (1.0 / 3.0))))
+                          (setq lst (cons p2 lst))
+                          (setq lst (reverse lst))
+                          (setq lst (cons p1 lst))
+                          lst))))
       (let ((getSingleTurn (lambda ()
                              (let ((firstPoint  (getPoint maxTurnIdx 0))
                                    (lastPoint (getPoint maxTurnIdx maxPointIdx))
-                                   (twoThirds (quotient 2.0 3.0))
-                                   (oneThird (quotient 1.0 3.0))
-                                   (singleTurnPoints nil))
-                                (let ((p1 (qub::midPoint firstPoint 
-                                                         lastPoint 
-                                                         ?distAlong twoThirds))
-                                      (p2 (qub::midPoint firstPoint 
-                                                         lastPoint 
-                                                         ?distAlong oneThird)))
-                                  (for pointIdx 0 maxPointIdx
-                                    (pushf (getPoint maxTurnIdx pointIdx) 
-                                           singleTurnPoints))
-                                  (pushf p2 singleTurnPoints)
-                                  (setq singleTurnPoints 
-                                        (reverse singleTurnPoints))
-                                  (pushf p1 singleTurnPoints)
-                                  (pushf (list singleTurnPoints) 
-                                         spiralCoords)))))
-                                  
+                                   (pts nil))
+                                (for pointIdx 0 maxPointIdx
+                                    (pushf (getPoint maxTurnIdx pointIdx) pts))
+                                (pushf (list (addPorts pts 
+                                                       firstPoint 
+                                                       lastPoint))
+                                       spiralCoords))))
             (getMultiTurn (lambda ()
                             (let ((curSide (if (evenp turns)
                                                'bottom
@@ -60,7 +59,8 @@
                                   (bridgePoint (if (eq curSide 'top)
                                                    'bottom
                                                    'top)))
-                              t))))
+                              (for turnIdx 0 maxTurnIdx
+                                t)))))
         (cond ((equal turns 1) (getSingleTurn))
               (t (getMultiTurn)))
         (list spiralCoords bridgeCoords)))))
