@@ -57,6 +57,7 @@
    (spacing @initform (defineParam "float" 5.0))
    (apothem @initform (defineParam "float" 50.0))
    (nsides @initform (defineParam "int" 8))
+   (rotation_anticlockwise @initform (defineParam "float" 0.0))
    (metalLayer @initform (defineParam "string" "M1"))))
 
 (defmethod draw ((device inductorPCell))
@@ -67,13 +68,15 @@
         (a (getParamValue device 'apothem))
         (n (getParamValue device 'nsides))
         (ml (getParamValue device 'metalLayer))
+        (ra (getParamValue device 'rotation_anticlockwise))
         (cv (slotValue device 'cvId)))
     (let ((points (qub::getSpiralPoints ?completeTurns ct
                                         ?additionalSegments as
                                         ?width w
                                         ?spacing s
                                         ?apothem a
-                                        ?nsides n)))
+                                        ?nsides n
+                                        ?rotation_anticlockwise ra)))
       (dbCreatePath cv (list ml) points w "truncateExtend"))
       (callNextMethod)))
       
@@ -85,7 +88,8 @@
    (spacing "float" 5.0)
    (apothem "float" 50.0)
    (nsides "int" 8)
-   (metalLayer "string" "M1"))
+   (metalLayer "string" "M1")
+   (rotation_anticlockwise "float" 0.0))
   (let ((pcell (makeInstance 'inductorPCell)))
     (setPcellParams pcell pcCellView)
     (draw pcell)))
