@@ -78,7 +78,9 @@
                               "truncateExtend" 
                               offset
                               "center"))))
-      (cp spiralCoords topMetalLayer))))
+      (cp spiralCoords topMetalLayer)
+      (unless (zerop (length bridgeCoords))
+        (cp bridgeCoords bottomMetalLayer)))))
 
 (printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 1))
 (qub::drawSymmetricInductor ?turns 1)
