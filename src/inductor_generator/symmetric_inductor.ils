@@ -31,14 +31,30 @@
             (getPoint 0 (add1 maxHalfPointIdx)))))
 
 (defun qub::getInterconnects (width spiralCoords)
-  nil)
+  (let ((pts nil)
+        (refPts (reverse spiralCoords)))
+    (for i 0 (sub1 (length refPts))
+      nil)
+    nil))
+      
+; Arranges the list so the upper point is the car
+; The order of the points is unchanged
+(defun qub:::sortTopPoint (pts)
+  (let ((firstPoint (car pts))
+        (lastPoint (car (last pts))))
+    (if (greaterp (yCoord firstPoint) (yCoord lastPoint))
+        pts
+        (reverse pts))))
+  
+; Arranges the list so the lower point is the car
+; The order of the points is unchanged
+(defun qub:::sortBottomPoint (pts)
+  (reverse (qub:::sortTopPoint pts)))
+
       
 ; Gets coordinates for a multi turn spiral inductor
 (defun qub:::multiTurn (getPoint maxTurnIdx nsides turns width)
-  (letseq ((curSide (if (evenp turns) 
-                        'bottom
-                        'top))
-           (bridgePoint (if (eq curSide 'top)
+  (letseq ((bridgePoint (if (evenp turns)
                             'bottom
                             'top))
            (spiralCoords nil)
@@ -52,20 +68,9 @@
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
         ; Reversing the right side as we generated it in reverse
         (setq rightSide (reverse rightSide))
-        ; Adding the connecting strip for the inner loop
-        ; if we're in the first iteration
-        (when (zerop turnIdx)
-          (let ((bridge (qub::getBridgePoints getPoint 
-                                              bridgePoint 
-                                              maxPointIdx 
-                                              maxHalfPointIdx)))
-	          (if (eq bridgePoint 'top)
-	            (setq leftSide (qub::joinLists (list leftSide bridge rightSide)))
-	            (setq leftSide (qub::joinLists (list rightSide bridge leftSide))))
-            (setq rightSide nil)))
         (pushf (list leftSide rightSide) spiralCoords)))
     (let ((interconnects (qub::getInterconnects width spiralCoords)))
-      (list spiralCoords interconnects)))))
+      (list spiralCoords interconnects))))
   
 (defun qub::getSymmetricSpiralPoints (@key 
                                       (turns 2)
@@ -131,7 +136,8 @@
           (unless (null half)
             (cp half topMetalLayer))))
       (unless (zerop (length bridgeCoords))
-        (cp bridgeCoords bottomMetalLayer)))))
+        (foreach pts bridgeCoords
+          (cp pts bottomMetalLayer))))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 2)
+(qub::drawSymmetricInductor ?turns 4)
