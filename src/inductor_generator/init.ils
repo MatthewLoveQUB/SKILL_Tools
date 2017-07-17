@@ -1,2 +1,3 @@
 (qubCreateModule "qub" "inductor_generator/"
-  (modload "inductor.ils"))
+  (modload "inductor.ils")
+  (modload "ind_pcell.ils"))
