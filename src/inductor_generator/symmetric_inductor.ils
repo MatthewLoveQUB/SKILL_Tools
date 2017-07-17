@@ -8,6 +8,10 @@
                                       (rotation_anticlockwise 0.0)
                                       (ref 0.0:0.0))
   (let ((spiralCoords nil)
+        ; format of spiralCoords:
+        ; spiralCoords = (turn0 turn1 turn2 ... turnN)
+        ; turnN = (left right)
+        ; right = (point0 point1 ... pointN)
         (bridgeCoords nil)
         (circumradius (qub::apothemToCircumradius (plus 
                                                     (quotient 
@@ -28,25 +32,37 @@
           (maxTurnIdx (sub1 turns))
           (maxPointIdx (sub1 nsides)))
       (let ((getSingleTurn (lambda ()
-                             (for pointIdx 0 maxPointIdx
-                               (pushf (getPoint maxTurnIdx pointIdx) 
-                                       spiralCoords))
-                             ; Now add the ports
                              (let ((firstPoint  (getPoint maxTurnIdx 0))
                                    (lastPoint (getPoint maxTurnIdx maxPointIdx))
                                    (twoThirds (quotient 2.0 3.0))
-                                   (oneThird (quotient 1.0 3.0)))
+                                   (oneThird (quotient 1.0 3.0))
+                                   (singleTurnPoints nil))
                                 (let ((p1 (qub::midPoint firstPoint 
                                                          lastPoint 
                                                          ?distAlong twoThirds))
                                       (p2 (qub::midPoint firstPoint 
                                                          lastPoint 
                                                          ?distAlong oneThird)))
-                                  (pushf p2 spiralCoords)
-                                  (setq spiralCoords (reverse spiralCoords))
-                                  (pushf p1 spiralCoords))))))
+                                  (for pointIdx 0 maxPointIdx
+                                    (pushf (getPoint maxTurnIdx pointIdx) 
+                                           singleTurnPoints))
+                                  (pushf p2 singleTurnPoints)
+                                  (setq singleTurnPoints 
+                                        (reverse singleTurnPoints))
+                                  (pushf p1 singleTurnPoints)
+                                  (pushf (list singleTurnPoints) 
+                                         spiralCoords)))))
+                                  
+            (getMultiTurn (lambda ()
+                            (let ((curSide (if (evenp turns)
+                                               'bottom
+                                               'top))
+                                  (bridgePoint (if (eq curSide 'top)
+                                                   'bottom
+                                                   'top)))
+                              t))))
         (cond ((equal turns 1) (getSingleTurn))
-              (t (error "jjkj")))
+              (t (getMultiTurn)))
         (list spiralCoords bridgeCoords)))))
         
 (defun qub::drawSymmetricInductor (@key 
@@ -78,7 +94,10 @@
                               "truncateExtend" 
                               offset
                               "center"))))
-      (cp spiralCoords topMetalLayer)
+      (foreach turn spiralCoords
+        (foreach half turn
+          (unless (null half)
+            (cp half topMetalLayer))))
       (unless (zerop (length bridgeCoords))
         (cp bridgeCoords bottomMetalLayer)))))
 
