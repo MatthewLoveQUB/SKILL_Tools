@@ -7,8 +7,8 @@
                                       (nsides 8)
                                       (rotation_anticlockwise 0.0)
                                       (ref 0.0:0.0))
-  (let ((spiral_coords nil)
-        (bridge_coords nil)
+  (let ((spiralCoords nil)
+        (bridgeCoords nil)
         (circumradius (qub::apothemToCircumradius (plus 
                                                     (quotient 
                                                       width 
@@ -26,4 +26,25 @@
                                            rotation_anticlockwise
                                          ?ref ref)))
           (maxTurnIdx (sub1 turns))
-          (maxPointIdx (sub1 sides))
+          (maxPointIdx (sub1 nsides)))
+      (let ((getSingleTurn (lambda ()
+              (for pointIdx 0 maxPointIdx
+                (pushf (getPoint maxTurnIdx pointIdx) spiralCoords))
+              ; Now add the ports
+              (let ((firstPoint  (getPoint maxTurnIdx 0))
+                    (lastPoint (getPoint maxTurnIdx maxPointIdx)))
+                (pushf (qub::midPoint firstPoint 
+                                      lastPoint 
+                                      ?distAlong (quotient 2.0 3.0))
+                       spiralCoords)
+                (append1 spiralCoords 
+                         (qub::midPoint firstPoint 
+                                        lastPoint 
+                                        ?distAlong (quotient 1.0 3.0)))))))
+        (cond ((equal turns 1) (getSingleTurn))
+              (t (error "jjkj")))
+        (list spiralCoords bridgeCoords)))))
+        
+(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 1))
+                
+                   

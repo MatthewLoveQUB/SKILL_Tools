@@ -107,7 +107,7 @@
     
 
 (defun qub::midPoint (p1 p2 @key (distAlong 0.5))
-  (let ((p1Scalar dist_along)
+  (let ((p1Scalar distAlong)
        (p2Scalar (difference 1.0 distAlong)))
   (range
     (times (plus (xCoord p1) (xCoord p2)) p1Scalar)

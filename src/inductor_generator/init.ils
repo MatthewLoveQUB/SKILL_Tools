@@ -1,4 +1,5 @@
 (qubCreateModule "qub" "inductor_generator/"
+  (modload "sym_init.ils")
   (modload "inductor.ils")
   (modload "spiral_inductor.ils")
   (modload "ind_pcell.ils"))
