@@ -1,4 +1,44 @@
 ;;;; Module for generating a spiral inductor
+
+(defun qub:::addPorts (lst firstPoint lastPoint)
+  (letseq ((mp (lambda (x) 
+                 (qub::midPoint firstPoint lastPoint ?distAlong x)))
+           (p1 (mp (quotient 1.0 3.0)))
+           (p2 (mp (quotient 2.0 3.0))))
+    (setq lst (cons p1 lst))
+    (setq lst (reverse lst))
+    (setq lst (cons p2 lst))
+    lst))
+    
+; Creates coordinates for a single turn spiral inductor
+(defun qub:::oneTurn (getPoint maxTurnIdx maxPointIdx)
+  (let ((firstPoint  (getPoint maxTurnIdx 0))
+        (lastPoint (getPoint maxTurnIdx maxPointIdx))
+        (pts nil))
+     (for pointIdx 0 maxPointIdx
+         (pushf (getPoint maxTurnIdx pointIdx) pts))
+     (letseq ((spiralHalf (qub:::addPorts pts firstPoint lastPoint))
+              (spiralTurn (list spiralHalf))
+              (spiralCoords (list spiralTurn))
+              (bridgeCoords nil))
+      (list spiralCoords bridgeCoords))))
+
+; Gets coordinates for a multi turn spiral inductor
+(defun qub:::multiTurn (getPoint maxTurnIdx nsides spiralCoords)
+  (let ((curSide (if (evenp turns) 
+                     'bottom
+                     'top))
+        (bridgePoint (if (eq curSide 'top)
+                         'bottom
+                         'top))
+        (curTurn nil)
+        (leftSide nil)
+        (rightSide nil)
+        (maxHalfPointIdx (sub1 (quotient nsides 2))))
+    (for turnIdx 0 maxTurnIdx
+      (for pIdx 0 maxHalfPointIdx
+        t))))
+  
 (defun qub::getSymmetricSpiralPoints (@key 
                                       (turns 2)
                                       (width 10.0)
@@ -11,13 +51,10 @@
            ; spiralCoords = (turn0 turn1 turn2 ... turnN)
            ; turnN = (left right)
            ; right = (point0 point1 ... pointN)
-           (spiralCoords nil)
-           ; For the connecting bridges in the lower metal level
-           (bridgeCoords nil)
            (maxTurnIdx (sub1 turns))
            (maxPointIdx (sub1 nsides))
            (atc qub::apothemToCircumradius)
-           (circumradius (atc (plus (quotient width 2.0) apothem) nsides))
+           (circumradius (atc (plus apothem (quotient width 2.0)) nsides))
            (getPoint (lambda (polyIdx pointIdx)
                        (qub::getPolyPoint polyIdx 
                                           pointIdx 
@@ -27,41 +64,10 @@
                                           width
                                           ?rotation_anticlockwise 
                                             rotation_anticlockwise
-                                          ?ref ref)))
-           (addPorts (lambda (lst firstPoint lastPoint)
-                       (letseq ((mp (lambda (x) 
-                                      (qub::midPoint firstPoint
-                                                     lastPoint 
-                                                     ?distAlong x)))
-                                (p1 (mp (quotient 1.0 3.0)))
-                                (p2 (mp (quotient 2.0 3.0))))
-                         (setq lst (cons p1 lst))
-                         (setq lst (reverse lst))
-                         (setq lst (cons p2 lst))
-                         lst)))
-           ; Creates coordinates for a single turn spiral inductor
-           (oneTurn (lambda ()
-                      (let ((firstPoint  (getPoint maxTurnIdx 0))
-                            (lastPoint (getPoint maxTurnIdx maxPointIdx))
-                            (pts nil))
-                         (for pointIdx 0 maxPointIdx
-                             (pushf (getPoint maxTurnIdx pointIdx) pts))
-                         (pushf (list (addPorts pts firstPoint lastPoint))
-                                spiralCoords))))
-           ; Gets coordinates for a multi turn spiral inductor
-           (multiTurn (lambda ()
-                        (let ((curSide (if (evenp turns)
-                                           'bottom
-                                           'top))
-                              (bridgePoint (if (eq curSide 'top)
-                                               'bottom
-                                               'top)))
-                          (for turnIdx 0 maxTurnIdx
-                            t)))))
+                                          ?ref ref))))
         ; Conditional to call the appropriate function
-        (cond ((equal turns 1) (oneTurn))
-              (t (multiTurn)))
-        (list spiralCoords bridgeCoords)))
+        (cond ((equal turns 1) (qub:::oneTurn getPoint maxTurnIdx maxPointIdx))
+              (t (qub:::multiTurn getPoint maxTurnIdx nsides)))))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
