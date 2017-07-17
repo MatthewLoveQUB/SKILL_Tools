@@ -5,4 +5,5 @@
                    qub:::findCollinearPoint
                    qub:::getPolyPoint
                    qub:::getSpiralPoints
-                   qub:::drawInductor))
+                   qub:::drawInductor
+                   qub:::createInductorPCell))
