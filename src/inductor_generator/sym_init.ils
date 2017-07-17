@@ -8,5 +8,6 @@
                    qub:::getSymmetricSpiralPoints
                    qub:::drawSymmetricInductor
                    qub:::midPoint
+                   qub:::getBridgePoints
                    qub:::createInductorPCell
                    qub:::drawInductor))

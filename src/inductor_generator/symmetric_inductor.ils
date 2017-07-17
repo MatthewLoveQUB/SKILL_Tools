@@ -23,6 +23,14 @@
               (bridgeCoords nil))
       (list spiralCoords bridgeCoords))))
 
+(defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
+  (if (eq bridgePoint 'top)
+      (list (getPoint 0 0)
+            (getPoint 0 maxPointIdx))
+      (list (getPoint 0 maxHalfPointIdx)
+            (getPoint 0 (add1 maxHalfPointIdx)))))
+
+      
 ; Gets coordinates for a multi turn spiral inductor
 (defun qub:::multiTurn (getPoint maxTurnIdx nsides turns)
   (letseq ((curSide (if (evenp turns) 
@@ -40,7 +48,19 @@
         (for pIdx 0 maxHalfPointIdx
           ; Adding point to the "left" side
           (pushf (getPoint turnIdx pIdx) leftSide)
+          ; Adding to the right side
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
+        ; Adding the connecting strip for the inner loop
+        ; if we're in the first iteration
+        (when (zerop turnIdx)
+          (let ((bridge (qub::getBridgePoints getPoint 
+                                              bridgePoint 
+                                              maxPointIdx 
+                                              maxHalfPointIdx)))
+	          (if (eq bridgePoint 'top)
+	            (setq leftSide (qub::joinLists (list leftSide bridge (reverse rightSide))))
+	            (setq leftSide (qub::joinLists (list (reverse leftSide) bridge rightSide))))
+            (setq rightSide nil)))
         (pushf (list leftSide rightSide) spiralCoords)))
     (list spiralCoords nil)))
   
