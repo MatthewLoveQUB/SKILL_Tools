@@ -24,20 +24,25 @@
       (list spiralCoords bridgeCoords))))
 
 ; Gets coordinates for a multi turn spiral inductor
-(defun qub:::multiTurn (getPoint maxTurnIdx nsides spiralCoords)
-  (let ((curSide (if (evenp turns) 
-                     'bottom
-                     'top))
-        (bridgePoint (if (eq curSide 'top)
-                         'bottom
-                         'top))
-        (curTurn nil)
-        (leftSide nil)
-        (rightSide nil)
-        (maxHalfPointIdx (sub1 (quotient nsides 2))))
+(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns)
+  (letseq ((curSide (if (evenp turns) 
+                        'bottom
+                        'top))
+           (bridgePoint (if (eq curSide 'top)
+                            'bottom
+                            'top))
+           (spiralCoords nil)
+           (maxPointIdx (sub1 nsides))
+           (maxHalfPointIdx (sub1 (quotient nsides 2))))
     (for turnIdx 0 maxTurnIdx
-      (for pIdx 0 maxHalfPointIdx
-        t))))
+      (let ((leftSide nil)
+            (rightSide nil))
+        (for pIdx 0 maxHalfPointIdx
+          ; Adding point to the "left" side
+          (pushf (getPoint turnIdx pIdx) leftSide)
+          (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
+        (pushf (list leftSide rightSide) spiralCoords)))
+    (list spiralCoords nil)))
   
 (defun qub::getSymmetricSpiralPoints (@key 
                                       (turns 2)
@@ -67,7 +72,7 @@
                                           ?ref ref))))
         ; Conditional to call the appropriate function
         (cond ((equal turns 1) (qub:::oneTurn getPoint maxTurnIdx maxPointIdx))
-              (t (qub:::multiTurn getPoint maxTurnIdx nsides)))))
+              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns)))))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
@@ -105,5 +110,5 @@
       (unless (zerop (length bridgeCoords))
         (cp bridgeCoords bottomMetalLayer)))))
 
-(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 1))
-(qub::drawSymmetricInductor ?turns 1)
+;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
+(qub::drawSymmetricInductor ?turns 2)
