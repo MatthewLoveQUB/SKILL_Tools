@@ -30,9 +30,11 @@
       (list (getPoint 0 maxHalfPointIdx)
             (getPoint 0 (add1 maxHalfPointIdx)))))
 
+(defun qub::getInterconnects (width spiralCoords)
+  nil)
       
 ; Gets coordinates for a multi turn spiral inductor
-(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns)
+(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns width)
   (letseq ((curSide (if (evenp turns) 
                         'bottom
                         'top))
@@ -62,7 +64,8 @@
 	            (setq leftSide (qub::joinLists (list rightSide bridge leftSide))))
             (setq rightSide nil)))
         (pushf (list leftSide rightSide) spiralCoords)))
-    (list spiralCoords nil)))
+    (let ((interconnects (qub::getInterconnects width spiralCoords)))
+      (list spiralCoords interconnects)))))
   
 (defun qub::getSymmetricSpiralPoints (@key 
                                       (turns 2)
@@ -92,7 +95,7 @@
                                           ?ref ref))))
         ; Conditional to call the appropriate function
         (cond ((equal turns 1) (qub:::oneTurn getPoint maxTurnIdx maxPointIdx))
-              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns)))))
+              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns width)))))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
