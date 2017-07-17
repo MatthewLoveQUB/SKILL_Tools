@@ -10,6 +10,26 @@
     (setq lst (cons p2 lst))
     lst))
     
+(defun qub:::addPortsMultiTurn (turn)
+  (letseq ((left (car turn))
+           (right (cadr turn))
+           (leftTopSort (qub:::sortTopPoint left))
+           (rightTopSort (qub:::sortTopPoint right))
+           (leftTop (car leftTopSort))
+           (rightTop (car rightTopSort))
+           (leftBottom (car leftTopSort))
+           (rightBottom (car rightTopSort))
+           (oneThird (quotient 1.0 3.0))
+           (twoThirds (quotient 2.0 3.0))
+           (ltPort (qub::midPoint leftTop rightTop ?distAlong twoThirds))
+           (rtPort (qub::midPoint leftTop rightTop ?distAlong oneThird))
+           (lbPort (qub::midPoint leftBottom rightBottom ?distAlong twoThirds))
+           (rbPort (qub::midPoint leftBottom rightBottom ?distAlong oneThird)))
+    (let ((newLeft (pushf ltPort leftTopSort))
+          (newRight (pushf rtPort rightTopSort)))
+      (list newLeft newRight))))
+      
+    
 ; Creates coordinates for a single turn spiral inductor
 (defun qub:::oneTurn (getPoint maxTurnIdx maxPointIdx)
   (let ((firstPoint  (getPoint maxTurnIdx 0))
@@ -105,6 +125,8 @@
         ; Reversing the right side as we generated it in reverse
         (setq rightSide (reverse rightSide))
         (pushf (list leftSide rightSide) spiralCoords)))
+    ; Add the extra metal to reduce the gap between each half of the turns
+    (setq spiralCoords (mapcar qub:::addPortsMultiTurn spiralCoords))
     (let ((interconnects (qub::getInterconnects width spiralCoords)))
       (list spiralCoords interconnects))))
   
