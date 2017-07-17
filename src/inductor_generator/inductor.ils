@@ -105,15 +105,15 @@
                    (qub::internalAngle nsides)))))
     (qub::getPoint (qub::fixAngle angle) dist ?ref ref)))
     
-(defun qub::getSpiralPoints (complete_turns
-                             additional_segments
-                             width 
-                             spacing 
-                             apothem 
-                             nsides
-                             @key 
+(defun qub::getSpiralPoints (@key 
+                             (completeTurns 2)
+                             (additionalSegments 0)
+                             (width 10.0)
+                             (spacing 5.0)
+                             (apothem 50.0)
+                             (nsides 8)
                              (ref 0.0:0.0))
-  (when (greaterp additional_segments nsides)
+  (when (greaterp additionalSegments nsides)
         (error "More additional segments then sides"))
   ; plus width is a hack needed because there is a big with left alignment
   ; right alignment works but needs the apothem increased to compensate
@@ -132,15 +132,15 @@
                                          spacing 
                                          width 
                                          ?ref ref)))
-          (maxTurnIdx (if (zerop additional_segments)
-                          (sub1 complete_turns)
-                          complete_turns))
+          (maxTurnIdx (if (zerop additionalSegments)
+                          (sub1 completeTurns)
+                          completeTurns))
           (maxPointIdx (sub1 nsides)))
       (for turnIdx 0 maxTurnIdx
         ; drawing each segment
         (let ((maxPointIdx (if (and (equal turnIdx maxTurnIdx)
-                                    (not (zerop additional_segments)))
-                               (sub1 additional_segments) 
+                                    (not (zerop additionalSegments)))
+                               (sub1 additionalSegments) 
                                maxPointIdx)))
           (for pointIdx 0 maxPointIdx
             (pushf (getPoint turnIdx pointIdx) points)))
@@ -169,13 +169,36 @@
       (rplaca rLst (midPoint (car rLst) (cadr rLst)))
       (reverse rLst))))
                       
-     
-(let ((points (qub::getSpiralPoints 2 1 10.0 5.0 70.0 4)))
-  (leCreatePath (geGetEditCellView) 
-                (list "M1") 
-                points
-                10.0 
-                "truncateExtend" 
-                0 
-                "center"))
-      
+(defun qub:::drawInductor (@key 
+                           (completeTurns 2)
+                           (additionalSegments 0)
+                           (width 10.0)
+                           (spacing 5.0)
+                           (apothem 50.0)
+                           (nsides 8)
+                           (metalLayer "M1")
+                           (ref 0.0:0.0))
+  (let ((points (qub::getSpiralPoints ?completeTurns completeTurns
+                                      ?additionalSegments additionalSegments
+                                      ?width width
+                                      ?spacing spacing
+                                      ?apothem apothem
+                                      ?nsides nsides
+                                      ?ref ref))
+        (offset 0))
+    (leCreatePath (geGetEditCellView) 
+                  (list metalLayer) 
+                  points
+                  width
+                  "truncateExtend" 
+                  offset
+                  "center")))
+
+(qub:::drawInductor ?completeTurns 2
+                    ?additionalSegments 6
+                    ?width 10.0
+                    ?spacing 5.0
+                    ?apothem 50.0
+                    ?nsides 8
+                    ?metalLayer "M2")
+                    
