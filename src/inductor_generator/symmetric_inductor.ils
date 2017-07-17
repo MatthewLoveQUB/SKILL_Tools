@@ -1,6 +1,6 @@
 ;;;; Module for generating a spiral inductor
 
-(defun qub:::addPorts (lst firstPoint lastPoint)
+(defun qub:::addPortsSingleTurn (lst firstPoint lastPoint)
   (letseq ((mp (lambda (x) 
                  (qub::midPoint firstPoint lastPoint ?distAlong x)))
            (p1 (mp (quotient 1.0 3.0)))
@@ -17,7 +17,7 @@
         (pts nil))
      (for pointIdx 0 maxPointIdx
          (pushf (getPoint maxTurnIdx pointIdx) pts))
-     (letseq ((spiralHalf (qub:::addPorts pts firstPoint lastPoint))
+     (letseq ((spiralHalf (qub:::addPortsSingleTurn pts firstPoint lastPoint))
               (spiralTurn (list spiralHalf))
               (spiralCoords (list spiralTurn))
               (bridgeCoords nil))
