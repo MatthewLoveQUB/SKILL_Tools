@@ -46,10 +46,10 @@
       (let ((leftSide nil)
             (rightSide nil))
         (for pIdx 0 maxHalfPointIdx
-          ; Adding point to the "left" side
           (pushf (getPoint turnIdx pIdx) leftSide)
-          ; Adding to the right side
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
+        ; Reversing the right side as we generated it in reverse
+        (setq rightSide (reverse rightSide))
         ; Adding the connecting strip for the inner loop
         ; if we're in the first iteration
         (when (zerop turnIdx)
@@ -58,8 +58,8 @@
                                               maxPointIdx 
                                               maxHalfPointIdx)))
 	          (if (eq bridgePoint 'top)
-	            (setq leftSide (qub::joinLists (list leftSide bridge (reverse rightSide))))
-	            (setq leftSide (qub::joinLists (list (reverse leftSide) bridge rightSide))))
+	            (setq leftSide (qub::joinLists (list leftSide bridge rightSide)))
+	            (setq leftSide (qub::joinLists (list rightSide bridge leftSide))))
             (setq rightSide nil)))
         (pushf (list leftSide rightSide) spiralCoords)))
     (list spiralCoords nil)))
