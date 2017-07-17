@@ -30,13 +30,43 @@
       (list (getPoint 0 maxHalfPointIdx)
             (getPoint 0 (add1 maxHalfPointIdx)))))
 
+(defun qub:::invertSide (side)
+  (if (eq side 'top)
+      'bottom
+      'top))
+            
+(defun qub:::getInterconnectsHelper (curSide refPts i width)
+  (letseq ((f (if (eq curSide 'top)
+                  qub:::sortTopPoint
+                  qub:::sortBottomPoint))
+           (innerTurnPts (nth i refPts))
+           (innerLeftPts (f (car innerTurnPts)))
+           (innerRightPts (f (cadr innerTurnPts)))
+           (outerTurnPts (nth (add1 i) refPts))
+           (outerLeftPts (f (car outerTurnPts)))
+           (outerRightPts (f (cadr outerTurnPts))))
+    (if (eq curSide 'top)
+        (list (car outerLeftPts) (car innerRightPts))
+        (list (car innerLeftPts) (car outerRightPts)))))
+
+            
 (defun qub::getInterconnects (width spiralCoords)
-  (let ((pts nil)
-        (refPts (reverse spiralCoords)))
-    (for i 0 (sub1 (length refPts))
-      nil)
-    nil))
-      
+  (letseq ((pts nil)
+           (refPts (reverse spiralCoords))
+           (maxPtIdx (sub1 (length refPts)))
+           (nturns (length refPts))
+           (curSide (if (evenp nturns)
+                               'top
+                               'bottom))
+           (is qub:::invertSide)
+           (gih qub:::getInterconnectsHelper))
+    (for i 0 (sub1 maxPtIdx)
+      (cond ((zerop i) (pushf (gih curSide refPts i width) pts))
+            ((equal i maxPtIdx) t)
+            ((evenp i) (pushf (gih curSide refPts i width) pts))
+            ((oddp i) (pushf (gih (is curSide) refPts i width) pts))))
+    pts))
+    
 ; Arranges the list so the upper point is the car
 ; The order of the points is unchanged
 (defun qub:::sortTopPoint (pts)
@@ -140,4 +170,5 @@
           (cp pts bottomMetalLayer))))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 4)
+(qub::drawSymmetricInductor ?turns 4
+                            ?rotation_anticlockwise 45.0)
