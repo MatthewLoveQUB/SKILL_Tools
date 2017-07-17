@@ -46,8 +46,14 @@
            (outerLeftPts (f (car outerTurnPts)))
            (outerRightPts (f (cadr outerTurnPts))))
     (if (eq curSide 'top)
-        (list (car outerLeftPts) (car innerRightPts))
-        (list (car innerLeftPts) (car outerRightPts)))))
+        (list (cadr outerLeftPts) 
+              (car outerLeftPts) 
+              (car innerRightPts) 
+              (cadr innerRightPts))
+        (list (cadr innerLeftPts) 
+              (car innerLeftPts) 
+              (car outerRightPts) 
+              (cadr outerRightPts)))))
 
             
 (defun qub::getInterconnects (width spiralCoords)
