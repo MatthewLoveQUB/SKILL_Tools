@@ -90,7 +90,8 @@
                           spacing 
                           width
                           @key 
-                          (ref 0.0:0.0))
+                          (ref 0.0:0.0)
+                          (rotation_anticlockwise 0.0))
   (let ((dist (plus 
                 circumradius 
                 (times 
@@ -100,6 +101,7 @@
                     (qub::apothemToCircumradius width nsides)))))
         (angle (plus 
 		             (difference 90.0 (quotient (qub::internalAngle nsides) 2.0))
+                 rotation_anticlockwise
                  (times 
                    pointIdx 
                    (qub::internalAngle nsides)))))
@@ -112,6 +114,7 @@
                              (spacing 5.0)
                              (apothem 50.0)
                              (nsides 8)
+                             (rotation_anticlockwise 0.0)
                              (ref 0.0:0.0))
   (when (greaterp additionalSegments nsides)
         (error "More additional segments then sides"))
@@ -130,7 +133,9 @@
                                          nsides 
                                          circumradius 
                                          spacing 
-                                         width 
+                                         width
+                                         ?rotation_anticlockwise 
+                                           rotation_anticlockwise
                                          ?ref ref)))
           (maxTurnIdx (if (zerop additionalSegments)
                           (sub1 completeTurns)
@@ -177,6 +182,7 @@
                            (apothem 50.0)
                            (nsides 8)
                            (metalLayer "M1")
+                           (rotation_anticlockwise 0.0)
                            (ref 0.0:0.0))
   (let ((points (qub::getSpiralPoints ?completeTurns completeTurns
                                       ?additionalSegments additionalSegments
@@ -184,6 +190,8 @@
                                       ?spacing spacing
                                       ?apothem apothem
                                       ?nsides nsides
+                                      ?rotation_anticlockwise 
+                                        rotation_anticlockwise
                                       ?ref ref))
         (offset 0))
     (leCreatePath (geGetEditCellView) 
@@ -200,5 +208,5 @@
                     ?spacing 5.0
                     ?apothem 50.0
                     ?nsides 8
-                    ?metalLayer "M2")
+                    ?metalLayer "M2")         
                     
