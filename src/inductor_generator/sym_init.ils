@@ -6,6 +6,7 @@
                    qub:::getPolyPoint
                    qub:::getSpiralPoints
                    qub:::getSymmetricSpiralPoints
+                   qub:::drawSymmetricInductor
                    qub:::midPoint
                    qub:::createInductorPCell
                    qub:::drawInductor))
