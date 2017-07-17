@@ -16,7 +16,8 @@
 (addToExportList '(qub:::foldl
                    qub:::foldr
                    qub:::sum
-                   qub:::lcmp))
+                   qub:::lcmp
+                   qub:::takeN))
 
 ; list.ils
 (addToExportList '(qub:::joinLists

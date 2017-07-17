@@ -19,5 +19,9 @@
     ((lcmp expression for element in list if predicate)
      (mapcar (lambda (element) expression) (setof element list predicate)))))
      
+     
+(defun qub::takeN (n lst)
+  (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
+     
 
 
