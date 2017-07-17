@@ -54,14 +54,10 @@
       
      
 (defun qub:::truncateFirstLastPoints (lst)
-  (let ((midPoint (lambda (a b)
-                    (range
-                      (quotient (plus (xCoord b) (xCoord a)) 2.0)
-                      (quotient (plus (yCoord b) (yCoord a)) 2.0)))))
-    (rplaca lst (midPoint (car lst) (cadr lst)))
-    (let ((rLst (reverse lst)))
-      (rplaca rLst (midPoint (car rLst) (cadr rLst)))
-      (reverse rLst))))
+  (rplaca lst (qub::midPoint (car lst) (cadr lst)))
+  (let ((rLst (reverse lst)))
+    (rplaca rLst (qub::midPoint (car rLst) (cadr rLst)))
+    (reverse rLst)))
                       
 (defun qub::drawInductor (@key 
                            (completeTurns 2)

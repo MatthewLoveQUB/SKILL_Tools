@@ -1,1 +1,29 @@
 ;;;; Module for generating a spiral inductor
+(defun qub::getSymmetricSpiralPoints (@key 
+                                      (turns 2)
+                                      (width 10.0)
+                                      (spacing 5.0)
+                                      (apothem 50.0)
+                                      (nsides 8)
+                                      (rotation_anticlockwise 0.0)
+                                      (ref 0.0:0.0))
+  (let ((spiral_coords nil)
+        (bridge_coords nil)
+        (circumradius (qub::apothemToCircumradius (plus 
+                                                    (quotient 
+                                                      width 
+                                                      2.0) 
+                                                    apothem) 
+                                                  nsides)))
+    (let ((getPoint (lambda (polyIdx pointIdx)
+                      (qub::getPolyPoint polyIdx 
+                                         pointIdx 
+                                         nsides 
+                                         circumradius 
+                                         spacing 
+                                         width
+                                         ?rotation_anticlockwise 
+                                           rotation_anticlockwise
+                                         ?ref ref)))
+          (maxTurnIdx (sub1 turns))
+          (maxPointIdx (sub1 sides))
