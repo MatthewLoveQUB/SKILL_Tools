@@ -1,10 +1,10 @@
 ;;;; Module for generating a spiral inductor
 
-(defun qub:::addPorts (turn ref width)
+(defun qub::addPorts (turn ref width)
   (letseq ((left (car turn))
            (right (cadr turn))
-           (leftTopSort (qub:::sortTopPoint left))
-           (rightTopSort (qub:::sortTopPoint right))
+           (leftTopSort (qub::sortTopPoint left))
+           (rightTopSort (qub::sortTopPoint right))
            (leftTop (car leftTopSort))
            (rightTop (car rightTopSort))
            (leftBottom (car (reverse leftTopSort)))
@@ -37,13 +37,13 @@
       (list (getPoint 0 maxHalfPointIdx)
             (getPoint 0 (add1 maxHalfPointIdx)))))
 
-(defun qub:::invertSide (side)
+(defun qub::invertSide (side)
   (if (eq side 'top) 'bottom 'top))
             
 (defun qub:::getInterconnectsHelper (curSide refPts i width)
   (letseq ((f (if (eq curSide 'top) 
-                  qub:::sortTopPoint
-                  qub:::sortBottomPoint))
+                  qub::sortTopPoint
+                  qub::sortBottomPoint))
            (innerTurnPts (nth i refPts))
            (innerLeftPts (f (car innerTurnPts)))
            (innerRightPts (f (cadr innerTurnPts)))
@@ -79,23 +79,23 @@
                (bottomInterconnects (cadr interconnects)))
          (pushf topInterconnects (car pts))
          (pushf bottomInterconnects (cadr pts)))
-      (setq curSide (qub:::invertSide curSide)))
+      (setq curSide (qub::invertSide curSide)))
     pts))
     
 ; Arranges the list so the upper point is the car
 ; The order of the points is unchanged
-(defun qub:::sortTopPoint (pts)
+(defun qub::sortTopPoint (pts)
   (let ((firstPoint (car pts))
         (lastPoint (car (last pts))))
     (if (greaterp (yCoord firstPoint) (yCoord lastPoint))
         pts
         (reverse pts))))
   
-(defun qub:::sortBottomPoint (pts)
-  (reverse (qub:::sortTopPoint pts)))
+(defun qub::sortBottomPoint (pts)
+  (reverse (qub::sortTopPoint pts)))
       
 ; Gets coordinates for a multi turn spiral inductor
-(defun qub:::createSymInd (getPoint maxTurnIdx nsides turns width ref)
+(defun qub::createSymInd (getPoint maxTurnIdx nsides turns width ref)
   (letseq ((bridgePoint (if (evenp turns)
                             'bottom
                             'top))
@@ -116,7 +116,7 @@
         ; Reversing the right side as we generated it in reverse
         (pushf (list leftSide (reverse rightSide)) spiralCoords)))
     ; Add the extra metal to reduce the gap between each half of the turns
-    (setq spiralCoords (mapcar (lambda (turn) (qub:::addPorts turn ref width))
+    (setq spiralCoords (mapcar (lambda (turn) (qub::addPorts turn ref width))
                                spiralCoords))
     ; Create the interconnects
     (let ((interconnects (qub::getInterconnects width spiralCoords gbp)))
@@ -149,7 +149,7 @@
                                             rotation_anticlockwise
                                           ?ref ref))))
         ; Conditional to call the appropriate function
-        (qub:::createSymInd getPoint maxTurnIdx nsides turns width ref)))
+        (qub::createSymInd getPoint maxTurnIdx nsides turns width ref)))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
@@ -200,8 +200,3 @@
       (foreach o objects
         (dbAddFigToFigGroup fg o))
       (dbMoveFig fg cv (list ref figGroupRot)))))
-
-;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 7 
-														?figGroupRot "R0" 
-														?name "myInd")

@@ -2,6 +2,16 @@
 ;;;; only use floats for coordinates                 
 ;;;; 0 degrees is east. 90 degrees is north
 
+(defgeneric qub::fixAngle (angle))
+
+(defmethod qub::fixAngle ((angle fixnum))
+  (modulo angle 360))
+  
+(defmethod qub::fixAngle ((angle flonum))
+  (if (negativep angle)
+      (plus 360.0 (modf angle 360.0))
+  (modf angle 360.0)))
+
 (defun qub::apothemToCircumradius (apothem num_sides)
   (quotient 
     apothem 

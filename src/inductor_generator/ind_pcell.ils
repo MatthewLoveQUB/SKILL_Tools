@@ -93,4 +93,4 @@
      (rotation_anticlockwise "float" 0.0))
     (let ((pcell (makeInstance 'inductorPCell)))
       (setPcellParams pcell pcCellView)
-      (draw pcell)))
+      (draw pcell))))

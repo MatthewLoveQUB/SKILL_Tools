@@ -1,14 +1,26 @@
+; inductor.ils
 (addToExportList '(qub:::apothemToCircumradius
                    qub:::internalAngle
-                   qub:::degToRad
                    qub:::getPoint
-                   qub:::findCollinearPoint
                    qub:::getPolyPoint
-                   qub:::getSpiralPoints
-                   qub:::getSymmetricSpiralPoints
-                   qub:::drawSymmetricInductor
                    qub:::midPoint
+                   qub:::fixAngle))
+  
+; spiral_inductor.ils
+(addToExportList '(qub:::getSpiralPoints
+                   qub:::drawInductor))
+
+
+; symmetric_inductor.ils
+(addToExportList '(qub:::addPorts
                    qub:::getBridgePoints
-                   qub:::createInductorPCell
-                   qub:::drawInductor
-	                 qub:::getInterconnects))
+                   qub:::invertSide
+                   qub:::getInterconnects
+                   qub:::sortTopPoint
+                   qub:::sortBottomPoint
+                   qub:::createSymInd
+                   qub:::getSymmetricSpiralPoints
+                   qub:::drawSymmetricInductor))
+                   
+; ind_pcell.ils
+(addToExportList '(qub:::createInductorPCell))                   
