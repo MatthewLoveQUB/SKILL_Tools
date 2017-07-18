@@ -77,16 +77,18 @@
            (outerLeftPts (f (car outerTurnPts)))
            (outerRightPts (f (cadr outerTurnPts)))
            (addX (lambda (pt f dx)
-                   (list (f (xCoord pt) dx) (yCoord pt)))))
+                   (list (f (xCoord pt) dx) (yCoord pt))))
+           (il2or (list (addX (car innerLeftPts) difference width)
+                        (car innerLeftPts) 
+                        (car outerRightPts) 
+                        (addX (car outerRightPts) plus width)))
+           (ol2ir (list (addX (car outerLeftPts) difference width)
+                        (car outerLeftPts) 
+                        (car innerRightPts) 
+                        (addX (car innerRightPts) plus width))))
     (if (eq curSide 'top)
-        (list (addX (car outerLeftPts) difference width)
-              (car outerLeftPts) 
-              (car innerRightPts) 
-              (addX (car innerRightPts) plus width))
-        (list (addX (car innerLeftPts) difference width)
-              (car innerLeftPts) 
-              (car outerRightPts) 
-              (addX (car outerRightPts) plus width)))))
+        (list ol2ir il2or)
+        (list il2or ol2ir))))
 
 ; gbp = getbridgepoint            
 (defun qub::getInterconnects (width spiralCoords gbp)
@@ -100,17 +102,22 @@
            (is qub:::invertSide)
            (gih qub:::getInterconnectsHelper))
     (for i 0 (sub1 maxPtIdx)
-      (cond ((zerop i)
-             ; Adding bottom metal interconnects
-             (pushf (gih curSide refPts i width) (cadr pts))
-             ; Adding bridge between parts
-             (pushf (gbp) (car pts)))
-            ((equal i maxPtIdx) t)
+      (when (zerop i)
+        (pushf (gbp) (car pts)))
+      (cond ((equal i maxPtIdx) t)
             ((evenp i)
              ; Adding bottom metal interconnects
-             (pushf (gih curSide refPts i width) (cadr pts)))
+             (letseq ((interconnects (gih curSide refPts i width))
+                      (topInterconnects (car interconnects))
+                      (bottomInterconnects (cadr interconnects)))
+                (pushf topInterconnects (car pts))
+                (pushf bottomInterconnects (cadr pts))))
             ((oddp i) 
-             (pushf (gih (is curSide) refPts i width) (cadr pts)))))
+             (letseq ((interconnects (gih (is curSide) refPts i width))
+                      (topInterconnects (car interconnects))
+                      (bottomInterconnects (cadr interconnects)))
+                (pushf topInterconnects (car pts))
+                (pushf bottomInterconnects (cadr pts))))))
     pts))
     
 ; Arranges the list so the upper point is the car
@@ -235,5 +242,5 @@
           (cp pts bottomMetalLayer))))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 4
+(qub::drawSymmetricInductor ?turns 3
                             ?rotation_anticlockwise 45.0)
