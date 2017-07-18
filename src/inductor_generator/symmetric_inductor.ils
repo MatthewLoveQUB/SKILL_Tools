@@ -159,27 +159,29 @@
                                    (nsides 8)
                                    (topMetalLayer "M1")
                                    (bottomMetalLayer "M2")
-                                   (rotation_anticlockwise 0.0)
+                                   (figGroupRot "R0")
                                    (ref 0.0:0.0))
   (letseq ((points (qub::getSymmetricSpiralPoints ?turns turns
                                                   ?width width
                                                   ?spacing spacing
                                                   ?apothem apothem
                                                   ?nsides nsides
-                                                  ?rotation_anticlockwise 
-                                                    rotation_anticlockwise
+                                                  ?rotation_anticlockwise 45.0
                                                   ?ref ref))
            (offset 0)
            (spiralCoords (car points))
            (bridgeCoords (cadr points))
+           (objects nil)
+           (cv (geGetEditCellView))
            (cp (lambda (pts metLyr)
-                 (leCreatePath (geGetEditCellView) 
-                               (list metLyr) 
-                               pts
-                               width
-                               "truncateExtend" 
-                               offset
-                               "center"))))
+                 (let ((obj (leCreatePath cv
+                                          (list metLyr) 
+                                          pts
+                                          width
+                                          "truncateExtend" 
+                                          offset
+                                          "center")))
+                    (pushf obj objects)))))
     ; Generating main turns
     (foreach turn spiralCoords
       (foreach half turn
@@ -190,8 +192,13 @@
           (bottomMetalBridges (cadr bridgeCoords))
           (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
       (drawPts topMetalBridges topMetalLayer)
-      (drawPts bottomMetalBridges bottomMetalLayer))))
+      (drawPts bottomMetalBridges bottomMetalLayer))
+    
+    ; creating a fig group to organise the parts
+    (let ((fg (dbCreateFigGroup cv "SymmIndx" t ref "R0")))
+      (foreach o objects
+        (dbAddFigToFigGroup fg o))
+      (dbMoveFig fg cv (list ref figGroupRot)))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 3
-                            ?rotation_anticlockwise 45.0)
+(qub::drawSymmetricInductor ?turns 3 ?figGroupRot "R0")
