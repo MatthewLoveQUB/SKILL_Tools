@@ -160,7 +160,8 @@
                                    (topMetalLayer "M1")
                                    (bottomMetalLayer "M2")
                                    (figGroupRot "R0")
-                                   (ref 0.0:0.0))
+                                   (ref 0.0:0.0)
+                                   (name "SymmInd"))
   (letseq ((points (qub::getSymmetricSpiralPoints ?turns turns
                                                   ?width width
                                                   ?spacing spacing
@@ -195,10 +196,12 @@
       (drawPts bottomMetalBridges bottomMetalLayer))
     
     ; creating a fig group to organise the parts
-    (let ((fg (dbCreateFigGroup cv "SymmIndx" t ref "R0")))
+    (let ((fg (dbCreateFigGroup cv name t ref "R0")))
       (foreach o objects
         (dbAddFigToFigGroup fg o))
       (dbMoveFig fg cv (list ref figGroupRot)))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
-(qub::drawSymmetricInductor ?turns 3 ?figGroupRot "R0")
+(qub::drawSymmetricInductor ?turns 7 
+														?figGroupRot "R0" 
+														?name "myInd")
