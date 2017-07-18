@@ -9,7 +9,7 @@
   (modload "transformer_pcell.ils"))
 
 (defmacro qub::createInductorPCells (libname)
-  (list nil
+  (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
         `(qub::createInductorPCell ,libname) 
         `(qub::createSymmInductorPCell ,libname)
         `(qub::createTransformerPCell ,libname)))
