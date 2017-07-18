@@ -114,8 +114,7 @@
           (pushf (getPoint turnIdx pIdx) leftSide)
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
         ; Reversing the right side as we generated it in reverse
-        (setq rightSide (reverse rightSide))
-        (pushf (list leftSide rightSide) spiralCoords)))
+        (pushf (list leftSide (reverse rightSide)) spiralCoords)))
     ; Add the extra metal to reduce the gap between each half of the turns
     (setq spiralCoords (mapcar (lambda (turn)
                                  (qub:::addPortsMultiTurn turn ref width))
