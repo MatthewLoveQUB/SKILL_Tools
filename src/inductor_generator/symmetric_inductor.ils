@@ -187,11 +187,10 @@
           
     ; Generating interconnects
     (let ((topMetalBridges (car bridgeCoords))
-          (bottomMetalBridges (cadr bridgeCoords)))
-      (foreach pts topMetalBridges
-        (cp pts topMetalLayer))
-      (foreach pts bottomMetalBridges
-        (cp pts bottomMetalLayer)))))
+          (bottomMetalBridges (cadr bridgeCoords))
+          (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
+      (drawPts topMetalBridges topMetalLayer)
+      (drawPts bottomMetalBridges bottomMetalLayer))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
 (qub::drawSymmetricInductor ?turns 3
