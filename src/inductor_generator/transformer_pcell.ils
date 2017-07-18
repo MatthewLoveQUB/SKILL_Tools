@@ -6,7 +6,7 @@
            (cv (slotValue device 'cvId))
            (createInd (lambda (name)
                          (let ((figGroup (callNextMethod)))
-                           (figGroup->name = name)
+                           (putprop figGroup name 'name)
                            figGroup)))
            (figGroup1 (createInd "Group1"))
            (figGroup2 (createInd "Group2"))
