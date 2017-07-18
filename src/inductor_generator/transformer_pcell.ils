@@ -2,13 +2,15 @@
   ((coilSpacing @initform (defineParam "float" 5.0))
    (coilOneRotation @initform (defineParam "string" "R0"))
    (coilTwoRotation @initform (defineParam "string" "R180"))
-   (secondCoilDirection @initform (defineParam "string" "up"))))
+   (secondCoilDirection @initform (defineParam "string" "up"))
+   (allowOverlap @initform (defineParam "boolean" "FALSE"))))
   
 (defmethod draw ((device transformerPCell_A))
   (letseq ((coilSpacing (getParamValue device 'coilSpacing))
            (rot1 (getParamValue device 'coilOneRotation))
            (rot2 (getParamValue device 'coilTwoRotation))
            (dir (getParamValue device 'secondCoilDirection))
+           (allowOverlap (nequal "FALSE" (getParamValue device 'allowOverlap)))
            (cv (slotValue device 'cvId))
            (createInd (lambda (name)
                          (let ((figGroup (callNextMethod)))
@@ -16,8 +18,12 @@
                            figGroup)))
            (figGroup1 (createInd "Group1"))
            (figGroup2 (createInd "Group2"))
-           (height (difference (topEdge figGroup1) (bottomEdge figGroup1)))
-           (width (difference (rightEdge figGroup1) (leftEdge figGroup1)))
+           (height (if allowOverlap
+                       0
+                       (difference (topEdge figGroup1) (bottomEdge figGroup1))))
+           (width (if allowOverlap
+                      0
+                      (difference (rightEdge figGroup1) (leftEdge figGroup1))))
            (transform (if (member dir (list "up" "down"))
                           (list 0 (if (equal dir "up")
                                       (plus height coilSpacing)
@@ -26,7 +32,6 @@
                                     (plus width coilSpacing)
                                     (difference 0 width coilSpacing))
                                 0))))
-      (printf "DIR %A\n" dir)
       (dbMoveFig figGroup1 cv (list 0:0 rot1))
       (dbMoveFig figGroup2 cv (list transform rot2))))
   
@@ -43,7 +48,8 @@
      (coilSpacing "float" 5.0)
      (coilOneRotation "string" "R0")
      (coilTwoRotation "string" "R180")
-     (secondCoilDirection "string" "up"))
+     (secondCoilDirection "string" "up")
+     (allowOverlap "boolean" "FALSE"))
     (let ((pcell (makeInstance 'transformerPCell_A)))
       (setPcellParams pcell pcCellView)
       (draw pcell))))
