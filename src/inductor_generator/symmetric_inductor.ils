@@ -17,8 +17,8 @@
            (rightTopSort (qub:::sortTopPoint right))
            (leftTop (car leftTopSort))
            (rightTop (car rightTopSort))
-           (leftBottom (car leftTopSort))
-           (rightBottom (car rightTopSort))
+           (leftBottom (car (reverse leftTopSort)))
+           (rightBottom (car (reverse rightTopSort)))
            (mp qub::midPoint)
            (getPort (lambda (a b f)
                       (letseq ((pt (mp a b ?distAlong 0.5))
@@ -29,8 +29,15 @@
            (rtPort (getPort leftTop rightTop plus))
            (lbPort (getPort leftBottom rightBottom difference))
            (rbPort (getPort leftBottom rightBottom plus)))
-    (let ((newLeft (pushf ltPort leftTopSort))
-          (newRight (pushf rtPort rightTopSort)))
+    (let ((newLeft leftTopSort)
+          (newRight rightTopSort))
+      (pushf ltPort newLeft)
+      (pushf rtPort newRight)
+      ; Adding ports on the other side
+      (setq newLeft (reverse newLeft))
+      (setq newRight (reverse newRight))
+      (pushf lbPort newLeft)
+      (pushf rbPort newRight)
       (list newLeft newRight))))
       
     
