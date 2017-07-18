@@ -96,8 +96,6 @@
         pts
         (reverse pts))))
   
-; Arranges the list so the lower point is the car
-; The order of the points is unchanged
 (defun qub:::sortBottomPoint (pts)
   (reverse (qub:::sortTopPoint pts)))
       
