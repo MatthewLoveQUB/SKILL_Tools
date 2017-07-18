@@ -1,6 +1,6 @@
 ;;;; Module for generating a spiral inductor
 
-(defun qub:::addPortsMultiTurn (turn ref width)
+(defun qub:::addPorts (turn ref width)
   (letseq ((left (car turn))
            (right (cadr turn))
            (leftTopSort (qub:::sortTopPoint left))
@@ -116,8 +116,7 @@
         ; Reversing the right side as we generated it in reverse
         (pushf (list leftSide (reverse rightSide)) spiralCoords)))
     ; Add the extra metal to reduce the gap between each half of the turns
-    (setq spiralCoords (mapcar (lambda (turn)
-                                 (qub:::addPortsMultiTurn turn ref width))
+    (setq spiralCoords (mapcar (lambda (turn) (qub:::addPorts turn ref width))
                                spiralCoords))
     ; Create the interconnects
     (let ((interconnects (qub::getInterconnects width spiralCoords gbp)))
