@@ -88,8 +88,8 @@
               (car outerRightPts) 
               (addX (car outerRightPts) plus width)))))
 
-            
-(defun qub::getInterconnects (width spiralCoords)
+; gbp = getbridgepoint            
+(defun qub::getInterconnects (width spiralCoords gbp)
   (letseq ((pts (list nil nil))
            (refPts (reverse spiralCoords))
            (maxPtIdx (sub1 (length refPts)))
@@ -100,10 +100,14 @@
            (is qub:::invertSide)
            (gih qub:::getInterconnectsHelper))
     (for i 0 (sub1 maxPtIdx)
-      (cond ((zerop i) 
-             (pushf (gih curSide refPts i width) (cadr pts)))
+      (cond ((zerop i)
+             ; Adding bottom metal interconnects
+             (pushf (gih curSide refPts i width) (cadr pts))
+             ; Adding bridge between parts
+             (pushf (gbp) (car pts)))
             ((equal i maxPtIdx) t)
-            ((evenp i) 
+            ((evenp i)
+             ; Adding bottom metal interconnects
              (pushf (gih curSide refPts i width) (cadr pts)))
             ((oddp i) 
              (pushf (gih (is curSide) refPts i width) (cadr pts)))))
@@ -131,7 +135,12 @@
                             'top))
            (spiralCoords nil)
            (maxPointIdx (sub1 nsides))
-           (maxHalfPointIdx (sub1 (quotient nsides 2))))
+           (maxHalfPointIdx (sub1 (quotient nsides 2)))
+           (gbp (lambda () 
+                  (qub::getBridgePoints getPoint 
+                                        bridgePoint 
+                                        maxPointIdx 
+                                        maxHalfPointIdx))))
     (for turnIdx 0 maxTurnIdx
       (let ((leftSide nil)
             (rightSide nil))
@@ -146,7 +155,7 @@
                                  (qub:::addPortsMultiTurn turn ref width))
                                spiralCoords))
     ; Create the interconnects
-    (let ((interconnects (qub::getInterconnects width spiralCoords)))
+    (let ((interconnects (qub::getInterconnects width spiralCoords gbp)))
       (list spiralCoords interconnects))))
   
 (defun qub::getSymmetricSpiralPoints (@key 
