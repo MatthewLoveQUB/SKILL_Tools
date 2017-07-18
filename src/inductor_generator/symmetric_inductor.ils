@@ -79,19 +79,13 @@
            (gih qub:::getInterconnectsHelper))
     (pushf (gbp) (car pts))
     (for i 0 (sub1 maxPtIdx)
-      (cond ((evenp i)
-             ; Adding bottom metal interconnects
-             (letseq ((interconnects (gih curSide refPts i width))
-                      (topInterconnects (car interconnects))
-                      (bottomInterconnects (cadr interconnects)))
-                (pushf topInterconnects (car pts))
-                (pushf bottomInterconnects (cadr pts))))
-            ((oddp i) 
-             (letseq ((interconnects (gih (is curSide) refPts i width))
-                      (topInterconnects (car interconnects))
-                      (bottomInterconnects (cadr interconnects)))
-                (pushf topInterconnects (car pts))
-                (pushf bottomInterconnects (cadr pts))))))
+      ; Adding bottom metal interconnects
+      (letseq ((interconnects (gih curSide refPts i width))
+               (topInterconnects (car interconnects))
+               (bottomInterconnects (cadr interconnects)))
+         (pushf topInterconnects (car pts))
+         (pushf bottomInterconnects (cadr pts)))
+      (setq curSide (is curSide)))
     pts))
     
 ; Arranges the list so the upper point is the car
