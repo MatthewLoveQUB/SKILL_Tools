@@ -10,7 +10,7 @@
     (setq lst (cons p2 lst))
     lst))
     
-(defun qub:::addPortsMultiTurn (turn)
+(defun qub:::addPortsMultiTurn (turn ref width)
   (letseq ((left (car turn))
            (right (cadr turn))
            (leftTopSort (qub:::sortTopPoint left))
@@ -19,12 +19,16 @@
            (rightTop (car rightTopSort))
            (leftBottom (car leftTopSort))
            (rightBottom (car rightTopSort))
-           (oneThird (quotient 1.0 3.0))
-           (twoThirds (quotient 2.0 3.0))
-           (ltPort (qub::midPoint leftTop rightTop ?distAlong twoThirds))
-           (rtPort (qub::midPoint leftTop rightTop ?distAlong oneThird))
-           (lbPort (qub::midPoint leftBottom rightBottom ?distAlong twoThirds))
-           (rbPort (qub::midPoint leftBottom rightBottom ?distAlong oneThird)))
+           (mp qub::midPoint)
+           (getPort (lambda (a b f)
+                      (letseq ((pt (mp a b ?distAlong 0.5))
+                               (x (xCoord pt))
+                               (y (yCoord pt)))
+                        (list (f x width) y))))                        
+           (ltPort (getPort leftTop rightTop difference))
+           (rtPort (getPort leftTop rightTop plus))
+           (lbPort (getPort leftBottom rightBottom difference))
+           (rbPort (getPort leftBottom rightBottom plus)))
     (let ((newLeft (pushf ltPort leftTopSort))
           (newRight (pushf rtPort rightTopSort)))
       (list newLeft newRight))))
@@ -64,16 +68,18 @@
            (innerRightPts (f (cadr innerTurnPts)))
            (outerTurnPts (nth (add1 i) refPts))
            (outerLeftPts (f (car outerTurnPts)))
-           (outerRightPts (f (cadr outerTurnPts))))
+           (outerRightPts (f (cadr outerTurnPts)))
+           (addX (lambda (pt f dx)
+                   (list (f (xCoord pt) dx) (yCoord pt)))))
     (if (eq curSide 'top)
-        (list (cadr outerLeftPts) 
+        (list (addX (car outerLeftPts) difference width)
               (car outerLeftPts) 
               (car innerRightPts) 
-              (cadr innerRightPts))
-        (list (cadr innerLeftPts) 
+              (addX (car innerRightPts) plus width))
+        (list (addX (car innerLeftPts) difference width)
               (car innerLeftPts) 
               (car outerRightPts) 
-              (cadr outerRightPts)))))
+              (addX (car outerRightPts) plus width)))))
 
             
 (defun qub::getInterconnects (width spiralCoords)
@@ -109,7 +115,7 @@
 
       
 ; Gets coordinates for a multi turn spiral inductor
-(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns width)
+(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns width ref)
   (letseq ((bridgePoint (if (evenp turns)
                             'bottom
                             'top))
@@ -126,7 +132,10 @@
         (setq rightSide (reverse rightSide))
         (pushf (list leftSide rightSide) spiralCoords)))
     ; Add the extra metal to reduce the gap between each half of the turns
-    (setq spiralCoords (mapcar qub:::addPortsMultiTurn spiralCoords))
+    (setq spiralCoords (mapcar (lambda (turn)
+                                 (qub:::addPortsMultiTurn turn ref width))
+                               spiralCoords))
+    ; Create the interconnects
     (let ((interconnects (qub::getInterconnects width spiralCoords)))
       (list spiralCoords interconnects))))
   
@@ -158,7 +167,7 @@
                                           ?ref ref))))
         ; Conditional to call the appropriate function
         (cond ((equal turns 1) (qub:::oneTurn getPoint maxTurnIdx maxPointIdx))
-              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns width)))))
+              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns width ref)))))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
