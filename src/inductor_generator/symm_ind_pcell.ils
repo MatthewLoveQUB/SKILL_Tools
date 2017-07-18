@@ -42,9 +42,9 @@
 
     (callNextMethod)))
       
-(defmacro qub::createSymmInductorPCell (library cellName)
+(defmacro qub::createSymmInductorPCell (library)
   `(pcDefinePCell 
-    (list (ddGetObj ,library) ,cellName "layout")
+    (list (ddGetObj ,library) "SymmetricInductorPCell" "layout")
     ((turns "int" 2)
      (width "float" 10.0)
      (spacing "float" 5.0)

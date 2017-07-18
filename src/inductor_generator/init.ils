@@ -5,4 +5,11 @@
   (modload "spiral_inductor.ils")
   (modload "ind_pcell.ils")
   (modload "symmetric_inductor.ils")
-  (modload "symm_ind_pcell.ils"))
+  (modload "symm_ind_pcell.ils")
+  (modload "transformer_pcell.ils"))
+
+(defmacro qub::createInductorPCells (libname)
+  (list nil
+        `(qub::createInductorPCell ,libname) 
+        `(qub::createSymmInductorPCell ,libname)
+        `(qub::createTransformerPCell ,libname)))

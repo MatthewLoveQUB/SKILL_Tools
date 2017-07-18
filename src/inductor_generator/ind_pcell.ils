@@ -28,9 +28,9 @@
       (dbCreatePath cv (list ml) points w "truncateExtend"))
       (callNextMethod)))
 
-(defmacro qub::createInductorPCell (library cellName)      
+(defmacro qub::createInductorPCell (library)      
   `(pcDefinePCell 
-    (list (ddGetObj ,library) ,cellName "layout")
+    (list (ddGetObj ,library) "spiralInductorPCell" "layout")
     ((completeTurns "int" 2)
      (additionalSegments "int" 0)
      (width "float" 10.0)

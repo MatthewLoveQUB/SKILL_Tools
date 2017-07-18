@@ -28,3 +28,9 @@
 
 ; symm_ind_pcell.ils
 (addToExportList '(qub:::createSymmInductorPCell))
+
+; symm_ind_pcell.ils
+(addToExportList '(qub:::createTransformerPCell))
+
+; init.ils
+(addToExportList '(qub:::createInductorPCells))
