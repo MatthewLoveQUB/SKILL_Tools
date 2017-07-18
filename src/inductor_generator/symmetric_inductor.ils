@@ -183,8 +183,7 @@
     ; Generating main turns
     (foreach turn spiralCoords
       (foreach half turn
-        (unless (null half)
-          (cp half topMetalLayer))))
+        (cp half topMetalLayer)))
           
     ; Generating interconnects
     (let ((topMetalBridges (car bridgeCoords))
