@@ -79,8 +79,7 @@
            (gih qub:::getInterconnectsHelper))
     (pushf (gbp) (car pts))
     (for i 0 (sub1 maxPtIdx)
-      (cond ((equal i maxPtIdx) t)
-            ((evenp i)
+      (cond ((evenp i)
              ; Adding bottom metal interconnects
              (letseq ((interconnects (gih curSide refPts i width))
                       (topInterconnects (car interconnects))
@@ -108,10 +107,9 @@
 ; The order of the points is unchanged
 (defun qub:::sortBottomPoint (pts)
   (reverse (qub:::sortTopPoint pts)))
-
       
 ; Gets coordinates for a multi turn spiral inductor
-(defun qub:::multiTurn (getPoint maxTurnIdx nsides turns width ref)
+(defun qub:::createSymInd (getPoint maxTurnIdx nsides turns width ref)
   (letseq ((bridgePoint (if (evenp turns)
                             'bottom
                             'top))
@@ -167,7 +165,7 @@
                                             rotation_anticlockwise
                                           ?ref ref))))
         ; Conditional to call the appropriate function
-        (qub:::multiTurn getPoint maxTurnIdx nsides turns width ref)))
+        (qub:::createSymInd getPoint maxTurnIdx nsides turns width ref)))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
