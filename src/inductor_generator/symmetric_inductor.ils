@@ -90,7 +90,7 @@
 
             
 (defun qub::getInterconnects (width spiralCoords)
-  (letseq ((pts nil)
+  (letseq ((pts (list nil nil))
            (refPts (reverse spiralCoords))
            (maxPtIdx (sub1 (length refPts)))
            (nturns (length refPts))
@@ -100,10 +100,13 @@
            (is qub:::invertSide)
            (gih qub:::getInterconnectsHelper))
     (for i 0 (sub1 maxPtIdx)
-      (cond ((zerop i) (pushf (gih curSide refPts i width) pts))
+      (cond ((zerop i) 
+             (pushf (gih curSide refPts i width) (cadr pts)))
             ((equal i maxPtIdx) t)
-            ((evenp i) (pushf (gih curSide refPts i width) pts))
-            ((oddp i) (pushf (gih (is curSide) refPts i width) pts))))
+            ((evenp i) 
+             (pushf (gih curSide refPts i width) (cadr pts)))
+            ((oddp i) 
+             (pushf (gih (is curSide) refPts i width) (cadr pts)))))
     pts))
     
 ; Arranges the list so the upper point is the car
@@ -186,31 +189,40 @@
                                    (bottomMetalLayer "M2")
                                    (rotation_anticlockwise 0.0)
                                    (ref 0.0:0.0))
-  (let ((points (qub::getSymmetricSpiralPoints ?turns turns
-                                               ?width width
-                                               ?spacing spacing
-                                               ?apothem apothem
-                                               ?nsides nsides
-                                               ?rotation_anticlockwise 
-                                                 rotation_anticlockwise
-                                               ?ref ref))
-        (offset 0))
-    (let ((spiralCoords (car points))
-          (bridgeCoords (cadr points))
-          (cp (lambda (pts metLyr)
-                (leCreatePath (geGetEditCellView) 
-                              (list metLyr) 
-                              pts
-                              width
-                              "truncateExtend" 
-                              offset
-                              "center"))))
-      (foreach turn spiralCoords
-        (foreach half turn
-          (unless (null half)
-            (cp half topMetalLayer))))
-      (unless (zerop (length bridgeCoords))
-        (foreach pts bridgeCoords
+  (letseq ((points (qub::getSymmetricSpiralPoints ?turns turns
+                                                  ?width width
+                                                  ?spacing spacing
+                                                  ?apothem apothem
+                                                  ?nsides nsides
+                                                  ?rotation_anticlockwise 
+                                                    rotation_anticlockwise
+                                                  ?ref ref))
+           (offset 0)
+           (spiralCoords (car points))
+           (bridgeCoords (cadr points))
+           (cp (lambda (pts metLyr)
+                 (leCreatePath (geGetEditCellView) 
+                               (list metLyr) 
+                               pts
+                               width
+                               "truncateExtend" 
+                               offset
+                               "center"))))
+    ; Generating main turns
+    (foreach turn spiralCoords
+      (foreach half turn
+        (unless (null half)
+          (cp half topMetalLayer))))
+          
+    ; Generating interconnects
+    (unless (zerop (length bridgeCoords))
+      (let ((topMetalBridges (car bridgeCoords))
+            (bottomMetalBridges (cadr bridgeCoords)))
+        ; Toplevel interconnects
+        (foreach pts topMetalBridges
+          (cp pts topMetalLayer))
+        ; Bottom level interconnects
+        (foreach pts bottomMetalBridges
           (cp pts bottomMetalLayer))))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
