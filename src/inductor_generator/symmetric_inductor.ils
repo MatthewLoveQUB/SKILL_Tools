@@ -38,12 +38,10 @@
             (getPoint 0 (add1 maxHalfPointIdx)))))
 
 (defun qub:::invertSide (side)
-  (if (eq side 'top)
-      'bottom
-      'top))
+  (if (eq side 'top) 'bottom 'top))
             
 (defun qub:::getInterconnectsHelper (curSide refPts i width)
-  (letseq ((f (if (eq curSide 'top)
+  (letseq ((f (if (eq curSide 'top) 
                   qub:::sortTopPoint
                   qub:::sortBottomPoint))
            (innerTurnPts (nth i refPts))
@@ -72,9 +70,7 @@
            (refPts (reverse spiralCoords))
            ; Outer loop has nothing to connect to
            (maxPtIdx (difference (length refPts) 2))
-           (curSide (if (evenp (length refPts))
-                               'top
-                               'bottom))
+           (curSide (if (evenp (length refPts)) 'top 'bottom))
            (gih qub:::getInterconnectsHelper))
     ; Adding m1 connection to innermost loop
     (pushf (gbp) (car pts))
@@ -194,15 +190,12 @@
           (cp half topMetalLayer))))
           
     ; Generating interconnects
-    (unless (zerop (length bridgeCoords))
-      (let ((topMetalBridges (car bridgeCoords))
-            (bottomMetalBridges (cadr bridgeCoords)))
-        ; Toplevel interconnects
-        (foreach pts topMetalBridges
-          (cp pts topMetalLayer))
-        ; Bottom level interconnects
-        (foreach pts bottomMetalBridges
-          (cp pts bottomMetalLayer))))))
+    (let ((topMetalBridges (car bridgeCoords))
+          (bottomMetalBridges (cadr bridgeCoords)))
+      (foreach pts topMetalBridges
+        (cp pts topMetalLayer))
+      (foreach pts bottomMetalBridges
+        (cp pts bottomMetalLayer)))))
 
 ;(printf "%A\n" (qub::getSymmetricSpiralPoints ?turns 2))
 (qub::drawSymmetricInductor ?turns 3
