@@ -1,15 +1,5 @@
 ;;;; Module for generating a spiral inductor
 
-(defun qub:::addPortsSingleTurn (lst firstPoint lastPoint)
-  (letseq ((mp (lambda (x) 
-                 (qub::midPoint firstPoint lastPoint ?distAlong x)))
-           (p1 (mp (quotient 1.0 3.0)))
-           (p2 (mp (quotient 2.0 3.0))))
-    (setq lst (cons p1 lst))
-    (setq lst (reverse lst))
-    (setq lst (cons p2 lst))
-    lst))
-    
 (defun qub:::addPortsMultiTurn (turn ref width)
   (letseq ((left (car turn))
            (right (cadr turn))
@@ -40,20 +30,6 @@
       (pushf rbPort newRight)
       (list newLeft newRight))))
       
-    
-; Creates coordinates for a single turn spiral inductor
-(defun qub:::oneTurn (getPoint maxTurnIdx maxPointIdx)
-  (let ((firstPoint  (getPoint maxTurnIdx 0))
-        (lastPoint (getPoint maxTurnIdx maxPointIdx))
-        (pts nil))
-     (for pointIdx 0 maxPointIdx
-         (pushf (getPoint maxTurnIdx pointIdx) pts))
-     (letseq ((spiralHalf (qub:::addPortsSingleTurn pts firstPoint lastPoint))
-              (spiralTurn (list spiralHalf))
-              (spiralCoords (list spiralTurn))
-              (bridgeCoords nil))
-      (list spiralCoords bridgeCoords))))
-
 (defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
   (if (eq bridgePoint 'top)
       (list (getPoint 0 0)
@@ -101,9 +77,8 @@
                                'bottom))
            (is qub:::invertSide)
            (gih qub:::getInterconnectsHelper))
+    (pushf (gbp) (car pts))
     (for i 0 (sub1 maxPtIdx)
-      (when (zerop i)
-        (pushf (gbp) (car pts)))
       (cond ((equal i maxPtIdx) t)
             ((evenp i)
              ; Adding bottom metal interconnects
@@ -192,8 +167,7 @@
                                             rotation_anticlockwise
                                           ?ref ref))))
         ; Conditional to call the appropriate function
-        (cond ((equal turns 1) (qub:::oneTurn getPoint maxTurnIdx maxPointIdx))
-              (t (qub:::multiTurn getPoint maxTurnIdx nsides turns width ref)))))
+        (qub:::multiTurn getPoint maxTurnIdx nsides turns width ref)))
         
 (defun qub::drawSymmetricInductor (@key 
                                    (turns 1)
