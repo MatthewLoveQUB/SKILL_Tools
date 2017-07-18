@@ -70,22 +70,21 @@
 (defun qub::getInterconnects (width spiralCoords gbp)
   (letseq ((pts (list nil nil))
            (refPts (reverse spiralCoords))
-           (maxPtIdx (sub1 (length refPts)))
-           (nturns (length refPts))
-           (curSide (if (evenp nturns)
+           ; Outer loop has nothing to connect to
+           (maxPtIdx (difference (length refPts) 2))
+           (curSide (if (evenp (length refPts))
                                'top
                                'bottom))
-           (is qub:::invertSide)
            (gih qub:::getInterconnectsHelper))
+    ; Adding m1 connection to innermost loop
     (pushf (gbp) (car pts))
-    (for i 0 (sub1 maxPtIdx)
-      ; Adding bottom metal interconnects
+    (for i 0 maxPtIdx
       (letseq ((interconnects (gih curSide refPts i width))
                (topInterconnects (car interconnects))
                (bottomInterconnects (cadr interconnects)))
          (pushf topInterconnects (car pts))
          (pushf bottomInterconnects (cadr pts)))
-      (setq curSide (is curSide)))
+      (setq curSide (qub:::invertSide curSide)))
     pts))
     
 ; Arranges the list so the upper point is the car
