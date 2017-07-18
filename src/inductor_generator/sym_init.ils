@@ -2,6 +2,7 @@
 (addToExportList '(qub:::apothemToCircumradius
                    qub:::internalAngle
                    qub:::getPoint
+                   qub:::degToRad
                    qub:::getPolyPoint
                    qub:::midPoint
                    qub:::fixAngle))
@@ -24,3 +25,6 @@
                    
 ; ind_pcell.ils
 (addToExportList '(qub:::createInductorPCell))                   
+
+; symm_ind_pcell.ils
+(addToExportList '(qub:::createSymmInductorPCell))

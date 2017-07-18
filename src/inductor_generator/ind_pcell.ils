@@ -28,9 +28,9 @@
       (dbCreatePath cv (list ml) points w "truncateExtend"))
       (callNextMethod)))
 
-(defun qub::createInductorPCell (library cellName)      
-  (pcDefinePCell 
-    (list (ddGetObj library) cellName "layout")
+(defmacro qub::createInductorPCell (library cellName)      
+  `(pcDefinePCell 
+    (list (ddGetObj ,library) ,cellName "layout")
     ((completeTurns "int" 2)
      (additionalSegments "int" 0)
      (width "float" 10.0)
@@ -42,3 +42,5 @@
     (let ((pcell (makeInstance 'inductorPCell)))
       (setPcellParams pcell pcCellView)
       (draw pcell))))
+
+;(qub::createInductorPCell "mlove_lib" "indPCell")
