@@ -25,9 +25,11 @@
            (offset 0)
            (spiralCoords (car points))
            (bridgeCoords (cadr points))
+           (objects nil)
            (mode "truncateExtend")
            (cp (lambda (pts metLyr)
-                 (dbCreatePath cv (list metLyr) pts w mode))))
+                 (pushf (dbCreatePath cv (list metLyr) pts w mode) objects))))
+                 
     ; Generating main turns
     (foreach turn spiralCoords
       (foreach half turn
@@ -40,7 +42,11 @@
       (drawPts topMetalBridges tml)
       (drawPts bottomMetalBridges bml))
 
-    (callNextMethod)))
+    ; creating a fig group to organise the parts
+    (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
+      (foreach o objects
+        (dbAddFigToFigGroup fg o))
+      fg)))
       
 (defmacro qub::createSymmInductorPCell (library)
   `(pcDefinePCell 
