@@ -1,0 +1,4 @@
+(qubCreateModule "qub" "pcell/"
+  (modload "sym_init.ils")
+  (modload "generic.ils")
+  (modload "PcellParam.ils"))
