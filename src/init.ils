@@ -6,15 +6,13 @@
                     (load (strcat ,folder p)))))
     ,@body))
 
-; Running it twice to fix "unknown symbol" errors during compilation
 ; Have to load the symbols first to avoid namespace errors
-(for x 0 1
-  (qubCreateModule "qub" ""
-    (modload "std/sym_init.ils")
-    (modload "pcell/sym_init.ils")
-    (modload "inductor_generator/sym_init.ils")
-    (modload "qtest/sym_init.ils")
-    (modload "std/init.ils")
-    (modload "qtest/init.ils")
-    (modload "pcell/init.ils")
-    (modload "inductor_generator/init.ils")))
+(qubCreateModule "qub" ""
+  (modload "std/sym_init.ils")
+  (modload "pcell/sym_init.ils")
+  (modload "inductor_generator/sym_init.ils")
+  (modload "qtest/sym_init.ils")
+  (modload "std/init.ils")
+  (modload "qtest/init.ils")
+  (modload "pcell/init.ils")
+  (modload "inductor_generator/init.ils"))

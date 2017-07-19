@@ -27,9 +27,6 @@
   
 ; A method to set Pcell parameter's value
 (defmethod setParamValue ((device PcellParam) (propName symbol) val)
-  (setSlotValue device (slotValue (slotValue device propName) 'value) val))
-  
-(defmethod setParamValue ((device PcellParam) (propName symbol) val)
   ((slotValue device propName)->value = val))
   
 ; A method to check is the given name a Pcell parameter or not. This is
