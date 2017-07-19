@@ -17,3 +17,6 @@
 
 (defun qub::findFilesWithPrefix (files prefix)
   (setof x files (qub::startsWith (qub::getFileName x) prefix)))
+  
+(defun qub::findFiles (files name)
+  (setof x files (equal name (qub::getFileName x))))

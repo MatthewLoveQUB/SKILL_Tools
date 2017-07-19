@@ -12,7 +12,8 @@
 (addToExportList '(qub:::listFileRec
                    qub:::filterUnwanted
                    qub:::getFileName
-                   qub:::findFilesWithPrefix))
+                   qub:::findFilesWithPrefix
+                   qub:::findFiles))
 
 ; functional.ils
 (addToExportList '(qub:::foldl
