@@ -12,3 +12,8 @@
                       (nequal x "..")
                       (nequal (getchar x 1) '\.))))
 
+(defun qub::getFileName (path)
+  (car (last (parseString path "/"))))             
+
+(defun qub::findFilesWithPrefix (files prefix)
+  (setof x files (qub::startsWith (qub::getFileName x) prefix)))

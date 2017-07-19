@@ -99,10 +99,7 @@ Evaluated Inputs: %A\n"
 ; Recursively look for all files prefixed with "test_" in a dir and load them    
 (defun qtest::runAllTests (rel_path)
   (letseq ((files_in_dir (qub::listFileRec rel_path))
-           (get_file_name (lambda (x) (car (last (parseString x "/")))))
-           (test_files (setof x 
-                              files_in_dir 
-                              (qub::startsWith (get_file_name x) "test_"))))
+           (test_files (qub::findFilesWithPrefix files_in_dir "test_")))
     (mapc (lambda (x) 
             (printf "Running: %s\n" x) 
             (load x))

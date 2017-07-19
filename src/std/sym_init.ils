@@ -10,7 +10,9 @@
                    
 ; fileio.ils
 (addToExportList '(qub:::listFileRec
-                   qub:::filterUnwanted))
+                   qub:::filterUnwanted
+                   qub:::getFileName
+                   qub:::findFilesWithPrefix))
 
 ; functional.ils
 (addToExportList '(qub:::foldl
