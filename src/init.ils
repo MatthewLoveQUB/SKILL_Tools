@@ -1,3 +1,9 @@
+; Loading some stdlib files so I have access to fileio functions
+(load "std/sym_init.ils")
+(load "std/fileio.ils")
+(load "std/list.ils")
+(load "std/string.ils")
+
 ; Run this file twice to fix all "unknown object" errors
 (defmacro qubCreateModule (name folder @rest body)
   (unless (findNamespace ,name)
@@ -8,10 +14,9 @@
 
 ; Have to load the symbols first to avoid namespace errors
 (qubCreateModule "qub" ""
-  (modload "std/sym_init.ils")
-  (modload "pcell/sym_init.ils")
-  (modload "inductor_generator/sym_init.ils")
-  (modload "qtest/sym_init.ils")
+  (letseq ((dirFiles (qub::listFileRec "./code/"))
+           (symInitFiles (qub::findFiles dirFiles "sym_init.ils")))
+    (mapc load symInitFiles))
   (modload "std/init.ils")
   (modload "qtest/init.ils")
   (modload "pcell/init.ils")
