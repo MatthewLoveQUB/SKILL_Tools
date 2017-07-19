@@ -5,17 +5,16 @@
 (load "std/string.ils")
 
 ; Run this file twice to fix all "unknown object" errors
-(defmacro qubCreateModule (name folder @rest body)
-  (unless (findNamespace ,name)
-          (makeNamespace ,name))
-  `(let ((modload (lambda (p) 
-                    (load (strcat ,folder p)))))
+(defmacro qubCreateModule (folder @rest body)
+  `(let ((modload (lambda (p) (load (strcat ,folder p)))))
     ,@body))
 
 ; Have to load the symbols first to avoid namespace errors
-(qubCreateModule "qub" ""
+(qubCreateModule ""
   (letseq ((dirFiles (qub::listFileRec "./code/"))
+           (nsInitFiles (qub::findFiles dirFiles "ns_init.ils"))
            (symInitFiles (qub::findFiles dirFiles "sym_init.ils")))
+    (mapc load nsInitFiles)
     (mapc load symInitFiles))
   (modload "std/init.ils")
   (modload "qtest/init.ils")

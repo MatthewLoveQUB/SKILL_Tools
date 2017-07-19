@@ -1,4 +1,4 @@
 ; Initialises the qtest module
-(qubCreateModule "qtest" "qtest/"
+(qubCreateModule "qtest/"
   (modload "core.ils")        
   (modload "assertions.ils"))

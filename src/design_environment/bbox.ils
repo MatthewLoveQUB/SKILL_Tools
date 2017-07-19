@@ -1,0 +1,5 @@
+(defun qub::bboxWidth (bbox)
+  (difference (rightEdge bbox) (leftEdge bbox)))
+  
+(defun qub::bboxHeight (bbox)
+  (difference (topEdge bbox) (bottomEdge bbox)))

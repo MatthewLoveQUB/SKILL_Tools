@@ -1,0 +1,2 @@
+(unless (findNamespace "qtest")
+        (makeNamespace "qtest"))

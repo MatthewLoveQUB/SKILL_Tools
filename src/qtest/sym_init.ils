@@ -1,6 +1,3 @@
-(unless (findNamespace "qtest")
-       (makeNamespace "qtest"))
-
 ; assertions.ils
 (addToExportList '(qtest:::assertEqual
                    qtest:::assertNotEqual
