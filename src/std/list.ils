@@ -22,3 +22,6 @@
         
 (defun qub::pushEnd (val lst)
   (pushf val (cdr (last lst))))
+  
+(defun qub::lastAtom (lst)
+  (car (last lst)))
