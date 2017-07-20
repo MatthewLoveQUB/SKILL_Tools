@@ -24,3 +24,10 @@
 ; translation should be a list of (hor_mv vert_mov)
 (defun qub::movePoint (point translation)
   (qub::addListElems point translation))
+  
+(defun qub::midPoint (p1 p2 @key (distAlong 0.5))
+  (let ((p1Scalar distAlong)
+        (p2Scalar (difference 1.0 distAlong)))
+  (range
+    (plus (times p1Scalar (xCoord p1)) (times p2Scalar (xCoord p2)))
+    (plus (times p1Scalar (yCoord p1)) (times p2Scalar (yCoord p2))))))

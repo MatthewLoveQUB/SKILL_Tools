@@ -4,4 +4,14 @@
                    qub:::leftPoint
                    qub:::rightPoint
                    qub:::movePoint
-                   qub:::higherp))
+                   qub:::higherp
+                   qub:::getPtAngle
+                   qub:::midPoint))
+                   
+; trig.ils
+(addToExportList '(qub:::degToRad
+                   qub:::fixAngle))
+                   
+; shapes.ils
+(addToExportList '(qub:::apothemToCircumradius
+                   qub:::internalAngle))                   

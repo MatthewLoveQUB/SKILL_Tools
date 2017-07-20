@@ -1,0 +1,12 @@
+(defun qub::apothemToCircumradius (apothem num_sides)
+  (quotient 
+    apothem 
+    (cos (quotient 
+           qub::m.PI
+           num_sides))))
+  
+; Finds the internal angle of a regular polygon
+(defun qub::internalAngle (sides)
+  (quotient 
+    360.0 
+    sides))

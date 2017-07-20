@@ -1,38 +1,3 @@
-;;;; file for generating spiral inductors
-;;;; only use floats for coordinates                 
-;;;; 0 degrees is east. 90 degrees is north
-
-(defgeneric qub::fixAngle (angle))
-
-(defmethod qub::fixAngle ((angle fixnum))
-  (modulo angle 360))
-  
-(defmethod qub::fixAngle ((angle flonum))
-  (if (negativep angle)
-      (plus 360.0 (modf angle 360.0))
-  (modf angle 360.0)))
-
-(defun qub::apothemToCircumradius (apothem num_sides)
-  (quotient 
-    apothem 
-    (cos (quotient 
-           qub::m.PI
-           num_sides))))
-  
-; Finds the internal angle of a regular polygon
-(defun qub::internalAngle (sides)
-  (quotient 
-    360.0 
-    sides))
-  
-; Degrees to radians
-(defun qub::degToRad (value)
-  (times 
-    qub::m.PI 
-    (quotient 
-      value 
-      180.0)))
-  
 ; Finds a point at a distance and angle from a reference point
 (defun qub::getPoint (angle dist @key (ref 0.0:0.0))
   (let ((x (xCoord ref))
@@ -116,9 +81,4 @@
     (qub::getPoint (qub::fixAngle angle) dist ?ref ref)))
     
 
-(defun qub::midPoint (p1 p2 @key (distAlong 0.5))
-  (let ((p1Scalar distAlong)
-        (p2Scalar (difference 1.0 distAlong)))
-  (range
-    (plus (times p1Scalar (xCoord p1)) (times p2Scalar (xCoord p2)))
-    (plus (times p1Scalar (yCoord p1)) (times p2Scalar (yCoord p2))))))
+

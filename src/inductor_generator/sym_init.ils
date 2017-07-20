@@ -1,11 +1,6 @@
 ; inductor.ils
-(addToExportList '(qub:::apothemToCircumradius
-                   qub:::internalAngle
-                   qub:::getPoint
-                   qub:::degToRad
-                   qub:::getPolyPoint
-                   qub:::midPoint
-                   qub:::fixAngle))
+(addToExportList '(qub:::getPoint
+                   qub:::getPolyPoint))
   
 ; spiral_inductor.ils
 (addToExportList '(qub:::getSpiralPoints

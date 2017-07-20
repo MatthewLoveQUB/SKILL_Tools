@@ -1,2 +1,4 @@
 (qubCreateModule "geometry/"
-  (modload "point2d.ils"))
+  (modload "point2d.ils")
+  (modload "trig.ils")
+  (modload "shapes.ils"))
