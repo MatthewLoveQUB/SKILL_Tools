@@ -18,6 +18,9 @@
       a
       b))
       
+(defun qub::higherp (a b)
+  (greaterp (yCoord a) (yCoord b)))
+      
 ; translation should be a list of (hor_mv vert_mov)
 (defun qub::movePoint (point translation)
   (qub::addListElems point translation))

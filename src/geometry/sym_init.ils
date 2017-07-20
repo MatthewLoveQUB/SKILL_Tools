@@ -3,4 +3,5 @@
                    qub:::bottomPoint
                    qub:::leftPoint
                    qub:::rightPoint
-                   qub:::movePoint))
+                   qub:::movePoint
+                   qub:::higherp))

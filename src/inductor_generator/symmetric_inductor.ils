@@ -55,32 +55,25 @@
         (list il2or ol2ir))))
 
 ; gbp = getbridgepoint            
-(defun qub::getInterconnects (width spiralCoords gbp)
+(defun qub::getInterconnects (width points gbp)
   (letseq ((pts (list nil nil))
-           (refPts (reverse spiralCoords))
-           ; Outer loop has nothing to connect to
-           (maxPtIdx (difference (length refPts) 2))
-           (curSide (if (evenp (length refPts)) 'top 'bottom))
-           (gih qub:::getInterconnectsHelper))
-    ; Adding m1 connection to innermost loop
-    (pushf (gbp) (car pts))
+           ; Outer loop connects to nothing
+           (maxPtIdx (difference (length points) 2))
+           (side (if (evenp (length points)) 'top 'bottom)))
+    (pushf (gbp) (car pts)) ; Adding m1 connection to innermost loop
     (for i 0 maxPtIdx
-      (letseq ((interconnects (gih curSide refPts i width))
-               (topInterconnects (car interconnects))
-               (bottomInterconnects (cadr interconnects)))
-         (pushf topInterconnects (car pts))
-         (pushf bottomInterconnects (cadr pts)))
-      (setq curSide (qub::invertSide curSide)))
+      (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
+         (pushf (car interconnects) (car pts))
+         (pushf (cadr interconnects) (cadr pts)))
+      (setq side (qub::invertSide side)))
     pts))
     
 ; Arranges the list so the upper point is the car
 ; The order of the points is unchanged
-(defun qub::sortTopPoint (pts)
-  (let ((firstPoint (car pts))
-        (lastPoint (car (last pts))))
-    (if (greaterp (yCoord firstPoint) (yCoord lastPoint))
-        pts
-        (reverse pts))))
+(defun qub::sortTopPoint (points)
+  (if (qub::higherp (car points) (qub::lastAtom points))
+      points
+      (reverse points)))
   
 (defun qub::sortBottomPoint (pts)
   (reverse (qub::sortTopPoint pts)))
@@ -90,26 +83,24 @@
   (letseq ((bridgePoint (if (evenp turns)
                             'bottom
                             'top))
-           (spiralCoords nil)
            (maxPointIdx (sub1 nsides))
            (maxHalfPointIdx (sub1 (quotient nsides 2)))
            (gbp (lambda () 
                   (qub::getBridgePoints getPoint 
                                         bridgePoint 
                                         maxPointIdx 
-                                        maxHalfPointIdx))))
+                                        maxHalfPointIdx)))
+           (spiralCoords nil))
     (for turnIdx 0 maxTurnIdx
       (let ((leftSide nil)
             (rightSide nil))
         (for pIdx 0 maxHalfPointIdx
           (pushf (getPoint turnIdx pIdx) leftSide)
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
-        ; Reversing the right side as we generated it in reverse
         (pushf (list leftSide (reverse rightSide)) spiralCoords)))
     ; Add the extra metal to reduce the gap between each half of the turns
-    (setq spiralCoords (mapcar (lambda (turn) (qub::addPorts turn ref width))
+    (setq spiralCoords (mapcar (lambda (trn) (qub::addPorts trn ref width))
                                spiralCoords))
-    ; Create the interconnects
     (let ((interconnects (qub::getInterconnects width spiralCoords gbp)))
       (list spiralCoords interconnects))))
   
