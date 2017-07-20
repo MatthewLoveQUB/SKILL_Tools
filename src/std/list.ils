@@ -19,3 +19,6 @@
           (pushf cur_val values)
           (setq cur_val (plus cur_val step)))
         (reverse values))))
+        
+(defun qub::pushEnd (val lst)
+  (pushf val (cdr (last lst))))

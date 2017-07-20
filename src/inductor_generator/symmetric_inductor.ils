@@ -20,8 +20,8 @@
       (pushf ltPort left)
       (pushf rtPort right)
       ; Adding ports on the other side
-      (pushf lbPort (cdr (last left)))
-      (pushf rbPort (cdr (last right)))
+      (qub::pushEnd lbPort left)
+      (qub::pushEnd rbPort right)
       (list left right)))
       
 (defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
