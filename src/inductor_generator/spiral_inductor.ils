@@ -58,31 +58,3 @@
   (let ((rLst (reverse lst)))
     (rplaca rLst (qub::midPoint (car rLst) (cadr rLst)))
     (reverse rLst)))
-                      
-(defun qub::drawInductor (@key 
-                           (completeTurns 2)
-                           (additionalSegments 0)
-                           (width 10.0)
-                           (spacing 5.0)
-                           (apothem 50.0)
-                           (nsides 8)
-                           (metalLayer "M1")
-                           (rotation_anticlockwise 0.0)
-                           (ref 0.0:0.0))
-  (let ((points (qub::getSpiralPoints ?completeTurns completeTurns
-                                      ?additionalSegments additionalSegments
-                                      ?width width
-                                      ?spacing spacing
-                                      ?apothem apothem
-                                      ?nsides nsides
-                                      ?rotation_anticlockwise 
-                                        rotation_anticlockwise
-                                      ?ref ref))
-        (offset 0))
-    (leCreatePath (geGetEditCellView) 
-                  (list metalLayer) 
-                  points
-                  width
-                  "truncateExtend" 
-                  offset
-                  "center")))
