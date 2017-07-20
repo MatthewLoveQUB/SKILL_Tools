@@ -42,3 +42,8 @@
   (let ((dx (times dist (cos (qub::degToRad angle))))
         (dy (times dist (sin (qub::degToRad angle)))))
     (qub::movePoint pt dx:dy)))
+    
+(defun qub::getDist (a b)
+  (sqrt (plus 
+          (expt (difference (yCoord a) (yCoord b)) 2)
+          (expt (difference (xCoord a) (xCoord b)) 2))))

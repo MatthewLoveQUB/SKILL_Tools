@@ -42,7 +42,7 @@
       (drawPts topMetalBridges tml)
       (drawPts bottomMetalBridges bml))
 
-    ;(setq objects (leMergeShapes objects))
+    (setq objects (leMergeShapes objects))
       
     ; creating a fig group to organise the parts
     (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
