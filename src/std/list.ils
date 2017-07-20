@@ -25,3 +25,6 @@
   
 (defun qub::lastAtom (lst)
   (car (last lst)))
+  
+(defun qub::addListElems (a b)
+  (mapcar plus a b))

@@ -1,0 +1,23 @@
+(defun qub::topPoint (a b)
+  (if (greaterp (yCoord a) (yCoord b))
+      a
+      b))
+      
+(defun qub::bottomPoint (a b)
+  (if (lessp (yCoord a) (yCoord b))
+      a
+      b))
+      
+(defun qub::leftPoint (a b)
+  (if (lessp (xCoord a) (xCoord b))
+      a
+      b))
+
+(defun qub::rightPoint (a b)
+  (if (greaterp (xCoord a) (xCoord b))
+      a
+      b))
+      
+; translation should be a list of (hor_mv vert_mov)
+(defun qub::movePoint (point translation)
+  (qub::addListElems point translation))

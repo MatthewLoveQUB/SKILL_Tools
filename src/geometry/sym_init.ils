@@ -1,1 +1,6 @@
-; Creating symbols for namespace
+; point2d.ils
+(addToExportList '(qub:::topPoint
+                   qub:::bottomPoint
+                   qub:::leftPoint
+                   qub:::rightPoint
+                   qub:::movePoint))

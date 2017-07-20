@@ -19,4 +19,5 @@
   (modload "std/init.ils")
   (modload "qtest/init.ils")
   (modload "pcell/init.ils")
+  (modload "geometry/init.ils")
   (modload "inductor_generator/init.ils"))

@@ -27,7 +27,8 @@
                    qub:::flattenList
                    qub:::range
                    qub:::pushEnd
-                   qub:::lastAtom))
+                   qub:::lastAtom
+                   qub:::addListElems))
 
 ; math.ils
 (addToExportList '(qub:::m
