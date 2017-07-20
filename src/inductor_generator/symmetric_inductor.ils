@@ -42,7 +42,8 @@
            (outerLeftPts (f (car outerTurnPts)))
            (outerRightPts (f (cadr outerTurnPts)))
            (getLst (lambda (a b)
-                     (list (qub::movePoint (car a) (minus width):0)
+                     (list 
+                           (qub::movePoint (car a) (minus width):0)
                            (car a) 
                            (car b)
                            (qub::movePoint (car b) width:0))))
