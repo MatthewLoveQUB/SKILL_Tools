@@ -7,9 +7,8 @@
            (rightTop (car right))
            (leftBottom (qub::lastAtom left))
            (rightBottom (qub::lastAtom right))
-           (mp qub::midPoint)
            (getPort (lambda (a b f)
-                      (letseq ((pt (mp a b ?distAlong 0.5))
+                      (letseq ((pt (qub::midPoint a b ?distAlong 0.5))
                                (x (xCoord pt))
                                (y (yCoord pt)))
                         (list (f x width) y))))                      
@@ -19,7 +18,6 @@
            (rbPort (getPort leftBottom rightBottom plus)))
       (pushf ltPort left)
       (pushf rtPort right)
-      ; Adding ports on the other side
       (qub::pushEnd lbPort left)
       (qub::pushEnd rbPort right)
       (list left right)))
