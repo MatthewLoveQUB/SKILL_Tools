@@ -20,3 +20,6 @@
     (quotient 
       value 
       180.0)))
+      
+(defun qub::radToDeg (value)
+  (times 180.0 (quotient value qub::m.PI)))

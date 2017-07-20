@@ -31,3 +31,9 @@
   (range
     (plus (times p1Scalar (xCoord p1)) (times p2Scalar (xCoord p2)))
     (plus (times p1Scalar (yCoord p1)) (times p2Scalar (yCoord p2))))))
+    
+(defun qub::getAngleToPt (refPt targetPt)
+  (letseq ((d (mapcar difference targetPt refPt))
+           (dx (xCoord d))
+           (dy (yCoord d)))
+    (qub::radToDeg (atan2 dy dx))))

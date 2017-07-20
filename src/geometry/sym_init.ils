@@ -6,11 +6,13 @@
                    qub:::movePoint
                    qub:::higherp
                    qub:::getPtAngle
-                   qub:::midPoint))
+                   qub:::midPoint
+                   qub:::getAngleToPt))
                    
 ; trig.ils
 (addToExportList '(qub:::degToRad
-                   qub:::fixAngle))
+                   qub:::fixAngle
+                   qub:::radToDeg))
                    
 ; shapes.ils
 (addToExportList '(qub:::apothemToCircumradius
