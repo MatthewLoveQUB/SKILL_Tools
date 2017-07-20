@@ -11,14 +11,23 @@
                               (qub::leftPoint right newRight)))))
            (topPorts (getPort (car left) (car right)))
            (bottomPorts (getPort (qub::lastAtom left) (qub::lastAtom right))))
-      (pushf (car topPorts) left)
-      (pushf (cadr topPorts) right)
-      (qub::pushEnd (car bottomPorts) left)
-      (qub::pushEnd (cadr bottomPorts) right)
+           
+      (unless (equal (car topPorts) (car left))
+        (pushf (car topPorts) left))
+        
+      (unless (equal (cadr topPorts) (car right))
+        (pushf (cadr topPorts) right))
+      
+      (unless (equal (car bottomPorts) (qub::lastAtom left))
+        (qub::pushEnd (car bottomPorts) left))
+      
+      (unless (equal (cadr bottomPorts) (qub::lastAtom right))
+        (qub::pushEnd (cadr bottomPorts) right))
+        
       (list left right)))
       
 (defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
-  (if (eq bridgePoint 'top)
+  (if (eq bridgePoint 'bottom)
       (list (getPoint 0 1)
             (getPoint 0 0)
             (getPoint 0 maxPointIdx)
@@ -29,7 +38,9 @@
             (getPoint 0 (plus 2 maxHalfPointIdx)))))
 
 (defun qub::invertSide (side)
-  (if (eq side 'top) 'bottom 'top))
+  (if (eq side 'top) 
+      'bottom 
+      'top))
             
 (defun qub:::getInterconnectsHelper (curSide refPts i width)
   (letseq ((f (if (eq curSide 'top) 
@@ -42,11 +53,10 @@
            (outerLeftPts (f (car outerTurnPts)))
            (outerRightPts (f (cadr outerTurnPts)))
            (getLst (lambda (a b)
-                     (list 
-                           (qub::movePoint (car a) (minus width):0)
+                     (list (qub::moveAtAngle (car a) width (qub::getAngleToPt (car a) (cadr a)))
                            (car a) 
                            (car b)
-                           (qub::movePoint (car b) width:0))))
+                           (qub::moveAtAngle (car b) width (qub::getAngleToPt (car b) (cadr b))))))
            (il2or (getLst innerLeftPts outerRightPts))
            (ol2ir (getLst outerLeftPts innerRightPts)))
     (if (eq curSide 'top)
@@ -54,11 +64,13 @@
         (list il2or ol2ir))))
 
 ; gbp = getbridgepoint            
-(defun qub::getInterconnects (width points gbp)
+(defun qub::getInterconnects (width points gbp turns) 
   (letseq ((pts (list nil nil))
            ; Outer loop connects to nothing
            (maxPtIdx (difference (length points) 2))
-           (side (if (evenp (length points)) 'top 'bottom)))
+           (side (if (evenp turns) 
+                     'top 
+                     'bottom)))
     (pushf (gbp) (car pts)) ; Adding m1 connection to innermost loop
     (for i 0 maxPtIdx
       (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
@@ -79,14 +91,11 @@
       
 ; Gets coordinates for a multi turn spiral inductor
 (defun qub::createSymInd (getPoint maxTurnIdx nsides turns width ref)
-  (letseq ((bridgePoint (if (evenp turns)
-                            'bottom
-                            'top))
-           (maxPointIdx (sub1 nsides))
+  (letseq ((maxPointIdx (sub1 nsides))
            (maxHalfPointIdx (sub1 (quotient nsides 2)))
            (gbp (lambda () 
                   (qub::getBridgePoints getPoint 
-                                        bridgePoint 
+                                        (if (evenp turns) 'top 'bottom) 
                                         maxPointIdx 
                                         maxHalfPointIdx)))
            (spiralCoords nil))
@@ -97,10 +106,15 @@
           (pushf (getPoint turnIdx pIdx) leftSide)
           (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
         (pushf (list leftSide (reverse rightSide)) spiralCoords)))
+        
+    ; fixing the order of the spiral coords
+    (setq spiralCoords (reverse spiralCoords))
+        
     ; Add the extra metal to reduce the gap between each half of the turns
     (setq spiralCoords (mapcar (lambda (trn) (qub::addPorts trn ref width))
                                spiralCoords))
-    (let ((interconnects (qub::getInterconnects width spiralCoords gbp)))
+                               
+    (let ((interconnects (qub::getInterconnects width spiralCoords gbp turns)))
       (list spiralCoords interconnects))))
   
 (defun qub::getSymmetricSpiralPoints (@key 
@@ -129,5 +143,6 @@
                                           ?rotation_anticlockwise 
                                             rotation_anticlockwise
                                           ?ref ref))))
+                                          
         ; Conditional to call the appropriate function
         (qub::createSymInd getPoint maxTurnIdx nsides turns width ref)))
