@@ -44,8 +44,7 @@
 
     ; creating a fig group to organise the parts
     (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
-      (foreach o objects
-        (dbAddFigToFigGroup fg o))
+      (mapc (lambda (obj) (dbAddFigToFigGroup fg obj)) objects)
       fg)))
       
 (defmacro qub::createSymmInductorPCell (library)
