@@ -39,6 +39,6 @@
     (qub::radToDeg (atan2 dy dx))))
     
 (defun qub::moveAtAngle (pt dist angle)
-  (let ((dx (times dist (sin (qub::degToRad angle))))
-        (dy (times dist (cos (qub::degToRad angle)))))
+  (let ((dx (times dist (cos (qub::degToRad angle))))
+        (dy (times dist (sin (qub::degToRad angle)))))
     (qub::movePoint pt dx:dy)))
