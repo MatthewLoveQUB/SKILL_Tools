@@ -1,0 +1,23 @@
+(defun qub:::getSpectreSimFiles ()
+  (letseq ((spectreObj (asiGetTool 'spectre))
+           (rawFiles (asiGetEnvOptionVal spectreObj 'allDefinitionFiles)))
+    (mapcar cadr rawFiles)))
+
+(defun qub:::getModelFiles ()
+  (letseq ((spectreObj (asiGetTool 'spectre))
+           (rawFiles (asiGetEnvOptionVal spectreObj 'modelFiles)))
+    (setof x rawFiles (or (equal "top_tt" (cadr x))
+                          (equal "pre_simu" (cadr x))))))
+           
+(addToExportList '(qub:::simPreamble))           
+(defun qub::simPreamble (lib schem)
+  (simulator 'spectre)
+  ; Turn off Spectre logging to speed up simulation time
+  (envSetVal "asimenv.misc" "includeSimLogInOCEAN" 'boolean nil)
+  (design lib schem "schematic")
+  ; Look for the preloaded model and definition files
+  (apply modelFile (qub:::getModelFiles))
+  (apply definitionFile (qub:::getSpectreSimFiles))
+  (createNetlist ?recreateAll t)
+  (resultsDir (sprintf nil "/user/p_outpa/mlove/%s/%s/" lib schem))
+  t)
