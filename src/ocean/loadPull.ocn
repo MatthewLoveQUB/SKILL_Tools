@@ -11,62 +11,63 @@ fetLength = 180n
 fetNFingers = 14
 fetMult = 1
 
-(qub::simPreamble "mlove_driver" "loadPull_1p8")
+(when t
+  (qub::simPreamble "mlove_driver" "loadPull_1p8")
 
-lpSweep = '(quote (nil theta (nil step "20"
+  lpSweep = '(quote (nil theta (nil step "20"
+                                    stepTypeLog "Points Per Decade" 
+                                    stepTypeLin "Step Size" 
+                                    incrType "Linear" 
+                                    stop "160" 
+                                    start "-180"
+                                    rangeType "Start-Stop") 
+                         mag (nil step "0.11"
                                   stepTypeLog "Points Per Decade" 
                                   stepTypeLin "Step Size" 
                                   incrType "Linear" 
-                                  stop "160" 
-                                  start "-180"
-                                  rangeType "Start-Stop") 
-                       mag (nil step "0.11"
-                                stepTypeLog "Points Per Decade" 
-                                stepTypeLin "Step Size" 
-                                incrType "Linear" 
-                                stop "0.991" 
-                                start "0.001"
-                                rangeType "Start-Stop")))
+                                  stop "0.991" 
+                                  start "0.001"
+                                  rangeType "Start-Stop")))
 
-(analysis 'pss 
-          ?engine "Harmonic Balance"  
-          ?flexbalance "yes"  
-          ?oversamplefactor ""  
-          ?fund (sprintf nil "%n" fund)
-          ?harms "30"  
-          ?errpreset "conservative"  
-          ?loadinst "/PORT1"  
-          ?loadinst_info "(quote (nil instType port))"  
-          ?sweepvar_info (sprintf nil "%A" lpSweep)
-          ?rho "mag"    
-          ?phi "theta"  
-          ?z0 "50"  
-          ?step ""  
-          ?write ""  
-          ?writefinal ""  
-          ?swapfile ""  
-          ?checkpss ""  
-          ?save "all"  
-          ?backtracking "")
-    
-(desVar	"mag" 0)
-(desVar	"theta" 0)
-(envOption 'analysisOrder  list("pss"))
+  (analysis 'pss 
+            ?engine "Harmonic Balance"  
+            ?flexbalance "yes"  
+            ?oversamplefactor ""  
+            ?fund (sprintf nil "%n" fund)
+            ?harms "30"  
+            ?errpreset "conservative"  
+            ?loadinst "/PORT1"  
+            ?loadinst_info "(quote (nil instType port))"  
+            ?sweepvar_info (sprintf nil "%A" lpSweep)
+            ?rho "mag"    
+            ?phi "theta"  
+            ?z0 "50"  
+            ?step ""  
+            ?write ""  
+            ?writefinal ""  
+            ?swapfile ""  
+            ?checkpss ""  
+            ?save "all"  
+            ?backtracking "")
+      
+  (desVar	"mag" 0)
+  (desVar	"theta" 0)
+  (envOption 'analysisOrder  list("pss"))
 
-(saveOption 'currents "all")
-(saveOption 'pwr "all")
-(saveOption 'save "all")
-(temp 27) 
+  (saveOption 'currents "all")
+  (saveOption 'pwr "all")
+  (saveOption 'save "all")
+  (temp 27) 
 
-(desVar "VGS" vgs)
-(desVar "fetWidth" fetWidth)
-(desVar "fetLength" fetLength)
-(desVar "fetMult" fetMult)
-(desVar "fetNFingers" fetNFingers)
-(desVar "inputPower" inputPower)
-(desVar "fund" fund)
+  (desVar "VGS" vgs)
+  (desVar "fetWidth" fetWidth)
+  (desVar "fetLength" fetLength)
+  (desVar "fetMult" fetMult)
+  (desVar "fetNFingers" fetNFingers)
+  (desVar "inputPower" inputPower)
+  (desVar "fund" fund)
 
-(run)
+  (run))
 
 (qub::createSmith)
 
@@ -111,4 +112,4 @@ powerContours = (cPwrContour outCurrent
                              ?closeCont t 
                              ?modifier "dBm")
 
-(plot powerContours ?expr '("Pout"))
+(plot powerContours ?expr '("Po"))
