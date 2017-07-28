@@ -9,6 +9,21 @@ fetMult = 1
 
 (qub::simPreamble "mlove_driver" "loadPull_1p8")
 
+lpSweep = '(quote (nil theta (nil step "20"
+                                  stepTypeLog "Points Per Decade" 
+                                  stepTypeLin "Step Size" 
+                                  incrType "Linear" 
+                                  stop "160" 
+                                  start "-180"
+                                  rangeType "Start-Stop") 
+                       mag (nil step "0.11"
+                                stepTypeLog "Points Per Decade" 
+                                stepTypeLin "Step Size" 
+                                incrType "Linear" 
+                                stop "0.991" 
+                                start "0.001"
+                                rangeType "Start-Stop")))
+
 (analysis 'pss 
           ?engine "Harmonic Balance"  
           ?flexbalance "yes"  
@@ -18,7 +33,7 @@ fetMult = 1
           ?errpreset "conservative"  
           ?loadinst "/PORT1"  
           ?loadinst_info "(quote (nil instType port))"  
-          ?sweepvar_info "(quote (nil theta (nil step \"20\" stepTypeLog \"Points Per Decade\" stepTypeLin \"Step Size\" incrType \"Linear\" stop \"360\" start \"0\" rangeType \"Start-Stop\") mag (nil step \"0.11\" stepTypeLog \"Points Per Decade\" stepTypeLin \"Step Size\" incrType \"Linear\" stop \"0.991\" start \"0.001\" rangeType \"Start-Stop\")))"
+          ?sweepvar_info (sprintf nil "%A" lpSweep)
           ?rho "mag"    
           ?phi "theta"  
           ?z0 "50"  
