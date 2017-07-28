@@ -77,18 +77,17 @@ title = (sprintf nil
 
 outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
 outVoltage = (v "/out" ?result "pss_fd") 
+outPower = (spectralPower outCurrent outVoltage) 
 
 inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
 inVoltage = (v "/in" ?result "pss_fd")
+inPower = (spectralPower inCurrent inVoltage)
 
 dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
 dcVoltage = (v "/net5" ?result "pss_fd")
-
-rfPower = (harmonic (plus (spectralPower outCurrent outVoltage) 
-                          (spectralPower inCurrent inVoltage)) 
-                    1)
-                    
 dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+
+rfPower = (harmonic (plus outPower inPower) 1)
 
 PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
                      ?maxValue 100 
@@ -108,4 +107,4 @@ powerContours = (cPwrContour outCurrent
                              ?closeCont t 
                              ?modifier "dBm")
 
-(plot powerContours ?expr '("Power"))
+(plot powerContours ?expr '("Pout"))
