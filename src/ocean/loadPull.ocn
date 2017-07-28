@@ -28,7 +28,7 @@ lpSweep = '(quote (nil theta (nil step "20"
           ?engine "Harmonic Balance"  
           ?flexbalance "yes"  
           ?oversamplefactor ""  
-          ?fund "5G"  
+          ?fund (sprintf nil "%n" fund)
           ?harms "30"  
           ?errpreset "conservative"  
           ?loadinst "/PORT1"  
