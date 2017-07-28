@@ -1,3 +1,7 @@
+;;;; This is a reference file for running load pull simulations
+;;;; It should be copied and modified to work with your current design
+
+
 ; Design variables
 inputPower = 10
 fund = 5G
