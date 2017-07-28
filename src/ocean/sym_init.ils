@@ -1,2 +1,3 @@
 ; oceanHelpers.ils
-(addToExportList '(qub:::simPreamble))
+(addToExportList '(qub:::simPreamble
+                   qub:::createSmith))

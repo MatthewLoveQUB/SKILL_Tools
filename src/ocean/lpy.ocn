@@ -1,0 +1,96 @@
+; Design variables
+inputPower = 10
+fund = 5G
+vgs = 700m
+fetWidth = 8u
+fetLength = 180n
+fetNFingers = 14
+fetMult = 1
+
+(qub::simPreamble "mlove_driver" "loadPull_1p8")
+
+(analysis 'pss 
+          ?engine "Harmonic Balance"  
+          ?flexbalance "yes"  
+          ?oversamplefactor ""  
+          ?fund "5G"  
+          ?harms "30"  
+          ?errpreset "conservative"  
+          ?loadinst "/PORT1"  
+          ?loadinst_info "(quote (nil instType port))"  
+          ?sweepvar_info "(quote (nil theta (nil step \"20\" stepTypeLog \"Points Per Decade\" stepTypeLin \"Step Size\" incrType \"Linear\" stop \"360\" start \"0\" rangeType \"Start-Stop\") mag (nil step \"0.11\" stepTypeLog \"Points Per Decade\" stepTypeLin \"Step Size\" incrType \"Linear\" stop \"0.991\" start \"0.001\" rangeType \"Start-Stop\")))"
+          ?rho "mag"    
+          ?phi "theta"  
+          ?z0 "50"  
+          ?step ""  
+          ?write ""  
+          ?writefinal ""  
+          ?swapfile ""  
+          ?checkpss ""  
+          ?save "all"  
+          ?backtracking "")
+    
+(desVar	"mag" 0)
+(desVar	"theta" 0)
+(envOption 'analysisOrder  list("pss"))
+
+(saveOption 'currents "all")
+(saveOption 'pwr "all")
+(saveOption 'save "all")
+(temp 27) 
+
+(desVar "VGS" vgs)
+(desVar "fetWidth" fetWidth)
+(desVar "fetLength" fetLength)
+(desVar "fetMult" fetMult)
+(desVar "fetNFingers" fetNFingers)
+(desVar "inputPower" inputPower)
+(desVar "fund" fund)
+
+(run)
+
+(qub::createSmith)
+
+title = (sprintf nil 
+                 "VG%0.2f W%s L%s F%d M%d" 
+                 vgs 
+                 (aelSuffixNotation fetWidth) 
+                 (aelSuffixNotation fetLength) 
+                 fetNFingers 
+                 fetMult)
+(addTitle title)
+
+outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
+outVoltage = (v "/out" ?result "pss_fd") 
+
+inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
+inVoltage = (v "/in" ?result "pss_fd")
+
+dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
+dcVoltage = (v "/net5" ?result "pss_fd")
+
+rfPower = (harmonic (plus (spectralPower outCurrent outVoltage) 
+                          (spectralPower inCurrent inVoltage)) 
+                    1)
+                    
+dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+
+PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
+                     ?maxValue 100 
+                     ?minValue 10
+                     ?numCont 9 
+                     ?closeCont t)
+
+(plot PAE ?expr '("PAE"))
+
+powerContours = (cPwrContour outCurrent
+                             outVoltage
+                             '1 
+                             ?maxPower 20.0
+                             ?minPower 0
+                             ?refImp 50.0 
+                             ?numCont 9 
+                             ?closeCont t 
+                             ?modifier "dBm")
+
+(plot powerContours ?expr '("Power"))
