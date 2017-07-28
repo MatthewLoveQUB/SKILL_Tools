@@ -94,8 +94,8 @@ dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
 rfPower = (harmonic (plus outPower inPower) 1)
 
 PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
-                     ?maxValue 100 
-                     ?minValue 10
+                     ;?maxValue 100 
+                     ;?minValue 10
                      ?numCont 9 
                      ?closeCont t)
 
@@ -104,8 +104,8 @@ PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
 powerContours = (cPwrContour outCurrent
                              outVoltage
                              '1 
-                             ?maxPower 20.0
-                             ?minPower 0
+                             ;?maxPower 
+                             ;?minPower 
                              ?refImp 50.0 
                              ?numCont 9 
                              ?closeCont t 
