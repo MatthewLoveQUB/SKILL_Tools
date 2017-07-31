@@ -1,0 +1,49 @@
+(qub::simPreamble "mlove_driver" "amp")
+
+(analysis 'pss 
+          ?engine "Harmonic Balance"  
+          ?flexbalance "yes"  
+          ?oversamplefactor ""  
+          ?fund "5G"  
+          ?harms "30"  
+          ?errpreset "conservative"  
+          ?dev "/PORT0"
+          ?param "dbm"  
+          ?start "-20"  
+          ?stop "15"  
+          ?sweepStep "1"  
+          ?step ""  
+          ?write ""  
+          ?writefinal ""  
+          ?swapfile ""  
+          ?checkpss ""  
+          ?backtracking "")
+(envOption 'analysisOrder (list "pss"))
+(temp 27)
+(run)
+
+outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
+outVoltage = (v "/out" ?result "pss_fd")
+outPower = (spectralPower outCurrent outVoltage)
+
+inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
+inVoltage = (v "/in" ?result "pss_fd")
+inPower = (spectralPower inCurrent inVoltage)
+
+rfPower = (harmonic (plus outPower inPower) 1)
+
+dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
+dcVoltage = (v "/supply" ?result "pss_fd")
+dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+
+PAE = (times 100.0 (quotient rfPower dcPower))
+(plot PAE ?expr '("PAE"))
+
+ampGain = (db10 (quotient (pvi 'pss "/out" 0 "/PORT1/PLUS" 0 1) 
+                          (minus (pvi 'pss "/in" 0 "/PORT0/PLUS" 0 1))))
+
+(plot ampGain ?expr '("Gain"))
+
+pout = (dbm (pvr 'pss "/out" "/gnd!" 50.0 1))
+
+(plot pout ?expr '("Power"))
