@@ -6,7 +6,7 @@
    (nsides @initform (qub::defineParam "int" 8))
    (metalStack @initform (qub::defineParam "string" "M1 M2"))))
 
-(defmethod qub::draw ((device symmInductorPCell))
+(defmethod qub::draw ((device qub::symmInductorPCell))
   (letseq ((turns (qub::getParamValue device 'turns))
            (w (qub::getParamValue device 'width))
            (s (qub::getParamValue device 'spacing))
@@ -58,5 +58,5 @@
      (metalStack "string" "M1 M2"))
     (let ((pcell (makeInstance 'qub::symmInductorPCell)))
       (qub::setPcellParams pcell pcCellView)
-      (draw pcell))))
+      (qub::draw pcell))))
       

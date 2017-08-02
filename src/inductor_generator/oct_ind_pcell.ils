@@ -15,4 +15,4 @@
      (metalLayer "string" "M1"))
     (let ((pcell (makeInstance 'qub::octInductorPCell)))
       (qub::setPcellParams pcell pcCellView)
-      (draw pcell))))
+      (qub::draw pcell))))

@@ -26,5 +26,5 @@
      (metalStack "string" "M1 M2"))
     (let ((pcell (makeInstance 'qub::transformerB)))
       (qub::setPcellParams pcell pcCellView)
-      (draw pcell))))
+      (qub::draw pcell))))
       
