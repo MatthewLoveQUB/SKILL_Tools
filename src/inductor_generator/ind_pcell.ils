@@ -2,10 +2,9 @@
   ((completeTurns @initform (qub::defineParam "int" 2))
    (additionalSegments @initform (qub::defineParam "int" 0))
    (width @initform (qub::defineParam "float" 10.0))
-   (spacing @initform (qub::defineParam "float" 5.0))
+   (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 50.0))
    (nsides @initform (qub::defineParam "int" 8))
-   (rotation_anticlockwise @initform (qub::defineParam "float" 0.0))
    (metalLayer @initform (qub::defineParam "string" "M1"))))
 
 (defmethod qub::draw ((device qub::inductorPCell))
