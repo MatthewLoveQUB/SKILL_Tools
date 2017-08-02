@@ -120,15 +120,42 @@
 (defun qub::sortBottomPoint (pts)
   (reverse (qub::sortTopPoint pts)))
       
-; Gets coordinates for a multi turn spiral inductor
-(defun qub::createSymInd (getPoint maxTurnIdx nsides turns width ref)
-  (letseq ((maxPointIdx (sub1 nsides))
+(defun qub::getSymmetricSpiralPoints (@key 
+                                      (turns 2)
+                                      (width 10.0)
+                                      (spacing 5.0)
+                                      (apothem 50.0)
+                                      (nsides 8)
+                                      (rotation_anticlockwise 0.0)
+                                      (ref 0.0:0.0))
+  (letseq (; format of spiralCoords:
+           ; spiralCoords = (turn0 turn1 turn2 ... turnN)
+           ; turnN = (left right)
+           ; right = (point0 point1 ... pointN)
+           (atc qub::apothemToCircumradius)
+           (getPoint 
+            (lambda (polyIdx pointIdx)
+              (qub::getPolyPoint 
+                polyIdx 
+                pointIdx 
+                nsides 
+                (atc (plus apothem (width / 2.0)) nsides) 
+                spacing 
+                width
+                ?rotation_anticlockwise rotation_anticlockwise
+                ?ref ref)))
+           (maxPointIdx (sub1 nsides))
+           (maxTurnIdx (sub1 turns))
            (maxHalfPointIdx (sub1 (quotient nsides 2)))
-           (gbp (lambda () 
-                  (qub::getBridgePoints getPoint 
-                                        (if (evenp turns) 'top 'bottom) 
-                                        maxPointIdx 
-                                        maxHalfPointIdx)))
+           (gbp 
+            (lambda () 
+              (qub::getBridgePoints 
+                getPoint 
+                (if (evenp turns) 
+                    'top 
+                    'bottom) 
+                maxPointIdx 
+                maxHalfPointIdx)))
            (spiralCoords nil))
     (for turnIdx 0 maxTurnIdx
       (let ((leftSide nil)
@@ -148,33 +175,3 @@
                                
     (let ((interconnects (qub::getInterconnects width spiralCoords gbp turns)))
       (list spiralCoords interconnects))))
-  
-(defun qub::getSymmetricSpiralPoints (@key 
-                                      (turns 2)
-                                      (width 10.0)
-                                      (spacing 5.0)
-                                      (apothem 50.0)
-                                      (nsides 8)
-                                      (rotation_anticlockwise 0.0)
-                                      (ref 0.0:0.0))
-  (letseq (; format of spiralCoords:
-           ; spiralCoords = (turn0 turn1 turn2 ... turnN)
-           ; turnN = (left right)
-           ; right = (point0 point1 ... pointN)
-           (maxTurnIdx (sub1 turns))
-           (maxPointIdx (sub1 nsides))
-           (atc qub::apothemToCircumradius)
-           (circumradius (atc (plus apothem (quotient width 2.0)) nsides))
-           (getPoint (lambda (polyIdx pointIdx)
-                       (qub::getPolyPoint polyIdx 
-                                          pointIdx 
-                                          nsides 
-                                          circumradius 
-                                          spacing 
-                                          width
-                                          ?rotation_anticlockwise 
-                                            rotation_anticlockwise
-                                          ?ref ref))))
-                                          
-        ; Conditional to call the appropriate function
-        (qub::createSymInd getPoint maxTurnIdx nsides turns width ref)))
