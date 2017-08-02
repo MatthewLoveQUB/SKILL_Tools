@@ -1,63 +1,63 @@
-;;;; This is a reference file for running load pull simulations
-;;;; It should be copied and modified to work with your current design
-
-
 ; Design variables
-inputPower = 10
+inputPower = 7
 fund = 5G
-vgs = 700m
-fetWidth = 8u
-fetLength = 180n
-fetNFingers = 14
-fetMult = 1
+vgs = 0.450
+fetWidth = 3u
+fetLength = 30n
+fetNFingers = 32
+fetMult = 10
+VDD = 0.9
 
-(when t
-  (qub::simPreamble "mlove_driver" "loadPull_1p8")
+; Setting up test
+(qub::simPreamble "mlove_test" "loadPull")
 
-  lpSweep = '(quote (nil theta (nil step "20"
-                                    stepTypeLog "Points Per Decade" 
-                                    stepTypeLin "Step Size" 
-                                    incrType "Linear" 
-                                    stop "160" 
-                                    start "-180"
-                                    rangeType "Start-Stop") 
-                         mag (nil step "0.11"
+lpSweep = '(quote (nil theta (nil step "20"
                                   stepTypeLog "Points Per Decade" 
                                   stepTypeLin "Step Size" 
                                   incrType "Linear" 
-                                  stop "0.991" 
-                                  start "0.001"
-                                  rangeType "Start-Stop")))
+                                  stop "360" 
+                                  start "0"
+                                  rangeType "Start-Stop") 
+                       mag (nil step "0.11"
+                                stepTypeLog "Points Per Decade" 
+                                stepTypeLin "Step Size" 
+                                incrType "Linear" 
+                                stop "0.991" 
+                                start "0.001"
+                                rangeType "Start-Stop")))
 
-  (analysis 'pss 
-            ?engine "Harmonic Balance"  
-            ?flexbalance "yes"  
-            ?oversamplefactor ""  
-            ?fund (sprintf nil "%n" fund)
-            ?harms "30"  
-            ?errpreset "conservative"  
-            ?loadinst "/PORT1"  
-            ?loadinst_info "(quote (nil instType port))"  
-            ?sweepvar_info (sprintf nil "%A" lpSweep)
-            ?rho "mag"    
-            ?phi "theta"  
-            ?z0 "50"  
-            ?step ""  
-            ?write ""  
-            ?writefinal ""  
-            ?swapfile ""  
-            ?checkpss ""  
-            ?save "all"  
-            ?backtracking "")
-      
-  (desVar	"mag" 0)
-  (desVar	"theta" 0)
-  (envOption 'analysisOrder  list("pss"))
+(analysis 'pss 
+          ?engine "Harmonic Balance"  
+          ?flexbalance "yes"  
+          ?oversamplefactor ""  
+          ?fund (sprintf nil "%n" fund)
+          ?harms "30"  
+          ?errpreset "conservative"  
+          ?loadinst "/PORT1"  
+          ?loadinst_info "(quote (nil instType port))"  
+          ?sweepvar_info (sprintf nil "%A" lpSweep)
+          ?rho "mag"    
+          ?phi "theta"  
+          ?z0 "50"  
+          ?step ""  
+          ?write ""  
+          ?writefinal ""  
+          ?swapfile ""  
+          ?checkpss ""  
+          ?save "all"  
+          ?backtracking "")
+    
+(desVar	"mag" 0)
+(desVar	"theta" 0)
+(envOption 'analysisOrder  list("pss"))
 
-  (saveOption 'currents "all")
-  (saveOption 'pwr "all")
-  (saveOption 'save "all")
-  (temp 27) 
+(saveOption 'currents "all")
+(saveOption 'pwr "all")
+(saveOption 'save "all")
+(temp 27) 
+
+(foreach loopVar (qub::range ?start 0 ?stop 1 ?step 1)
+  VDD = 0.9 + (loopVar * 0.9)
 
   (desVar "VGS" vgs)
   (desVar "fetWidth" fetWidth)
@@ -66,50 +66,52 @@ fetMult = 1
   (desVar "fetNFingers" fetNFingers)
   (desVar "inputPower" inputPower)
   (desVar "fund" fund)
+  (desVar "VDD" VDD)
+  
+  (run)
 
-  (run))
+  (qub::createSmith)
 
-(qub::createSmith)
+  title = (sprintf nil 
+                   "VDD%0.1f Pin%d VG%0.2f W%s L%s F%d M%d"
+                   VDD
+                   inputPower
+                   vgs 
+                   (aelSuffixNotation fetWidth) 
+                   (aelSuffixNotation fetLength) 
+                   fetNFingers 
+                   fetMult)
+  (addTitle title)
 
-title = (sprintf nil 
-                 "VG%0.2f W%s L%s F%d M%d" 
-                 vgs 
-                 (aelSuffixNotation fetWidth) 
-                 (aelSuffixNotation fetLength) 
-                 fetNFingers 
-                 fetMult)
-(addTitle title)
+  outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
+  outVoltage = (v "/out" ?result "pss_fd") 
+  outPower = (spectralPower outCurrent outVoltage) 
 
-outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
-outVoltage = (v "/out" ?result "pss_fd") 
-outPower = (spectralPower outCurrent outVoltage) 
+  inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
+  inVoltage = (v "/in" ?result "pss_fd")
+  inPower = (spectralPower inCurrent inVoltage)
 
-inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
-inVoltage = (v "/in" ?result "pss_fd")
-inPower = (spectralPower inCurrent inVoltage)
+  dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
+  dcVoltage = (v "/supply" ?result "pss_fd")
+  dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
 
-dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
-dcVoltage = (v "/net5" ?result "pss_fd")
-dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+  rfPower = (harmonic (plus outPower inPower) 1)
 
-rfPower = (harmonic (plus outPower inPower) 1)
+  PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
+                       ?maxValue 100 
+                       ?minValue 40
+                       ?numCont 9 
+                       ?closeCont nil)
 
-PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
-                     ;?maxValue 100 
-                     ;?minValue 10
-                     ?numCont 9 
-                     ?closeCont t)
+  (plot PAE ?expr '("PAE"))
 
-(plot PAE ?expr '("PAE"))
+  powerContours = (cPwrContour outCurrent
+                               outVoltage
+                               '1 
+                               ?refImp 50.0 
+                               ?numCont 9
+                               ?minPower 10.0
+                               ?closeCont nil
+                               ?modifier "dBm")
 
-powerContours = (cPwrContour outCurrent
-                             outVoltage
-                             '1 
-                             ;?maxPower 
-                             ;?minPower 
-                             ?refImp 50.0 
-                             ?numCont 9 
-                             ?closeCont t 
-                             ?modifier "dBm")
-
-(plot powerContours ?expr '("Po"))
+  (plot powerContours ?expr '("Po")))
