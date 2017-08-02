@@ -9,41 +9,36 @@
                              (ref 0.0:0.0))
   (when (greaterp additionalSegments nsides)
         (error "More additional segments then sides"))
-  ; plus width is a hack needed because there is a big with left alignment
-  ; right alignment works but needs the apothem increased to compensate
-	(let ((circumradius (qub::apothemToCircumradius (plus 
-                                                    (quotient 
-                                                      width 
-                                                      2.0) 
-                                                    apothem) 
-                                                  nsides)))
-    (let ((points nil)
-          (getPoint (lambda (polyIdx pointIdx)
-                      (qub::getPolyPoint polyIdx 
-                                         pointIdx 
-                                         nsides 
-                                         circumradius 
-                                         spacing 
-                                         width
-                                         ?rotation_anticlockwise 
-                                           rotation_anticlockwise
-                                         ?ref ref)))
-          (maxTurnIdx (if (zerop additionalSegments)
+  (let ((a2c qub::apothemToCircumradius)
+        (fip qub:::findIntersectPoint)
+        (maxTurnIdx (if (zerop additionalSegments)
                           (sub1 completeTurns)
                           completeTurns))
-          (maxPointIdx (sub1 nsides)))
+        (maxPointIdx (sub1 nsides)))
+    (let ((points nil)
+          (getPoint 
+            (lambda (polyIdx pointIdx)
+              (qub::getPolyPoint 
+                polyIdx 
+                pointIdx 
+                nsides 
+                (a2c ((width / 2.0) + apothem) nsides)
+                spacing 
+                width
+                ?rotation_anticlockwise rotation_anticlockwise
+                ?ref ref)))
+          (getMaxPtIdx 
+            (lambda (trnIdx)
+              (if (and (equal trnIdx maxTurnIdx) additionalSegments)
+                  (sub1 additionalSegments) 
+                  maxPointIdx))))
       (for turnIdx 0 maxTurnIdx
         ; drawing each segment
-        (let ((maxPointIdx (if (and (equal turnIdx maxTurnIdx)
-                                    (not (zerop additionalSegments)))
-                               (sub1 additionalSegments) 
-                               maxPointIdx)))
-          (for pointIdx 0 maxPointIdx
-            (pushf (getPoint turnIdx pointIdx) points)))
+        (for pointIdx 0 (getMaxPtIdx turnIdx)
+            (pushf (getPoint turnIdx pointIdx) points))
         (unless (equal turnIdx maxTurnIdx)
           ; Adding the bridging point to the next spiral
-          (let ((fip qub:::findIntersectPoint)
-                (refa1 (getPoint turnIdx (sub1 maxPointIdx)))
+          (let ((refa1 (getPoint turnIdx (sub1 maxPointIdx)))
                 (refa2 (getPoint turnIdx maxPointIdx))
                 ; Get the first and last points of the next spiral
                 ; So we can find the collinear point that intersects them

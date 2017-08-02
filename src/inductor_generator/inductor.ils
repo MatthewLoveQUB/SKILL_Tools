@@ -47,18 +47,16 @@
                           @key 
                           (ref 0.0:0.0)
                           (rotation_anticlockwise 0.0))
-  (let ((dist (plus 
-                circumradius 
-                (times 
-                  polyIdx 
-                  (plus 
-                    (qub::apothemToCircumradius spacing nsides)
-                    (qub::apothemToCircumradius width nsides)))))
-        (angle (plus 
-		             (difference 90.0 (quotient (qub::internalAngle nsides) 2.0))
-                 rotation_anticlockwise
-                 (pointIdx * (qub::internalAngle nsides)))))
-    (qub::getPoint (qub::fixAngle angle) dist ?ref ref)))
+  (let ((a2c qub::apothemToCircumradius)
+        (fa qub::fixAngle)
+        (ia qub::internalAngle)
+        (n nsides))
+    (let ((d (circumradius + (polyIdx * ((a2c spacing n) + (a2c width n)))))
+          (angle (plus 
+                   (difference 90.0 ((ia nsides) / 2.0))
+                   rotation_anticlockwise
+                   (pointIdx * (ia nsides)))))
+      (qub::getPoint (fa angle) d ?ref ref))))
     
 
 
