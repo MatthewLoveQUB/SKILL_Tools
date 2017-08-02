@@ -4,6 +4,8 @@
                    qub:::leftPoint
                    qub:::rightPoint
                    qub:::movePoint
+                   qub:::mvPtX
+                   qub:::mvPtY
                    qub:::higherp
                    qub:::getPtAngle
                    qub:::midPoint

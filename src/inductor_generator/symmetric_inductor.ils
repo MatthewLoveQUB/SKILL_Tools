@@ -1,33 +1,45 @@
 ;;;; Module for generating a spiral inductor
 
+; Extends the middle sections so they're closer together
+;  _       _    
+; /         \
+; |         |
+;
+; versus
+;
+;  ___   ___  
+; /         \
+; |         |
 (defun qub::addPorts (turn ref width nturns turnIdx)
-  (letseq ((left (qub::sortTopPoint (car turn)))
-           (right (qub::sortTopPoint (cadr turn)))
-           (getPort (lambda (left right)
-                      (letseq ((mp (qub::midPoint left right ?distAlong 0.5))
-                               (newleft (qub::movePoint mp (minus width):0))
-                               (newRight (qub::movePoint mp width:0)))
-                        (list (qub::rightPoint left newleft)
-                              (qub::leftPoint right newRight)))))
+  (letseq ((left (qub::sortTopPoint turn->left))
+           (right (qub::sortTopPoint turn->right))
+           (mvp qub::movePoint)
+           (getPort 
+             (lambda (left right)
+               (letseq ((mp (qub::midPoint left right ?distAlong 0.5))
+                        (newleft (qub::mvPtX mp -width))
+                        (newRight (qub::mvPtX mp width)))
+                 (list (qub::rightPoint left newleft)
+                       (qub::leftPoint right newRight)))))
            (topPorts (getPort (car left) (car right)))
            (bottomPorts (getPort (qub::lastAtom left) (qub::lastAtom right)))
            (mutLast (lambda (lst obj) (setcar (last lst) obj))))
       (cond ((and (evenp nturns) (evenp turnIdx))
              ;rb rt
-             (mutLast topPorts (qub::movePoint (cadr topPorts) (times width -0.2):0))
-             (mutLast bottomPorts (qub::movePoint (cadr bottomPorts) (times width -0.2):0)))
+             (mutLast topPorts (mvp (cadr topPorts) (times width -0.2):0))
+             (mutLast bottomPorts (mvp (cadr bottomPorts) (times width -0.2):0)))
             ((and (evenp nturns) (oddp turnIdx))
              ; lb lt
-             (setcar topPorts (qub::movePoint (car topPorts) (times width 0.2):0))
-             (setcar bottomPorts (qub::movePoint (car bottomPorts) (times width 0.2):0)))
+             (setcar topPorts (mvp (car topPorts) (times width 0.2):0))
+             (setcar bottomPorts (mvp (car bottomPorts) (times width 0.2):0)))
             ((and (oddp nturns) (evenp turnIdx))
              ; lb lt
-             (setcar topPorts (qub::movePoint (car topPorts) (times width 0.2):0))
-             (setcar bottomPorts (qub::movePoint (car bottomPorts) (times width 0.2):0)))
+             (setcar topPorts (mvp (car topPorts) (times width 0.2):0))
+             (setcar bottomPorts (mvp (car bottomPorts) (times width 0.2):0)))
             ((and (oddp nturns) (oddp turnIdx)) 
              ; rb rt
-             (mutLast topPorts (qub::movePoint (cadr topPorts) (times width -0.2):0))
-             (mutLast bottomPorts (qub::movePoint (cadr bottomPorts) (times width -0.2):0))))
+             (mutLast topPorts (mvp (cadr topPorts) (times width -0.2):0))
+             (mutLast bottomPorts (mvp (cadr bottomPorts) (times width -0.2):0))))
       
       (unless (equal (car topPorts) (car left))
         (pushf (car topPorts) left))
@@ -158,12 +170,12 @@
                 maxHalfPointIdx)))
            (spiralCoords nil))
     (for turnIdx 0 maxTurnIdx
-      (let ((leftSide nil)
-            (rightSide nil))
+      (let ((left nil)
+            (right nil))
         (for pIdx 0 maxHalfPointIdx
-          (pushf (getPoint turnIdx pIdx) leftSide)
-          (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) rightSide))
-        (pushf (list leftSide (reverse rightSide)) spiralCoords)))
+          (pushf (getPoint turnIdx pIdx) left)
+          (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) right))
+        (pushf (list nil 'left left 'right (reverse right)) spiralCoords)))
         
     ; fixing the order of the spiral coords
     (setq spiralCoords (reverse spiralCoords))

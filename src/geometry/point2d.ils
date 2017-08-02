@@ -25,6 +25,12 @@
 (defun qub::movePoint (point translation)
   (qub::addListElems point translation))
   
+(defun qub::mvPtX (pt dist)
+  (qub::movePoint pt dist:0))
+  
+(defun qub::mvPtY (pt dist)
+  (qub::movePoint pt 0:dist))
+  
 (defun qub::midPoint (p1 p2 @key (distAlong 0.5))
   (let ((p1Scalar distAlong)
         (p2Scalar (difference 1.0 distAlong)))
