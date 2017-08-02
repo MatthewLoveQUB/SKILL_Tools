@@ -49,7 +49,7 @@
   
 (defmacro qub::createTransformerPCell (library)
   `(pcDefinePCell 
-    (list (ddGetObj ,library) "transformerPCell_A" "layout")
+    (list (ddGetObj ,library) "transformerA" "layout")
     ((turns "int" 2)
      (width "float" 10.0)
      (spacing "float" 5.0)

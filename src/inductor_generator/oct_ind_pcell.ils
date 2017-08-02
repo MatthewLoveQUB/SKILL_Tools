@@ -7,7 +7,7 @@
 
 (defmacro qub::createOctInductorPCell (library)      
   `(pcDefinePCell 
-    (list (ddGetObj ,library) "octInductorPCell" "layout")
+    (list (ddGetObj ,library) "octSpiralInd" "layout")
     ((completeTurns "int" 2)
      (additionalSegments "int" 0)
      (width "float" 10.0)

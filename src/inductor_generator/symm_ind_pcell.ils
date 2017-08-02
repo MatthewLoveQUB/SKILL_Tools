@@ -51,7 +51,7 @@
       
 (defmacro qub::createSymmInductorPCell (library)
   `(pcDefinePCell 
-    (list (ddGetObj ,library) "symmetricInductorPCell" "layout")
+    (list (ddGetObj ,library) "symmInd" "layout")
     ((turns "int" 2)
      (width "float" 10.0)
      (spacing "float" 5.0)

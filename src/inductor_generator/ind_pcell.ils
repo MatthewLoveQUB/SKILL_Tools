@@ -30,7 +30,7 @@
 
 (defmacro qub::createInductorPCell (library)      
   `(pcDefinePCell 
-    (list (ddGetObj ,library) "spiralInductorPCell" "layout")
+    (list (ddGetObj ,library) "spiralInd" "layout")
     ((completeTurns "int" 2)
      (additionalSegments "int" 0)
      (width "float" 10.0)
