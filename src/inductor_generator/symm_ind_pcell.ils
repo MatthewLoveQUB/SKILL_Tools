@@ -4,8 +4,7 @@
    (spacing @initform (defineParam "float" 5.0))
    (apothem @initform (defineParam "float" 50.0))
    (nsides @initform (defineParam "int" 8))
-   (topMetalLayer @initform (defineParam "string" "M1"))
-   (bottomMetalLayer @initform (defineParam "string" "M2"))))
+   (metalStack @initform (defineParam "string" "M1 M2"))))
 
 (defmethod draw ((device symmInductorPCell))
   (letseq ((turns (getParamValue device 'turns))
@@ -13,8 +12,7 @@
            (s (getParamValue device 'spacing))
            (a (getParamValue device 'apothem))
            (n (getParamValue device 'nsides))
-           (tml (getParamValue device 'topMetalLayer))
-           (bml (getParamValue device 'bottomMetalLayer))
+           (metalLayers (parseString (getParamValue device 'metalStack)))
            (cv (slotValue device 'cvId))
            (points (qub::getSymmetricSpiralPoints ?turns turns
                                                   ?width w
@@ -33,14 +31,14 @@
     ; Generating main turns
     (foreach turn spiralCoords
       (foreach half turn
-        (cp half tml)))
+        (cp half (car metalLayers))))
           
     ; Generating interconnects
     (let ((topMetalBridges (car bridgeCoords))
           (bottomMetalBridges (cadr bridgeCoords))
           (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
-      (drawPts topMetalBridges tml)
-      (drawPts bottomMetalBridges bml))
+      (drawPts topMetalBridges (car metalLayers))
+      (drawPts bottomMetalBridges (cadr metalLayers)))
 
     (setq objects (leMergeShapes objects))
       
@@ -57,8 +55,7 @@
      (spacing "float" 5.0)
      (apothem "float" 50.0)
      (nsides "int" 8)
-     (topMetalLayer "string" "M1")
-     (bottomMetalLayer "string" "M2"))
+     (metalStack "string" "M1 M2"))
     (let ((pcell (makeInstance 'symmInductorPCell)))
       (setPcellParams pcell pcCellView)
       (draw pcell))))
