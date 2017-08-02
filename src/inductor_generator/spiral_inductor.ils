@@ -50,7 +50,7 @@
                 (refb1 (getPoint (add1 turnIdx) 0))
                 (refb2 (getPoint (add1 turnIdx) maxPointIdx)))
            (pushf (fip refa1 refa2 refb1 refb2) points))))
-      (qub:::truncateFirstLastPoints (reverse points)))))
+    points)))
       
      
 (defun qub:::truncateFirstLastPoints (lst)
