@@ -1,20 +1,20 @@
 ; Two coils some space apart
 
-(defclass transformerA (symmInductorPCell)
-  ((coilSpacing @initform (defineParam "float" 5.0))
-   (coilRotation @initform (defineParam "string" "R0 R180"))
-   (secondCoilDirection @initform (defineParam "string" "up"))
-   (allowOverlap @initform (defineParam "boolean" "FALSE"))))
+(defclass qub::transformerA (qub::symmInductorPCell)
+  ((coilSpacing @initform (qub::defineParam "float" 5.0))
+   (coilRotation @initform (qub::defineParam "string" "R0 R180"))
+   (secondCoilDirection @initform (qub::defineParam "string" "up"))
+   (allowOverlap @initform (qub::defineParam "boolean" "FALSE"))))
   
-(defmethod draw ((device transformerA))
-  (letseq ((coilSpacing (getParamValue device 'coilSpacing))
-           (rotation (parseString (getParamValue device 'coilRotation)))
-           (dir (getParamValue device 'secondCoilDirection))
-           (metalLayers (parseString (getParamValue device 'metalStack)))
-           (allowOverlap (nequal "FALSE" (getParamValue device 'allowOverlap)))
+(defmethod qub::draw ((device qub::transformerA))
+  (letseq ((coilSpacing (qub::getParamValue device 'coilSpacing))
+           (rotation (parseString (qub::getParamValue device 'coilRotation)))
+           (dir (qub::getParamValue device 'secondCoilDirection))
+           (metalLayers (parseString (qub::getParamValue device 'metalStack)))
+           (allowOverlap (nequal "FALSE" (qub::getParamValue device 'allowOverlap)))
            (cv (slotValue device 'cvId))
            (setMet (lambda (m1 m2)
-                     (setParamValue device 
+                     (qub::setParamValue device 
                                     'metalStack 
                                     (sprintf nil "%s %s" m1 m2))))
            (createInd (lambda (name m1 m2)
@@ -58,7 +58,7 @@
      (secondCoilDirection "string" "up")
      (allowOverlap "boolean" "FALSE")
      (metalStack "string" "M1 M2 M1 M2"))
-    (let ((pcell (makeInstance 'transformerA)))
-      (setPcellParams pcell pcCellView)
+    (let ((pcell (makeInstance 'qub::transformerA)))
+      (qub::setPcellParams pcell pcCellView)
       (draw pcell))))
       

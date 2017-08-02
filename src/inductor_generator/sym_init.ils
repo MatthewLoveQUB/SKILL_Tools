@@ -2,8 +2,10 @@
 (addToExportList '(qub:::getPoint
                    qub:::getPolyPoint))
   
+  
 ; oct_ind_pcell 
-(addToExportList '(qub:::createOctInductorPCell))
+(addToExportList '(qub:::createOctInductorPCell
+                   qub:::octInductorPCell))
   
 ; spiral_inductor.ils
 (addToExportList '(qub:::getSpiralPoints
@@ -22,16 +24,20 @@
                    qub:::drawSymmetricInductor))
                    
 ; ind_pcell.ils
-(addToExportList '(qub:::createInductorPCell))                   
+(addToExportList '(qub:::createInductorPCell
+                   qub:::inductorPCell))                   
 
 ; symm_ind_pcell.ils
-(addToExportList '(qub:::createSymmInductorPCell))
+(addToExportList '(qub:::createSymmInductorPCell
+                   qub:::symmInductorPCell))
 
 ; transformerA.ils
-(addToExportList '(qub:::createTransformerA))
+(addToExportList '(qub:::createTransformerA
+                   qub:::transformerA))
 
 ; transformerB.ils
-(addToExportList '(qub:::createTransformerB))
+(addToExportList '(qub:::createTransformerB
+                   qub:::transformerB))
 
 ; init.ils
 (addToExportList '(qub:::createInductorPCells))
