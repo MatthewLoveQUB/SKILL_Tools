@@ -1,10 +1,12 @@
-(defclass transformerPCell_A (symmInductorPCell)
+; Two coils some space apart
+
+(defclass transformerA (symmInductorPCell)
   ((coilSpacing @initform (defineParam "float" 5.0))
    (coilRotation @initform (defineParam "string" "R0 R180"))
    (secondCoilDirection @initform (defineParam "string" "up"))
    (allowOverlap @initform (defineParam "boolean" "FALSE"))))
   
-(defmethod draw ((device transformerPCell_A))
+(defmethod draw ((device transformerA))
   (letseq ((coilSpacing (getParamValue device 'coilSpacing))
            (rotation (parseString (getParamValue device 'coilRotation)))
            (dir (getParamValue device 'secondCoilDirection))
@@ -43,7 +45,7 @@
       (dbMoveFig figGroup1 cv (list 0:0 (car rotation)))
       (dbMoveFig figGroup2 cv (list transform (cadr rotation)))))
   
-(defmacro qub::createTransformerAPCell (library)
+(defmacro qub::createTransformerA (library)
   `(pcDefinePCell 
     (list (ddGetObj ,library) "transformerA" "layout")
     ((turns "int" 2)
@@ -56,7 +58,7 @@
      (secondCoilDirection "string" "up")
      (allowOverlap "boolean" "FALSE")
      (metalStack "string" "M1 M2 M1 M2"))
-    (let ((pcell (makeInstance 'transformerPCell_A)))
+    (let ((pcell (makeInstance 'transformerA)))
       (setPcellParams pcell pcCellView)
       (draw pcell))))
       

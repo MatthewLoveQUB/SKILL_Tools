@@ -1,0 +1,30 @@
+; Two single turn octagonal inductors on top of each other
+
+(defclass transformerB (transformerA) ())
+  
+(defmethod draw ((device transformerB))
+  (setParamValue device 'coilSpacing 0)
+  (setParamValue device 'secondCoilDirection "up")
+  (setParamValue device 'allowOverlap t)
+  (setParamValue device 'coilSpacing 0)
+  (setParamValue device 'turns 1)
+  (setParamValue device 'nsides 8)
+  (letseq ((m (parseString (getParamValue device 'metalStack)))
+           (m1 (car m))
+           (m2 (cadr m))
+           (s (sprintf nil "%s %s %s %s" m1 m1 m2 m2)))
+    (setParamValue device 'metalStack s))
+  (callNextMethod))
+  
+(defmacro qub::createTransformerB (library)
+  `(pcDefinePCell 
+    (list (ddGetObj ,library) "transformerB" "layout")
+    ((width "float" 10.0)
+     (spacing "float" 5.0)
+     (apothem "float" 50.0)
+     (coilRotation "string" "R0 R180")
+     (metalStack "string" "M1 M2"))
+    (let ((pcell (makeInstance 'transformerB)))
+      (setPcellParams pcell pcCellView)
+      (draw pcell))))
+      
