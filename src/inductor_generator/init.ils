@@ -5,11 +5,11 @@
   (modload "oct_ind_pcell.ils")
   (modload "symmetric_inductor.ils")
   (modload "symm_ind_pcell.ils")
-  (modload "transformer_pcell.ils"))
+  (modload "transformer_a_pcell.ils"))
 
 (defmacro qub::createInductorPCells (libname)
   (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
         `(qub::createInductorPCell ,libname)
         `(qub::createOctInductorPCell ,libname)
         `(qub::createSymmInductorPCell ,libname)
-        `(qub::createTransformerPCell ,libname)))
+        `(qub::createTransformerAPCell ,libname)))

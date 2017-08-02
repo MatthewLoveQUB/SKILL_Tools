@@ -43,7 +43,7 @@
       (dbMoveFig figGroup1 cv (list 0:0 (car rotation)))
       (dbMoveFig figGroup2 cv (list transform (cadr rotation)))))
   
-(defmacro qub::createTransformerPCell (library)
+(defmacro qub::createTransformerAPCell (library)
   `(pcDefinePCell 
     (list (ddGetObj ,library) "transformerA" "layout")
     ((turns "int" 2)
