@@ -2,15 +2,9 @@
 (defun qub::getPoint (angle dist @key (ref 0.0:0.0))
   (let ((x (xCoord ref))
         (y (yCoord ref))
-        (dx (times 
-              dist 
-              (cos (qub::degToRad angle))))
-        (dy (times 
-              dist 
-              (sin (qub::degToRad angle)))))
-    (range 
-      (plus x dx)
-      (plus y dy))))
+        (dx (dist * (cos (qub::degToRad angle))))
+        (dy (dist * (sin (qub::degToRad angle)))))
+    (range (x + dx) (y + dy))))
     
 ; equation taken from here the Line-Line intersection wiki page
 (defun qub:::findIntersectPoint (a1 a2 b1 b2)
@@ -22,36 +16,24 @@
         (y2 (yCoord a2))
         (y3 (yCoord b1))
         (y4 (yCoord b2)))
-    (let ((x1y2 (times x1 y2))
-          (y1x2 (times y1 x2))
-          (x3y4 (times x3 y4))
-          (y3x4 (times y3 x4)))
-      (let ((denominator (difference
-                           (times
-                             (difference x1 x2)
-                             (difference y3 y4))
-                           (times
-                             (difference y1 y2)
-                             (difference x3 x4)))))
-      (let ((px (quotient
-                  (difference
-                    (times
-                      (difference x1y2 y1x2)
-                      (difference x3 x4))
-                    (times
-                      (difference x1 x2)
-                      (difference x3y4 y3x4)))
-                  denominator))
-            (py (quotient
-                  (difference
-                    (times
-                      (difference x1y2 y1x2)
-                      (difference y3 y4))
-                    (times
-                      (difference y1 y2)
-                      (difference x3y4 y3x4)))
-                  denominator)))
-        px:py)))))
+    (let ((x1y2 (x1 * y2))
+          (y1x2 (y1 * x2))
+          (x3y4 (x3 * y4))
+          (y3x4 (y3 * x4)))
+      (let ((denominator (difference 
+                           ((x1 - x2) * (y3 - y4)) 
+                           ((y1 - y2) * (x3 - x4)))))
+        (let ((px (quotient
+                    (difference
+                      ((x1y2 - y1x2) * (x3 - x4))
+                      ((x1 - x2) * (x3y4 - y3x4)))
+                    denominator))
+              (py (quotient
+                    (difference
+                      ((x1y2 - y1x2) * (y3 - y4))
+                      ((y1 - y2) * (x3y4 - y3x4)))
+                    denominator)))
+          px:py)))))
 
 
 ; 0 = half of the internal angle e.g. 45 for a square
@@ -75,9 +57,7 @@
         (angle (plus 
 		             (difference 90.0 (quotient (qub::internalAngle nsides) 2.0))
                  rotation_anticlockwise
-                 (times 
-                   pointIdx 
-                   (qub::internalAngle nsides)))))
+                 (pointIdx * (qub::internalAngle nsides)))))
     (qub::getPoint (qub::fixAngle angle) dist ?ref ref)))
     
 
