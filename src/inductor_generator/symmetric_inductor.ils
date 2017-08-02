@@ -13,58 +13,39 @@
 (defun qub::addPorts (turn ref width nturns turnIdx)
   (letseq ((left (qub::sortTopPoint turn->left))
            (right (qub::sortTopPoint turn->right))
-           (mvp qub::movePoint)
            (getPort 
              (lambda (left right)
-               (letseq ((mp (qub::midPoint left right ?distAlong 0.5))
-                        (newleft (qub::mvPtX mp -width))
-                        (newRight (qub::mvPtX mp width)))
-                 (list (qub::rightPoint left newleft)
-                       (qub::leftPoint right newRight)))))
+               (let ((mp (qub::midPoint left right ?distAlong 0.5)))
+                 (list (qub::rightPoint left (qub::mvPtX mp -width))
+                       (qub::leftPoint right (qub::mvPtX mp width))))))
            (topPorts (getPort (car left) (car right)))
            (bottomPorts (getPort (qub::lastAtom left) (qub::lastAtom right)))
            (mutLast (lambda (lst obj) (setcar (last lst) obj))))
-      (cond ((and (evenp nturns) (evenp turnIdx))
-             ;rb rt
-             (mutLast topPorts (mvp (cadr topPorts) (times width -0.2):0))
-             (mutLast bottomPorts (mvp (cadr bottomPorts) (times width -0.2):0)))
-            ((and (evenp nturns) (oddp turnIdx))
-             ; lb lt
-             (setcar topPorts (mvp (car topPorts) (times width 0.2):0))
-             (setcar bottomPorts (mvp (car bottomPorts) (times width 0.2):0)))
-            ((and (oddp nturns) (evenp turnIdx))
-             ; lb lt
-             (setcar topPorts (mvp (car topPorts) (times width 0.2):0))
-             (setcar bottomPorts (mvp (car bottomPorts) (times width 0.2):0)))
-            ((and (oddp nturns) (oddp turnIdx)) 
-             ; rb rt
-             (mutLast topPorts (mvp (cadr topPorts) (times width -0.2):0))
-             (mutLast bottomPorts (mvp (cadr bottomPorts) (times width -0.2):0))))
+    (let ((f (if (or (and (evenp nturns) (evenp turnIdx))
+                     (and (oddp nturns) (oddp turnIdx)))
+             (lambda (p) (mutLast p (qub::mvPtX (cadr p) (width * -0.2))))
+             (lambda (p) (setcar p (qub::mvPtX (car p) (width * 0.2)))))))
+      (mapcar f (list topPorts bottomPorts)))
+    
+    ; Making sure that there are no duplicate coordinates added
+    (unless (equal (car topPorts) (car left))
+      (pushf (car topPorts) left))
+    (unless (equal (cadr topPorts) (car right))
+      (pushf (cadr topPorts) right))
+    (unless (equal (car bottomPorts) (qub::lastAtom left))
+      (qub::pushEnd (car bottomPorts) left))
+    (unless (equal (cadr bottomPorts) (qub::lastAtom right))
+      (qub::pushEnd (cadr bottomPorts) right))
       
-      (unless (equal (car topPorts) (car left))
-        (pushf (car topPorts) left))
-        
-      (unless (equal (cadr topPorts) (car right))
-        (pushf (cadr topPorts) right))
-      
-      (unless (equal (car bottomPorts) (qub::lastAtom left))
-        (qub::pushEnd (car bottomPorts) left))
-      
-      (unless (equal (cadr bottomPorts) (qub::lastAtom right))
-        (qub::pushEnd (cadr bottomPorts) right))
-        
-      (list left right)))
+    (list left right)))
       
 (defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
-  (if (eq bridgePoint 'bottom)
-      (list (getPoint 0 1)
-            (getPoint 0 0)
-            (getPoint 0 maxPointIdx)
-            (getPoint 0 (sub1 maxPointIdx)))
-      (list (getPoint 0 (sub1 maxHalfPointIdx))
-            (getPoint 0 maxHalfPointIdx)
-            (getPoint 0 (add1 maxHalfPointIdx))
-            (getPoint 0 (plus 2 maxHalfPointIdx)))))
+  (let ((gp (lambda (x) (getPoint 0 x)))
+        (x maxPointIdx)
+        (y maxHalfPointIdx))
+    (if (eq bridgePoint 'bottom)
+        (mapcar gp (list 1 0 x (x - 1)))
+        (mapcar gp (list (y - 1) y (y + 1) (y + 2))))))
 
 (defun qub::invertSide (side)
   (if (eq side 'top) 
@@ -110,7 +91,7 @@
 (defun qub::getInterconnects (width points gbp turns) 
   (letseq ((pts (list nil nil))
            ; Outer loop connects to nothing
-           (maxPtIdx (difference (length points) 2))
+           (maxPtIdx ((length points) - 2))
            (side (if (evenp turns) 
                      'top 
                      'bottom)))
