@@ -2,6 +2,9 @@
 (addToExportList '(qub:::getPoint
                    qub:::getPolyPoint))
   
+; oct_ind_pcell 
+(addToExportList '(qub:::createOctInductorPCell))
+  
 ; spiral_inductor.ils
 (addToExportList '(qub:::getSpiralPoints
                    qub:::drawInductor))

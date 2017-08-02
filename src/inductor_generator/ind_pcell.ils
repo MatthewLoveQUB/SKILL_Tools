@@ -42,5 +42,3 @@
     (let ((pcell (makeInstance 'inductorPCell)))
       (setPcellParams pcell pcCellView)
       (draw pcell))))
-
-;(qub::createInductorPCell "mlove_lib" "indPCell")

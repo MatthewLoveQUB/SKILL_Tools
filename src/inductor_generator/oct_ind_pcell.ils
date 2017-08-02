@@ -1,0 +1,19 @@
+(defclass octInductorPCell (inductorPCell) ())
+
+(defmethod draw ((device octInductorPCell))
+  (setParamValue device 'nsides 8)
+  (setParamValue device 'rotation_anticlockwise 0.0)
+  (callNextMethod))
+
+(defmacro qub::createOctInductorPCell (library)      
+  `(pcDefinePCell 
+    (list (ddGetObj ,library) "octInductorPCell" "layout")
+    ((completeTurns "int" 2)
+     (additionalSegments "int" 0)
+     (width "float" 10.0)
+     (spacing "float" 5.0)
+     (apothem "float" 50.0)
+     (metalLayer "string" "M1"))
+    (let ((pcell (makeInstance 'octInductorPCell)))
+      (setPcellParams pcell pcCellView)
+      (draw pcell))))

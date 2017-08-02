@@ -63,4 +63,3 @@
       (setPcellParams pcell pcCellView)
       (draw pcell))))
       
-; (qub::createSymmInductorPCell "mlove_lib" "symmIndPCell")
