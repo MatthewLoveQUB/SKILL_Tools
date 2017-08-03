@@ -24,14 +24,28 @@
            (cp (lambda (pts metLyr)
              (pushf (dbCreatePath cv (list metLyr) pts w mode) objects)))
            (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
+           
       ; Generating main turns
       (foreach turn points->spiralCoords
         (cp turn->left (car metalLayers))
         (cp turn->right (car metalLayers)))
+        
       ; Generating interconnects
       (drawPts points->intercons->topMetal (car metalLayers))
       (drawPts points->intercons->botMetal (cadr metalLayers))
       (setq objects (leMergeShapes objects))
+        
+      (let ((f (lambda (x n)
+                 (leCreatePin cv 
+                              (list (car metalLayers) "pin")
+                              "rectangle"
+                              (list (qub::mvPtX x (w / 2)) 
+                                    (qub::movePoint x -(w / 2):w))
+                              (sprintf nil "port%d" n)
+                              "inputOutput"
+                              (list "top" "bottom" "left" "right")))))
+        (f points->ports->left 0)
+        (f points->ports->right 0))
         
       ; Create fig group to organise the parts
       (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))

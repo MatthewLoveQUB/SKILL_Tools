@@ -55,12 +55,14 @@
   (letseq ((left (qub::lastAtom points)->left)
            (right (qub::lastAtom points)->right)
            (y (yCoord (qub::lastAtom left)))
-           (porty (y - portLength - (width / 2))))
+           (porty (y - portLength - (width / 2)))
+           (endLeft -width:porty)
+           (endRight width:porty))
     (qub::pushEnd -width:y left)
-    (qub::pushEnd -width:porty left)
+    (qub::pushEnd endLeft left)
     (qub::pushEnd width:y right)
-    (qub::pushEnd width:porty right)
-    points))
+    (qub::pushEnd endRight right)
+    (list nil 'points points 'ports (list nil 'left endLeft 'right endRight))))
             
 (defun qub:::getInterconnectsHelper (side refPts i width)
   (letseq ((f (if (eq side 'top) 
@@ -150,7 +152,8 @@
               (reverse spiralCoords)
               (qub::range ?stop (length spiralCoords))))
               
-    (let ((i (qub::getInterconnects width spiralCoords gbp turns)))
-      (setq spiralCoords 
-          (qub::addPorts spiralCoords width portLen))
-      (list nil 'spiralCoords spiralCoords 'intercons i))))
+    (let ((i (qub::getInterconnects width spiralCoords gbp turns))
+          (x (qub::addPorts spiralCoords width portLen)))
+      (list nil 'spiralCoords x->points 
+                'intercons i
+                'ports x->ports))))
