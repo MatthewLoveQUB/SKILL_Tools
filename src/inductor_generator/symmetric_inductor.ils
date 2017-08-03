@@ -62,14 +62,12 @@
            (getLst 
              (lambda (leftPts rightPts)
                (let ((points nil)
-                     (leftAngle (a2p leftPts))
-                     (rightAngle (a2p rightPts))
                      (maa (lambda (p a) 
                        (qub::moveAtAngle (car p) (min width (getDist p)) a))))
-                 (pushf (maa leftPts leftAngle) points)
+                 (pushf (maa leftPts (a2p leftPts)) points)
                  (pushf (car leftPts) points)
                  (pushf (car rightPts) points)
-                 (pushf (maa rightPts rightAngle) points)
+                 (pushf (maa rightPts (a2p rightPts)) points)
                  points)))
            (il2or (getLst (f innerPts->left) (f outerPts->right)))
            (ol2ir (getLst (f outerPts->left) (f innerPts->right))))
@@ -77,15 +75,14 @@
         (list nil 'top ol2ir 'bot il2or)
         (list nil 'top il2or 'bot ol2ir))))
 
-; gbp = getbridgepoint            
-(defun qub::getInterconnects (width points gbp turns) 
+(defun qub::getInterconnects (width points getbridgepoint turns) 
   (let ((pts (list nil 'topMetal nil 'botMetal nil))
         ; Outer loop connects to nothing
         (maxPtIdx ((length points) - 2))
         (side (if (evenp turns) 
                   'top 
                   'bottom)))
-    (pushf (gbp) pts->topMetal) ; Adding m1 connection to innermost loop
+    (pushf (getbridgepoint) pts->topMetal)
     (for i 0 maxPtIdx
       (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
         (pushf interconnects->top pts->topMetal)
