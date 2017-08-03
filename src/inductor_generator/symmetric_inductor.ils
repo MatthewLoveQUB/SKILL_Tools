@@ -14,7 +14,7 @@
   `(unless (equal (,fn1 ,x) (,fn2 ,y))
     (,p (,fn1 ,x) ,y)))
 
-(defun qub::extendMiddle (turn ref width nturns turnIdx)
+(defun qub::extendMiddle (turn width nturns turnIdx)
   (letseq ((left (qub::sortTopPoint turn->left))
            (right (qub::sortTopPoint turn->right))
            (getPort 
@@ -103,14 +103,8 @@
 (defun qub::sortBottomPoint (pts)
   (reverse (qub::sortTopPoint pts)))
       
-(defun qub::getSymmetricSpiralPoints (@key 
-                                      (turns 2)
-                                      (width 10.0)
-                                      (spacing 5.0)
-                                      (apothem 50.0)
-                                      (nsides 8)
-                                      (rotation_anticlockwise 0.0)
-                                      (ref 0.0:0.0))
+(defun qub::getSymmetricSpiralPoints 
+  (@key (turns 2) (width 10.0) (spacing 5.0) (apothem 50.0) (nsides 8))
   (letseq ((atc qub::apothemToCircumradius)
            (getPoint 
             (lambda (polyIdx pointIdx)
@@ -121,8 +115,7 @@
                 (atc (plus apothem (width / 2.0)) nsides) 
                 spacing 
                 width
-                ?rotation_anticlockwise rotation_anticlockwise
-                ?ref ref)))
+                ?rotation_anticlockwise 45.0)))
            (maxPointIdx (nsides - 1))
            (maxTurnIdx (turns - 1))
            (maxHalfPointIdx ((nsides / 2) - 1))
@@ -145,8 +138,9 @@
     ; Reverse to fix the order of the spiral coords
     ; Add extra metal to reduce the gap between each half of the turns
     (setq spiralCoords 
-      (mapcar (lambda (trn i) (qub::extendMiddle trn ref width turns i))
+      (mapcar (lambda (trn i) (qub::extendMiddle trn width turns i))
               (reverse spiralCoords)
               (qub::range ?stop (length spiralCoords))))
+              
     (list nil 'spiralCoords spiralCoords 
               'intercons (qub::getInterconnects width spiralCoords gbp turns))))

@@ -16,8 +16,7 @@
                ?width w
                ?spacing (qub::getParamValue device 'spacing)
                ?apothem (qub::getParamValue device 'apothem)
-               ?nsides (qub::getParamValue device 'nsides)
-               ?rotation_anticlockwise 45.0))
+               ?nsides (qub::getParamValue device 'nsides)))
            (objects nil)
            (mode "truncateExtend")
            (cp (lambda (pts metLyr)
