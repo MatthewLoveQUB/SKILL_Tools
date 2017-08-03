@@ -79,12 +79,12 @@
 
 ; gbp = getbridgepoint            
 (defun qub::getInterconnects (width points gbp turns) 
-  (letseq ((pts (list nil 'topMetal nil 'botMetal nil))
-           ; Outer loop connects to nothing
-           (maxPtIdx ((length points) - 2))
-           (side (if (evenp turns) 
-                     'top 
-                     'bottom)))
+  (let ((pts (list nil 'topMetal nil 'botMetal nil))
+        ; Outer loop connects to nothing
+        (maxPtIdx ((length points) - 2))
+        (side (if (evenp turns) 
+                  'top 
+                  'bottom)))
     (pushf (gbp) pts->topMetal) ; Adding m1 connection to innermost loop
     (for i 0 maxPtIdx
       (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
