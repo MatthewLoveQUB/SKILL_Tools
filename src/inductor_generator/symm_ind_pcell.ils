@@ -30,12 +30,12 @@
                  
     ; Generating main turns
     (foreach turn spiralCoords
-      (foreach half turn
-        (cp half (car metalLayers))))
+      (cp turn->left (car metalLayers))
+      (cp turn->right (car metalLayers)))
           
     ; Generating interconnects
-    (let ((topMetalBridges (car bridgeCoords))
-          (bottomMetalBridges (cadr bridgeCoords))
+    (let ((topMetalBridges bridgeCoords->topMetal)
+          (bottomMetalBridges bridgeCoords->botMetal)
           (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
       (drawPts topMetalBridges (car metalLayers))
       (drawPts bottomMetalBridges (cadr metalLayers)))

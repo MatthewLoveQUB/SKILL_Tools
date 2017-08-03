@@ -10,6 +10,11 @@
 ;  ___   ___  
 ; /         \
 ; |         |
+
+(defmacro qub:::__portHelper (fn1 x fn2 y p)
+  `(unless (equal (,fn1 ,x) (,fn2 ,y))
+    (,p (,fn1 ,x) ,y)))
+
 (defun qub::addPorts (turn ref width nturns turnIdx)
   (letseq ((left (qub::sortTopPoint turn->left))
            (right (qub::sortTopPoint turn->right))
@@ -28,16 +33,11 @@
       (mapcar f (list topPorts bottomPorts)))
     
     ; Making sure that there are no duplicate coordinates added
-    (unless (equal (car topPorts) (car left))
-      (pushf (car topPorts) left))
-    (unless (equal (cadr topPorts) (car right))
-      (pushf (cadr topPorts) right))
-    (unless (equal (car bottomPorts) (qub::lastAtom left))
-      (qub::pushEnd (car bottomPorts) left))
-    (unless (equal (cadr bottomPorts) (qub::lastAtom right))
-      (qub::pushEnd (cadr bottomPorts) right))
-      
-    (list left right)))
+    (qub:::__portHelper car topPorts car left pushf)
+    (qub:::__portHelper cadr topPorts car right pushf)
+    (qub:::__portHelper car bottomPorts qub::lastAtom left qub::pushEnd)
+    (qub:::__portHelper cadr bottomPorts qub::lastAtom right qub::pushEnd)
+    (list nil 'left left 'right right)))
       
 (defun qub::getBridgePoints (getPoint bridgePoint maxPointIdx maxHalfPointIdx)
   (let ((gp (lambda (x) (getPoint 0 x)))
@@ -52,50 +52,45 @@
       'bottom 
       'top))
             
-(defun qub:::getInterconnectsHelper (curSide refPts i width)
-  (letseq ((f (if (eq curSide 'top) 
+(defun qub:::getInterconnectsHelper (side refPts i width)
+  (letseq ((f (if (eq side 'top) 
                   qub::sortTopPoint
                   qub::sortBottomPoint))
-           (innerTurnPts (nth i refPts))
-           (innerLeftPts (f (car innerTurnPts)))
-           (innerRightPts (f (cadr innerTurnPts)))
-           (outerTurnPts (nth (add1 i) refPts))
-           (outerLeftPts (f (car outerTurnPts)))
-           (outerRightPts (f (cadr outerTurnPts)))
-           (getLst (lambda (leftPts rightPts)
-                      (letseq ((points nil)
-                               (leftAngle1 (qub::getAngleToPt (car leftPts) (cadr leftPts)))
-                               (leftAngle2 (qub::getAngleToPt (cadr leftPts) (caddr leftPts)))
-                               (rightAngle1 (qub::getAngleToPt (car rightPts) (cadr rightPts)))
-                               (rightAngle2 (qub::getAngleToPt (cadr rightPts) (caddr rightPts)))
-                               (leftDist (qub::getDist (car leftPts) (cadr leftPts)))
-                               (rightDist (qub::getDist (car rightPts) (cadr rightPts)))
-                               (leftRemainder (difference leftDist width))
-                               (rightRemainder (difference rightDist width)))
-                        (pushf (qub::moveAtAngle (car leftPts) (min width leftDist) leftAngle1) points)
-                        (pushf (car leftPts) points)
-                        (pushf (car rightPts) points)
-                        (pushf (qub::moveAtAngle (car rightPts) (min rightDist width) rightAngle1) points)
-                        points)))
-           (il2or (getLst innerLeftPts outerRightPts))
-           (ol2ir (getLst outerLeftPts innerRightPts)))
-    (if (eq curSide 'top)
-        (list ol2ir il2or)
-        (list il2or ol2ir))))
+           (innerPts (nth i refPts))
+           (outerPts (nth (i + 1) refPts))
+           (getDist (lambda (x) (qub::getDist (car x) (cadr x))))
+           (a2p (lambda (x) (qub::getAngleToPt (car x) (cadr x))))
+           (getLst 
+             (lambda (leftPts rightPts)
+               (letseq ((points nil)
+                        (leftAngle (a2p leftPts))
+                        (rightAngle (a2p rightPts))
+                        (maa (lambda (p a) 
+                         (qub::moveAtAngle (car p) (min width (getDist p)) a))))
+                 (pushf (maa leftPts leftAngle) points)
+                 (pushf (car leftPts) points)
+                 (pushf (car rightPts) points)
+                 (pushf (maa rightPts rightAngle) points)
+                 points)))
+           (il2or (getLst (f innerPts->left) (f outerPts->right)))
+           (ol2ir (getLst (f outerPts->left) (f innerPts->right))))
+    (if (eq side 'top)
+        (list nil 'top ol2ir 'bot il2or)
+        (list nil 'top il2or 'bot ol2ir))))
 
 ; gbp = getbridgepoint            
 (defun qub::getInterconnects (width points gbp turns) 
-  (letseq ((pts (list nil nil))
+  (letseq ((pts (list nil 'topMetal nil 'botMetal nil))
            ; Outer loop connects to nothing
            (maxPtIdx ((length points) - 2))
            (side (if (evenp turns) 
                      'top 
                      'bottom)))
-    (pushf (gbp) (car pts)) ; Adding m1 connection to innermost loop
+    (pushf (gbp) pts->topMetal) ; Adding m1 connection to innermost loop
     (for i 0 maxPtIdx
       (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
-         (pushf (car interconnects) (car pts))
-         (pushf (cadr interconnects) (cadr pts)))
+        (pushf interconnects->top pts->topMetal)
+        (pushf interconnects->bot pts->botMetal))
       (setq side (qub::invertSide side)))
     pts))
     
@@ -133,26 +128,25 @@
                 width
                 ?rotation_anticlockwise rotation_anticlockwise
                 ?ref ref)))
-           (maxPointIdx (sub1 nsides))
-           (maxTurnIdx (sub1 turns))
-           (maxHalfPointIdx (sub1 (quotient nsides 2)))
+           (maxPointIdx (nsides - 1))
+           (maxTurnIdx (turns - 1))
+           (maxHalfPointIdx ((nsides / 2) - 1))
            (gbp 
             (lambda () 
               (qub::getBridgePoints 
                 getPoint 
                 (if (evenp turns) 
                     'top 
-                    'bottom) 
+                    'bottom)
                 maxPointIdx 
                 maxHalfPointIdx)))
            (spiralCoords nil))
     (for turnIdx 0 maxTurnIdx
-      (let ((left nil)
-            (right nil))
+      (let ((turn (list nil 'left nil 'right nil)))
         (for pIdx 0 maxHalfPointIdx
-          (pushf (getPoint turnIdx pIdx) left)
-          (pushf (getPoint turnIdx (difference maxPointIdx pIdx)) right))
-        (pushf (list nil 'left left 'right (reverse right)) spiralCoords)))
+          (pushf (getPoint turnIdx pIdx) turn->left)
+          (pushf (getPoint turnIdx (maxPointIdx - pIdx)) turn->right))
+        (pushf turn spiralCoords)))
         
     ; fixing the order of the spiral coords
     (setq spiralCoords (reverse spiralCoords))
