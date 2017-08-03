@@ -7,45 +7,35 @@
    (metalStack @initform (qub::defineParam "string" "M1 M2"))))
 
 (defmethod qub::draw ((device qub::symmInductorPCell))
-  (letseq ((turns (qub::getParamValue device 'turns))
-           (w (qub::getParamValue device 'width))
-           (s (qub::getParamValue device 'spacing))
-           (a (qub::getParamValue device 'apothem))
-           (n (qub::getParamValue device 'nsides))
+  (letseq ((w (qub::getParamValue device 'width))
            (metalLayers (parseString (qub::getParamValue device 'metalStack)))
            (cv (slotValue device 'cvId))
-           (points (qub::getSymmetricSpiralPoints ?turns turns
-                                                  ?width w
-                                                  ?spacing s
-                                                  ?apothem a
-                                                  ?nsides n
-                                                  ?rotation_anticlockwise 45.0))
-           (offset 0)
-           (spiralCoords (car points))
-           (bridgeCoords (cadr points))
+           (points 
+             (qub::getSymmetricSpiralPoints 
+               ?turns (qub::getParamValue device 'turns)
+               ?width w
+               ?spacing (qub::getParamValue device 'spacing)
+               ?apothem (qub::getParamValue device 'apothem)
+               ?nsides (qub::getParamValue device 'nsides)
+               ?rotation_anticlockwise 45.0))
            (objects nil)
            (mode "truncateExtend")
            (cp (lambda (pts metLyr)
-                 (pushf (dbCreatePath cv (list metLyr) pts w mode) objects))))
-                 
-    ; Generating main turns
-    (foreach turn spiralCoords
-      (cp turn->left (car metalLayers))
-      (cp turn->right (car metalLayers)))
-          
-    ; Generating interconnects
-    (let ((topMetalBridges bridgeCoords->topMetal)
-          (bottomMetalBridges bridgeCoords->botMetal)
-          (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
-      (drawPts topMetalBridges (car metalLayers))
-      (drawPts bottomMetalBridges (cadr metalLayers)))
-
-    (setq objects (leMergeShapes objects))
-      
-    ; creating a fig group to organise the parts
-    (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
-      (mapc (lambda (obj) (dbAddFigToFigGroup fg obj)) objects)
-      fg)))
+             (pushf (dbCreatePath cv (list metLyr) pts w mode) objects)))
+           (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
+      ; Generating main turns
+      (foreach turn points->spiralCoords
+        (cp turn->left (car metalLayers))
+        (cp turn->right (car metalLayers)))
+      ; Generating interconnects
+      (drawPts points->intercons->topMetal (car metalLayers))
+      (drawPts points->intercons->botMetal (cadr metalLayers))
+      (setq objects (leMergeShapes objects))
+        
+      ; Create fig group to organise the parts
+      (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
+        (mapc (lambda (obj) (dbAddFigToFigGroup fg obj)) objects)
+        fg)))
       
 (defmacro qub::createSymmInductorPCell (library)
   `(pcDefinePCell 

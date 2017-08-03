@@ -13,7 +13,7 @@
 
 
 ; symmetric_inductor.ils
-(addToExportList '(qub:::addPorts
+(addToExportList '(qub:::extendMiddle
                    qub:::getBridgePoints
                    qub:::invertSide
                    qub:::getInterconnects
