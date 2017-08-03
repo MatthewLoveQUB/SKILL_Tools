@@ -22,28 +22,23 @@
                          (let ((figGroup (callNextMethod)))
                            (putprop figGroup name 'name)
                            figGroup)))
-           (figGroup1 (createInd "Group1" 
-                                 (nth 0 metalLayers) 
-                                 (nth 1 metalLayers)))
-           (figGroup2 (createInd "Group2" 
-                                 (nth 2 metalLayers) 
-                                 (nth 3 metalLayers)))
-           (height (if allowOverlap
+           (fg1 (createInd "Group1" (nth 0 metalLayers) (nth 1 metalLayers)))
+           (fg2 (createInd "Group2" (nth 2 metalLayers) (nth 3 metalLayers)))
+           (calc (lambda (x y)
+                   (if allowOverlap 
                        0
-                       (difference (topEdge figGroup1) (bottomEdge figGroup1))))
-           (width (if allowOverlap
-                      0
-                      (difference (rightEdge figGroup1) (leftEdge figGroup1))))
+                       ((x fg1) - (y fg1)))))
+           (height (calc topEdge bottomEdge))
+           (width  (calc rightEdge leftEdge))
+           (fn (lambda (refDir x)
+                 (if (dir == refDir) 
+                     (x + coilSpacing) 
+                     (0 - x - coilSpacing))))
            (transform (if (member dir (list "up" "down"))
-                          (list 0 (if (equal dir "up")
-                                      (plus height coilSpacing)
-                                      (difference 0 height coilSpacing)))
-                          (list (if (equal dir "right")
-                                    (plus width coilSpacing)
-                                    (difference 0 width coilSpacing))
-                                0))))
-      (dbMoveFig figGroup1 cv (list 0:0 (car rotation)))
-      (dbMoveFig figGroup2 cv (list transform (cadr rotation)))))
+                          (list 0 (fn "up" height))
+                          (list (fn "right" width) 0))))
+      (dbMoveFig fg1 cv (list 0:0 (car rotation)))
+      (dbMoveFig fg2 cv (list transform (cadr rotation)))))
   
 (defmacro qub::createTransformerA (library)
   `(pcDefinePCell 
@@ -57,7 +52,8 @@
      (coilRotation "string" "R0 R180")
      (secondCoilDirection "string" "up")
      (allowOverlap "boolean" "FALSE")
-     (metalStack "string" "M1 M2 M1 M2"))
+     (metalStack "string" "M1 M2 M1 M2")
+     (portLength "float" 25.0))
     (let ((pcell (makeInstance 'qub::transformerA)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell))))
