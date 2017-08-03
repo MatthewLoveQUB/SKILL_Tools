@@ -21,7 +21,8 @@
                    qub:::sortBottomPoint
                    qub:::createSymInd
                    qub:::getSymmetricSpiralPoints
-                   qub:::drawSymmetricInductor))
+                   qub:::drawSymmetricInductor
+                   qub:::addPorts))
                    
 ; ind_pcell.ils
 (addToExportList '(qub:::createInductorPCell

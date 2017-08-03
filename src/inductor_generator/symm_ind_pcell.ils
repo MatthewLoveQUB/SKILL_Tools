@@ -4,22 +4,21 @@
    (spacing @initform (qub::defineParam "float" 5.0))
    (apothem @initform (qub::defineParam "float" 50.0))
    (nsides @initform (qub::defineParam "int" 8))
-   (metalStack @initform (qub::defineParam "string" "M1 M2"))))
+   (metalStack @initform (qub::defineParam "string" "M1 M2"))
+   (portLength @initform (qub::defineParam "float" "25.0"))))
 
 (defmethod qub::draw ((device qub::symmInductorPCell))
-  (letseq ((turns (qub::getParamValue device 'turns))
-           (w (qub::getParamValue device 'width))
-           (s (qub::getParamValue device 'spacing))
-           (a (qub::getParamValue device 'apothem))
-           (n (qub::getParamValue device 'nsides))
+  (letseq ((w (qub::getParamValue device 'width))
            (metalLayers (parseString (qub::getParamValue device 'metalStack)))
            (cv (slotValue device 'cvId))
-           (points (qub::getSymmetricSpiralPoints ?turns turns
-                                                  ?width w
-                                                  ?spacing s
-                                                  ?apothem a
-                                                  ?nsides n
-                                                  ?rotation_anticlockwise 45.0))
+           (points 
+             (qub::getSymmetricSpiralPoints 
+               ?turns (qub::getParamValue device 'turns)
+               ?width w
+               ?spacing (qub::getParamValue device 'spacing)
+               ?apothem (qub::getParamValue device 'apothem)
+               ?nsides (qub::getParamValue device 'nsides)
+               ?portLen (qub::getParamValue device 'portLength)))
            (objects nil)
            (mode "truncateExtend")
            (cp (lambda (pts metLyr)
@@ -47,7 +46,8 @@
      (spacing "float" 5.0)
      (apothem "float" 50.0)
      (nsides "int" 8)
-     (metalStack "string" "M1 M2"))
+     (metalStack "string" "M1 M2")
+     (portLength "float" 25.0))
     (let ((pcell (makeInstance 'qub::symmInductorPCell)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell))))

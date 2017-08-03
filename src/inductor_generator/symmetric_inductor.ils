@@ -14,7 +14,7 @@
   `(unless (equal (,fn1 ,x) (,fn2 ,y))
     (,p (,fn1 ,x) ,y)))
 
-(defun qub::extendMiddle (turn ref width nturns turnIdx)
+(defun qub::extendMiddle (turn width nturns turnIdx)
   (letseq ((left (qub::sortTopPoint turn->left))
            (right (qub::sortTopPoint turn->right))
            (getPort 
@@ -25,11 +25,11 @@
            (topPorts (getPort (car left) (car right)))
            (bottomPorts (getPort (qub::lastAtom left) (qub::lastAtom right)))
            (mutLast (lambda (lst obj) (setcar (last lst) obj))))
-    (let ((f (if (or (and (evenp nturns) (evenp turnIdx))
-                     (and (oddp nturns) (oddp turnIdx)))
-             (lambda (p) (mutLast p (qub::mvPtX (cadr p) (width * -0.2))))
-             (lambda (p) (setcar p (qub::mvPtX (car p) (width * 0.2)))))))
-      (mapcar f (list topPorts bottomPorts)))
+    (mapc (if (or (and (evenp nturns) (evenp turnIdx))
+                  (and (oddp nturns) (oddp turnIdx)))
+          (lambda (p) (mutLast p (qub::mvPtX (cadr p) (width * -0.2))))
+          (lambda (p) (setcar p (qub::mvPtX (car p) (width * 0.2)))))
+      (list topPorts bottomPorts))
     
     ; Making sure that there are no duplicate coordinates added
     (qub:::xtendHelper car topPorts car left pushf)
@@ -51,6 +51,17 @@
       'bottom 
       'top))
             
+(defun qub::addPorts (points width portLength)
+  (letseq ((left (qub::lastAtom points)->left)
+           (right (qub::lastAtom points)->right)
+           (y (yCoord (qub::lastAtom left)))
+           (porty (y - portLength - (width / 2))))
+    (qub::pushEnd -width:y left)
+    (qub::pushEnd -width:porty left)
+    (qub::pushEnd width:y right)
+    (qub::pushEnd width:porty right)
+    points))
+            
 (defun qub:::getInterconnectsHelper (side refPts i width)
   (letseq ((f (if (eq side 'top) 
                   qub::sortTopPoint
@@ -61,15 +72,13 @@
            (a2p (lambda (x) (qub::getAngleToPt (car x) (cadr x))))
            (getLst 
              (lambda (leftPts rightPts)
-               (letseq ((points nil)
-                        (leftAngle (a2p leftPts))
-                        (rightAngle (a2p rightPts))
-                        (maa (lambda (p a) 
-                         (qub::moveAtAngle (car p) (min width (getDist p)) a))))
-                 (pushf (maa leftPts leftAngle) points)
+               (let ((points nil)
+                     (maa (lambda (p a) 
+                       (qub::moveAtAngle (car p) (min width (getDist p)) a))))
+                 (pushf (maa leftPts (a2p leftPts)) points)
                  (pushf (car leftPts) points)
                  (pushf (car rightPts) points)
-                 (pushf (maa rightPts rightAngle) points)
+                 (pushf (maa rightPts (a2p rightPts)) points)
                  points)))
            (il2or (getLst (f innerPts->left) (f outerPts->right)))
            (ol2ir (getLst (f outerPts->left) (f innerPts->right))))
@@ -77,15 +86,14 @@
         (list nil 'top ol2ir 'bot il2or)
         (list nil 'top il2or 'bot ol2ir))))
 
-; gbp = getbridgepoint            
-(defun qub::getInterconnects (width points gbp turns) 
-  (letseq ((pts (list nil 'topMetal nil 'botMetal nil))
-           ; Outer loop connects to nothing
-           (maxPtIdx ((length points) - 2))
-           (side (if (evenp turns) 
-                     'top 
-                     'bottom)))
-    (pushf (gbp) pts->topMetal) ; Adding m1 connection to innermost loop
+(defun qub::getInterconnects (width points getbridgepoint turns) 
+  (let ((pts (list nil 'topMetal nil 'botMetal nil))
+        ; Outer loop connects to nothing
+        (maxPtIdx ((length points) - 2))
+        (side (if (evenp turns) 
+                  'top 
+                  'bottom)))
+    (pushf (getbridgepoint) pts->topMetal)
     (for i 0 maxPtIdx
       (let ((interconnects (qub:::getInterconnectsHelper side points i width)))
         (pushf interconnects->top pts->topMetal)
@@ -104,13 +112,7 @@
   (reverse (qub::sortTopPoint pts)))
       
 (defun qub::getSymmetricSpiralPoints (@key 
-                                      (turns 2)
-                                      (width 10.0)
-                                      (spacing 5.0)
-                                      (apothem 50.0)
-                                      (nsides 8)
-                                      (rotation_anticlockwise 0.0)
-                                      (ref 0.0:0.0))
+  (turns 2) (width 10.0) (spacing 5.0) (apothem 50.0) (nsides 8) (portLen 25.0))
   (letseq ((atc qub::apothemToCircumradius)
            (getPoint 
             (lambda (polyIdx pointIdx)
@@ -121,8 +123,7 @@
                 (atc (plus apothem (width / 2.0)) nsides) 
                 spacing 
                 width
-                ?rotation_anticlockwise rotation_anticlockwise
-                ?ref ref)))
+                ?rotation_anticlockwise 45.0)))
            (maxPointIdx (nsides - 1))
            (maxTurnIdx (turns - 1))
            (maxHalfPointIdx ((nsides / 2) - 1))
@@ -145,8 +146,11 @@
     ; Reverse to fix the order of the spiral coords
     ; Add extra metal to reduce the gap between each half of the turns
     (setq spiralCoords 
-      (mapcar (lambda (trn i) (qub::extendMiddle trn ref width turns i))
+      (mapcar (lambda (trn i) (qub::extendMiddle trn width turns i))
               (reverse spiralCoords)
               (qub::range ?stop (length spiralCoords))))
-    (list nil 'spiralCoords spiralCoords 
-              'intercons (qub::getInterconnects width spiralCoords gbp turns))))
+              
+    (let ((i (qub::getInterconnects width spiralCoords gbp turns)))
+      (setq spiralCoords 
+          (qub::addPorts spiralCoords width portLen))
+      (list nil 'spiralCoords spiralCoords 'intercons i))))
