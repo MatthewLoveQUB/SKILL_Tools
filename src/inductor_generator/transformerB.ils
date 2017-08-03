@@ -6,7 +6,8 @@
   (qub::setParamValue device 'coilSpacing 0)
   (qub::setParamValue device 'secondCoilDirection "up")
   (qub::setParamValue device 'allowOverlap t)
-  (qub::setParamValue device 'coilSpacing 0)
+  (qub::setParamValue device 'coilSpacing
+    (qub::getParamValue device 'portLength))
   (qub::setParamValue device 'turns 1)
   (qub::setParamValue device 'nsides 8)
   (letseq ((m (parseString (qub::getParamValue device 'metalStack)))
