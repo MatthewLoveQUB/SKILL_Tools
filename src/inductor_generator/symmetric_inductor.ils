@@ -25,11 +25,11 @@
            (topPorts (getPort (car left) (car right)))
            (bottomPorts (getPort (qub::lastAtom left) (qub::lastAtom right)))
            (mutLast (lambda (lst obj) (setcar (last lst) obj))))
-    (let ((f (if (or (and (evenp nturns) (evenp turnIdx))
-                     (and (oddp nturns) (oddp turnIdx)))
-             (lambda (p) (mutLast p (qub::mvPtX (cadr p) (width * -0.2))))
-             (lambda (p) (setcar p (qub::mvPtX (car p) (width * 0.2)))))))
-      (mapc f (list topPorts bottomPorts)))
+    (mapc (if (or (and (evenp nturns) (evenp turnIdx))
+                  (and (oddp nturns) (oddp turnIdx)))
+          (lambda (p) (mutLast p (qub::mvPtX (cadr p) (width * -0.2))))
+          (lambda (p) (setcar p (qub::mvPtX (car p) (width * 0.2)))))
+      (list topPorts bottomPorts))
     
     ; Making sure that there are no duplicate coordinates added
     (qub:::xtendHelper car topPorts car left pushf)
