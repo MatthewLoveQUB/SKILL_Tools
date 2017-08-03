@@ -11,7 +11,9 @@
            (rotation (parseString (qub::getParamValue device 'coilRotation)))
            (dir (qub::getParamValue device 'secondCoilDirection))
            (metalLayers (parseString (qub::getParamValue device 'metalStack)))
-           (allowOverlap (nequal "FALSE" (qub::getParamValue device 'allowOverlap)))
+           (allowOverlap 
+             (nequal "FALSE" (qub::getParamValue device 'allowOverlap)))
+           (portLength (qub::getParamValue device 'portLength))
            (cv (slotValue device 'cvId))
            (setMet (lambda (m1 m2)
                      (qub::setParamValue device 
@@ -32,7 +34,7 @@
            (width  (calc rightEdge leftEdge))
            (fn (lambda (refDir x)
                  (if (dir == refDir) 
-                     (x + coilSpacing) 
+                     (x + coilSpacing - portLength) 
                      (0 - x - coilSpacing))))
            (transform (if (member dir (list "up" "down"))
                           (list 0 (fn "up" height))
