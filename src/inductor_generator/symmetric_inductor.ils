@@ -51,6 +51,10 @@
       'bottom 
       'top))
             
+(defun qub::addPorts (points width portLength)
+  (let ((portSpacing width))
+    points))
+            
 (defun qub:::getInterconnectsHelper (side refPts i width)
   (letseq ((f (if (eq side 'top) 
                   qub::sortTopPoint
@@ -100,8 +104,8 @@
 (defun qub::sortBottomPoint (pts)
   (reverse (qub::sortTopPoint pts)))
       
-(defun qub::getSymmetricSpiralPoints 
-  (@key (turns 2) (width 10.0) (spacing 5.0) (apothem 50.0) (nsides 8))
+(defun qub::getSymmetricSpiralPoints (@key 
+  (turns 2) (width 10.0) (spacing 5.0) (apothem 50.0) (nsides 8) (portLen 25.0))
   (letseq ((atc qub::apothemToCircumradius)
            (getPoint 
             (lambda (polyIdx pointIdx)
@@ -138,6 +142,9 @@
       (mapcar (lambda (trn i) (qub::extendMiddle trn width turns i))
               (reverse spiralCoords)
               (qub::range ?stop (length spiralCoords))))
+              
+    (setq spiralCoords 
+          (qub::addPorts spiralCoords width portLen))
               
     (list nil 'spiralCoords spiralCoords 
               'intercons (qub::getInterconnects width spiralCoords gbp turns))))
