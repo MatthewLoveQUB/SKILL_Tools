@@ -35,17 +35,27 @@
       (drawPts points->intercons->botMetal (cadr metalLayers))
       (setq objects (leMergeShapes objects))
         
-      (let ((f (lambda (x n)
+      (letseq ((metalLayer (list (car metalLayers) "pin"))
+               (name (sprintf nil "port%d" n))
+               (f (lambda (x n)
                  (leCreatePin cv 
-                              (list (car metalLayers) "pin")
+                              metalLayer
                               "rectangle"
                               (list (qub::mvPtX x (w / 2)) 
                                     (qub::movePoint x -(w / 2):w))
-                              (sprintf nil "port%d" n)
+                              name
                               "inputOutput"
-                              (list "top" "bottom" "left" "right")))))
+                              (list "top" "bottom" "left" "right"))
+                (dbCreateLabel cv
+                               metalLayer
+                               (qub::mvPtY x (w / 2))
+                               name
+                               "centerCenter"
+                               "R0"
+                               "stick"
+                               (w / 3)))))
         (f points->ports->left 0)
-        (f points->ports->right 0))
+        (f points->ports->right 1))
         
       ; Create fig group to organise the parts
       (let ((fg (dbCreateFigGroup cv "IndGroup" t 0.0:0.0 "R0")))
