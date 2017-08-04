@@ -6,7 +6,8 @@
   (qub::setParamValue device 'coilSpacing 0)
   (qub::setParamValue device 'secondCoilDirection "up")
   (qub::setParamValue device 'allowOverlap t)
-  (qub::setParamValue device 'coilSpacing 0)
+  (qub::setParamValue device 'coilSpacing
+    (qub::getParamValue device 'portLength))
   (qub::setParamValue device 'turns 1)
   (qub::setParamValue device 'nsides 8)
   (letseq ((m (parseString (qub::getParamValue device 'metalStack)))
@@ -20,10 +21,11 @@
   `(pcDefinePCell 
     (list (ddGetObj ,library) "transformerB" "layout")
     ((width "float" 10.0)
-     (spacing "float" 5.0)
+     (spacing "float" 0.0)
      (apothem "float" 50.0)
      (coilRotation "string" "R0 R180")
-     (metalStack "string" "M1 M2"))
+     (metalStack "string" "M1 M2")
+     (portLength "float" 25.0))
     (let ((pcell (makeInstance 'qub::transformerB)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell))))
