@@ -1,5 +1,7 @@
 simulator( 'spectre )
-design(	 "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic/netlist/netlist")
+design("mloveWilkinson" 
+       "deltaWithPadsAndGroundCutTb" 
+       "schematic")
 resultsDir( "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic" )
 modelFile( 
     '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
