@@ -1,3 +1,4 @@
 ; oceanHelpers.ils
 (addToExportList '(qub:::simPreamble
-                   qub:::createSmith))
+                   qub:::createSmith
+                   qub:::sToF))

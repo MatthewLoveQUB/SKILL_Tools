@@ -15,7 +15,7 @@
              (qub::getSymmetricSpiralPoints 
                ?turns (qub::getParamValue device 'turns)
                ?width w
-               ?spacing (qub::getParamValue device 'spacing)
+               ?spacing (qub::getParamValue device 'spacing) 
                ?apothem (qub::getParamValue device 'apothem)
                ?nsides (qub::getParamValue device 'nsides)
                ?portLen (qub::getParamValue device 'portLength)))

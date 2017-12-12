@@ -25,3 +25,7 @@
   (newWindow)
   (displayMode "smith")
   (smithType smithTypeStr))
+
+; Gets the frequency from a S-Parameter value
+(defun qub::sToF ()
+  (xval (getData "/s11" ?result "sp")))
