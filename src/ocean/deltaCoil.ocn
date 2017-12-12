@@ -65,7 +65,7 @@ Xp = (quotient top Xs)
 
 Rideal = 100.0
 Rnew = (quotient 1.0 
-                 (minus (quotient 1.0 Rideal)
+                 (difference (quotient 1.0 Rideal)
                        (quotient 1.0 Rp)))
 (plot Rnew ?expr (list "Rnew"))
 
