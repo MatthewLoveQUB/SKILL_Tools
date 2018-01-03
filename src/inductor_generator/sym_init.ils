@@ -1,6 +1,7 @@
 ; inductor.ils
 (addToExportList '(qub:::getPoint
-                   qub:::getPolyPoint))
+                   qub:::getPolyPoint
+                   qub:::findIntersectPoint))
   
   
 ; oct_ind_pcell 

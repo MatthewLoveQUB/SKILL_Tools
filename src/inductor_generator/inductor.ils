@@ -7,7 +7,7 @@
     (range (x + dx) (y + dy))))
     
 ; equation taken from here the Line-Line intersection wiki page
-(defun qub:::findIntersectPoint (a1 a2 b1 b2)
+(defun qub::findIntersectPoint (a1 a2 b1 b2)
   (let ((x1 (xCoord a1))
         (x2 (xCoord a2))
         (x3 (xCoord b1))

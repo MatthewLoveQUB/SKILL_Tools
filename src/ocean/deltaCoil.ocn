@@ -1,19 +1,24 @@
-simulator( 'spectre )
-design("mloveWilkinson" 
-       "deltaWithPadsAndGroundCutTb" 
-       "schematic")
-resultsDir( "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic" )
-modelFile( 
-    '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
-    '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "pre_simu")
+(simulator 'spectre)
+
+;curDesign = (geGetEditCellView (getCurrentWindow))
+
+(design
+  "mloveDNR2_Final"
+  "coilTb"
+  "schematic")
+(resultsDir 
+  "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic" )
+(modelFile 
+  '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
+  '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "pre_simu")
 )
-definitionFile(
-    "/user/p_outpa/.caddata/tcbn28hpcbwp35p140/Back_End/spice/tcbn28hpcbwp35p140_100a/tcbn28hpcbwp35p140_100a.spi"
-    "/user/p_outpa/.caddata/tcbn28hpcbwp35p140lvt/Back_End/spice/tcbn28hpcbwp35p140lvt_100a/tcbn28hpcbwp35p140lvt_100a.spi"
-    "/user/p_outpa/.caddata/tphn28hpcgv18e/Back_End/spice/tphn28hpcgv18e_120a/tphn28hpcgv18e.spi"
+(definitionFile
+  "/user/p_outpa/.caddata/tcbn28hpcbwp35p140/Back_End/spice/tcbn28hpcbwp35p140_100a/tcbn28hpcbwp35p140_100a.spi"
+  "/user/p_outpa/.caddata/tcbn28hpcbwp35p140lvt/Back_End/spice/tcbn28hpcbwp35p140lvt_100a/tcbn28hpcbwp35p140lvt_100a.spi"
+  "/user/p_outpa/.caddata/tphn28hpcgv18e/Back_End/spice/tphn28hpcgv18e_120a/tphn28hpcgv18e.spi"
 )
 
-(analysis 'sp ?ports list("/PORT0" "/PORT1" "/PORT2")  ?start "1G"  ?stop "15G")
+(analysis 'sp ?ports list("/PORT0" "/PORT1" "/PORT2")  ?start "1G"  ?stop "15G" ?step "10M")
 (envOption 'analysisOrder  list("sp"))
 (temp 27) 
 (run)
@@ -25,9 +30,9 @@ y12 = (times -1.0 (ypm "sp" 1 2))
 y13 = (times -1.0 (ypm "sp" 1 3))
 y23 = (times -1.0 (ypm "sp" 2 3))
 
-z12 = (quotient 1 y12)
-z13 = (quotient 1 y13)
-z23 = (quotient 1 y23)
+z12 = (quotient 1.0 y12)
+z13 = (quotient 1.0 y13)
+z23 = (quotient 1.0 y23)
 
 r12 = (real z12)
 r13 = (real z13)

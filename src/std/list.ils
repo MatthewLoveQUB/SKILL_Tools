@@ -10,6 +10,10 @@
       (helper lst)
     (reverse outputList))))
 
+; Start is inclusive
+; End is exclusive
+; (qub::range ?start 0 ?stop 5)
+; (0 1 2 3 4)
 (defun qub::range (@key (start 0) (stop -1) (step 1))
   (if (lessp stop start)
       (error "End value is lower than start value")
