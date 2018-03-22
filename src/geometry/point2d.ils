@@ -44,11 +44,15 @@
            (dy (yCoord d)))
     (qub::radToDeg (atan2 dy dx))))
     
+; Move a distance from a point at an angle
+; It assumes a polar plot
+; Angle is in degrees	
 (defun qub::moveAtAngle (pt dist angle)
   (let ((dx (times dist (cos (qub::degToRad angle))))
         (dy (times dist (sin (qub::degToRad angle)))))
     (qub::movePoint pt dx:dy)))
     
+; Calculate the distance between two points	
 (defun qub::getDist (a b)
   (sqrt (plus 
           (expt (difference (yCoord a) (yCoord b)) 2)

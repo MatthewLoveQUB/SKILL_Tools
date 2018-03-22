@@ -36,20 +36,19 @@
       (setq objects (leMergeShapes objects))
         
       (letseq ((metalLayer (list (car metalLayers) "pin"))
-               (name (sprintf nil "port%d" n))
                (f (lambda (x n)
                  (leCreatePin cv 
                               metalLayer
                               "rectangle"
                               (list (qub::mvPtX x (w / 2)) 
                                     (qub::movePoint x -(w / 2):w))
-                              name
+                              (sprintf nil "port%d" n)
                               "inputOutput"
                               (list "top" "bottom" "left" "right"))
                 (dbCreateLabel cv
                                metalLayer
                                (qub::mvPtY x (w / 2))
-                               name
+                               (sprintf nil "port%d" n)
                                "centerCenter"
                                "R0"
                                "stick"

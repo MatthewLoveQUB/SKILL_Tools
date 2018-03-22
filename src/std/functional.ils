@@ -23,5 +23,5 @@
 (defun qub::takeN (n lst)
   (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
      
-
-
+(defun qub::dropN (n lst)
+  (mapcar (lambda (x) (nth x lst)) (qub::range ?start n ?stop (length lst))))

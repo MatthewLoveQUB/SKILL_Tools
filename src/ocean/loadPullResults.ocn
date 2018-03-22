@@ -1,0 +1,42 @@
+(defun plotLoadPull (minPout minPae)
+	; To plot these values you must add the input, output and DC 
+	; voltages and currents to the ADE outputs
+
+	(qub::createSmith)
+
+	; Comment one out depending on if you're using a PSS or HB load-pull
+	;testName = "pss_fd"
+	testName = "hb_fd"
+
+	outCurrent = (i "/PORT1/PLUS" ?result testName)
+	outVoltage = (v "/out" ?result testName) 
+	outPower = (spectralPower outCurrent outVoltage) 
+
+	inCurrent = (i "/PORT0/PLUS" ?result testName)
+	inVoltage = (v "/in" ?result testName)
+	inPower = (spectralPower inCurrent inVoltage)
+
+	dcCurrent = (i "/V1/PLUS" ?result testName)
+	dcVoltage = (v "/supply" ?result testName)
+	dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+
+	rfPower = (harmonic (plus outPower inPower) 1)
+
+	PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
+					   ?maxValue 100 
+					   ?minValue minPae
+					   ?numCont 6
+					   ?closeCont nil)
+
+	(plot PAE ?expr '("PAE"))
+
+	powerContours = (cPwrContour outCurrent
+							   outVoltage
+							   '1 
+							   ?refImp 50.0 
+							   ?numCont 6
+							   ?minPower minPout
+							   ?closeCont nil
+							   ?modifier "dBm")
+
+	(plot powerContours ?expr '("Po")))

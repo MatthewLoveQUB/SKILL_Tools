@@ -1,0 +1,47 @@
+f = (qub::sToF)
+w = (times 2 qub::m.PI f)
+
+z11 = (zpm "sp" 1 1)
+z22 = (zpm "sp" 2 2)
+z12 = (zpm "sp" 1 2)
+
+r11 = (real z11)
+r22 = (real z22)
+r12 = (real z12)
+
+x11 = (imag z11)
+x22 = (imag z22)
+x12 = (imag z12)
+
+q11 = (quotient x11 r11)
+q22 = (quotient x22 r22)
+q12 = (quotient x12 r12)
+
+l11 = (quotient x11 w)
+l22 = (quotient x22 w)
+l12 = (quotient x12 w)
+
+; L11 = Lx
+; L12 = M
+; M = k*Lx
+; k = M / Lx
+k11 = (quotient l12 l11)
+k22 = (quotient l12 l22)
+
+winId = (newWindow)
+(plot q11 q22 q12 ?expr (list "Q11" "Q22" "Q12"))
+
+(addSubwindow)
+(plot r11 r22 r12 ?expr (list "R11" "R22" "R12"))
+
+(addSubwindow)
+(plot l11 l22 l12 ?expr (list "L11" "L22" "L12"))
+
+(addSubwindow)
+(plot k11 k22 ?expr (list "k11" "k22"))
+
+
+(awvPlaceXMarker winId 5G ?subwindow 1) 
+(awvPlaceXMarker winId 5G ?subwindow 2) 
+(awvPlaceXMarker winId 5G ?subwindow 3)
+(awvPlaceXMarker winId 5G ?subwindow 4) 

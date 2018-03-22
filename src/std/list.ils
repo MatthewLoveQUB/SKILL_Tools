@@ -1,6 +1,8 @@
+; Join a list of lists
 (defun qub::joinLists (lst)
   (qub::foldl append (list) lst))
 
+  ; Recursively flatten all lists
 (defun qub::flattenList (lst)
   (letseq ((outputList (list)))
     (labels  ((helper (a)
@@ -24,11 +26,16 @@
           (setq cur_val (plus cur_val step)))
         (reverse values))))
         
+; Push a new item to the end of a list		
 (defun qub::pushEnd (val lst)
   (pushf val (cdr (last lst))))
   
+; Get the last atom from a list  
 (defun qub::lastAtom (lst)
   (car (last lst)))
   
+; Sum values in two lists 
+; >>> (qub::addListElems (list 1 2 3) (list 1 2 3))
+; (2 4 6)
 (defun qub::addListElems (a b)
   (mapcar plus a b))

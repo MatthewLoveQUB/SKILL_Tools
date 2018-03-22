@@ -1,2 +1,3 @@
+; Namespace initialisation
 (unless (findNamespace "qub")
         (makeNamespace "qub"))

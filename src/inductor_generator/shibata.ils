@@ -1,0 +1,132 @@
+; apothem
+(defun genOctagon (a)
+  (letseq ((angle 45.0)
+           (sides 8.0)
+           ; circumradius
+           (cr (qub::apothemToCircumradius a sides)))
+    (qub::lcmp
+      ; 90 degrees is north
+      ; Move by angle/2 clockwise so the shape is normal
+      (qub::getPoint (difference 202.5 (times n angle)) cr)
+      for n in (qub::range ?start 0 ?stop sides))))
+
+; width, spacing, apothem, number of shapes
+(defun genOctagons (w1 w2 s a n)
+  (let ((sides 8)
+        ; new apothem
+        (na (lambda (w1 w2 s a n)
+              (plus (plus a (quotient w1 2.0))
+                    (times n (plus w1 s w2 s))))))
+    (qub::lcmp 
+      (genOctagon (na w1 w2 s a n)) 
+      for n in (qub::range ?start 0 ?stop n))))
+      
+; Flatten octagons
+(defun getPointsFromOctagons (octs)
+  (letseq ((nshapes (length octs))
+           (pts nil)
+           (lastShape (nth (difference nshapes 1) octs)))
+    (for shapeN 0 (difference nshapes 2)
+      (letseq ((thisShape (nth shapeN octs))
+               (nextShape (nth (plus shapeN 1) octs))
+               (intersectionPoint
+                 (qub::findIntersectPoint (nth 6 thisShape)
+                                          (nth 7 thisShape)
+                                          (nth 0 nextShape)
+                                          (nth 7 nextShape))))
+        (foreach pt thisShape
+          (setq pts (cons pt pts)))
+        (setq pts (cons intersectionPoint pts))))
+    (setq pts (cons (nth 0 lastShape) pts))
+    (setq pts (cons (nth 1 lastShape) pts))
+    pts))
+    
+; a = apothem
+(defun drawShibata (w1 w2 s a trns)
+  (letseq ((curWin (getCurrentWindow))
+           (cvId (geGetEditCellView curWin))
+           (layer (list "AP" "drawing"))
+           ; We need to generate an extra shape
+           ; as we're going to plot the first two points
+           (octagons (genOctagons w1 w2 s a (plus trns 1.0)))
+           (pts (reverse (getPointsFromOctagons octagons)))
+           (mainPath (rodCreatePath
+                       ?name "Master Path"
+                       ?cvId cvId
+                       ?layer layer
+                       ?width w1
+                       ?justification 'center
+                       ; List of points to be drawn
+                       ?pts pts
+                       ; Contains a list of subpath-lists
+                       ?offsetSubPath (list (list ?layer layer
+                                                  ?width w2
+                                                  ?sep s
+                                                  ?justification 'left
+                                                  ?beginOffset 0))))
+           ; Make the final point of the outer coil
+           ; Go a bit further north than the top of the bbox
+           (lastInner (mainPath->endLast))
+           (pathSeparation (plus (quotient w1 2.0) (quotient w2 2.0) s))
+           (lastOuter (qub::mvPtX lastInner (minus pathSeparation)))
+           (coilTop (topEdge mainPath->mppBBox))
+           (finalOuter (list (car lastOuter) (plus coilTop w1 w1 s)))
+           (extensionPts (list lastOuter finalOuter))
+           (outExtensionPath (rodCreatePath
+                               ?name "Outer Extension"
+                               ?cvId cvId
+                               ?layer layer
+                               ?width w2
+                               ?justification 'center
+                               ?pts extensionPts))
+           ; Make final points for the inner path
+           ; This will have to be tuned by the designer afterwards
+           (lastOct (qub::lastAtom octagons))
+           (lastInnerLoopPt (qub::mvPtX (nth 3 lastOct) (times w1 4.0)))
+           (extPts (append (qub::takeN 4 lastOct) (list lastInnerLoopPt)))
+           (inExtPath (rodCreatePath
+                        ?name "Inner Extension"
+                        ?cvId cvId
+                        ?layer layer
+                        ?width w1
+                        ?justification 'center
+                        ?pts extPts))
+           ; Make an underpass to the inner points
+           (firstInnerPoint mainPath->start0)
+           ; We now add in the M8 bridge
+           (underLayer (list "M8" "drawing"))
+           (bridgeRightStart (qub::mvPtY firstInnerPoint (quotient w1 2.0)))
+           (bridgeRightEnd 
+             (list (xCoord bridgeRightStart)
+                   (difference (bottomEdge mainPath->mppBBox) s w1)))
+           (bridgeLeftStart (qub::mvPtX bridgeRightStart 
+                                        (minus pathSeparation)))
+           (bridgeLeftEnd (qub::mvPtX bridgeRightEnd 
+                                      (minus pathSeparation)))
+           (underBridgeRight (rodCreatePath
+                               ?name "Under path Right"
+                               ?cvId cvId
+                               ?layer underLayer
+                               ?width (min w1 12.0)
+                               ?justification 'center
+                               ?pts (list bridgeRightStart bridgeRightEnd)))
+           (underBridgeLeft (rodCreatePath
+                              ?name "Under path Left"
+                              ?cvId cvId
+                              ?layer underLayer
+                              ?width (min w2 12.0)
+                              ?justification 'center
+                              ?pts (list bridgeLeftStart bridgeLeftEnd)))
+           (tf (techGetTechFile cvId)))
+    mainPath))
+
+; cur test des
+wx = 17
+w1 = wx
+w2 = wx
+s = 3.5
+a = 87
+trns = 1.0
+
+
+(define tst (drawShibata w1 w2 s a trns))

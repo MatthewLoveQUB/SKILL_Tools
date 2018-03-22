@@ -1,0 +1,57 @@
+; (simulator 'spectre)
+
+; (design
+  ; "mloveStarRes"
+  ; "CoilInductanceTest"
+  ; "schematic")
+
+; (resultsDir "/data/p_outpa_extra01/mlove/simulation/coilInductanceTest/spectre/schematic" )
+; (modelFile 
+    ; '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
+    ; '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "pre_simu")
+; )
+
+; (definitionFile
+    ; "/user/p_outpa/.caddata/tcbn28hpcbwp35p140/Back_End/spice/tcbn28hpcbwp35p140_100a/tcbn28hpcbwp35p140_100a.spi"
+    ; "/user/p_outpa/.caddata/tcbn28hpcbwp35p140lvt/Back_End/spice/tcbn28hpcbwp35p140lvt_100a/tcbn28hpcbwp35p140lvt_100a.spi"
+    ; "/user/p_outpa/.caddata/tphn28hpcgv18e/Back_End/spice/tphn28hpcgv18e_120a/tphn28hpcgv18e.spi"
+; )
+
+; (analysis 'sp 
+  ; ?ports (list "/PORT1" "/PORT2")  
+  ; ?start "1G"  
+  ; ?stop "15G" 
+  ; ?step "10M")
+    
+; (desVar "capRes" 106)
+
+; (envOption 'analysisOrder (list "sp"))
+
+; (temp 27 ) 
+; (run)
+
+f = (qub::sToF)
+w = (times 2 qub::m.PI f)
+
+z1 = (zpm "sp" 1 1)
+z2 = (zpm "sp" 2 2)
+zM = (zpm "sp" 1 2)
+
+L1 = (quotient (imag z1) w)
+L2 = (quotient (imag z2) w)
+LM = (quotient (imag zM) w)
+
+totalL1 = (plus L1 (minus LM))
+totalL2 = (plus L2 (minus LM))
+
+q1 = (quotient (imag z1) (real z1))
+q2 = (quotient (imag z2) (real z2))
+
+winId = (newWindow)
+(plot q1 q2 ?expr (list "Q1" "Q2"))
+
+(addSubwindow)
+(plot L1 L2 LM totalL1 totalL2 ?expr (list "L1" "L2" "LM" "TL1" "TL2"))
+
+(awvPlaceXMarker winId 5G ?subwindow 1) 
+(awvPlaceXMarker winId 5G ?subwindow 2) 

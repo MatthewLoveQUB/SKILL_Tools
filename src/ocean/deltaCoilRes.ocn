@@ -2,26 +2,26 @@
 
 ;curDesign = (geGetEditCellView (getCurrentWindow))
 
-(design
-  "mloveDR"
-  "coilTb"
-  "schematic")
-(resultsDir 
-  "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic" )
-(modelFile 
-  '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
-  '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "pre_simu")
-)
-(definitionFile
-  "/user/p_outpa/.caddata/tcbn28hpcbwp35p140/Back_End/spice/tcbn28hpcbwp35p140_100a/tcbn28hpcbwp35p140_100a.spi"
-  "/user/p_outpa/.caddata/tcbn28hpcbwp35p140lvt/Back_End/spice/tcbn28hpcbwp35p140lvt_100a/tcbn28hpcbwp35p140lvt_100a.spi"
-  "/user/p_outpa/.caddata/tphn28hpcgv18e/Back_End/spice/tphn28hpcgv18e_120a/tphn28hpcgv18e.spi"
-)
+; (design
+  ; "mloveDR"
+  ; "coilTb"
+  ; "schematic")
+; (resultsDir 
+  ; "/data/p_outpa_extra01/mlove/simulation/deltaWithPadsAndGroundCutTb/spectre/schematic" )
+; (modelFile 
+  ; '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "top_tt")
+  ; '("/cadappl/iclibs/tsmc/CRN28HPC/T-N28-CR-SP-020/1_0_2P1//toplevel.scs" "pre_simu")
+; )
+; (definitionFile
+  ; "/user/p_outpa/.caddata/tcbn28hpcbwp35p140/Back_End/spice/tcbn28hpcbwp35p140_100a/tcbn28hpcbwp35p140_100a.spi"
+  ; "/user/p_outpa/.caddata/tcbn28hpcbwp35p140lvt/Back_End/spice/tcbn28hpcbwp35p140lvt_100a/tcbn28hpcbwp35p140lvt_100a.spi"
+  ; "/user/p_outpa/.caddata/tphn28hpcgv18e/Back_End/spice/tphn28hpcgv18e_120a/tphn28hpcgv18e.spi"
+; )
 
-(analysis 'sp ?ports list("/PORT0" "/PORT1" "/PORT2")  ?start "1G"  ?stop "15G" ?step "10M")
-(envOption 'analysisOrder  list("sp"))
-(temp 27) 
-(run)
+; (analysis 'sp ?ports list("/PORT0" "/PORT1" "/PORT2")  ?start "1G"  ?stop "15G" ?step "10M")
+; (envOption 'analysisOrder  list("sp"))
+; (temp 27) 
+; (run)
 
 f = (qub::sToF)
 w = (times 2 qub::m.PI f)
@@ -57,6 +57,7 @@ winId = (newWindow)
 (plot r12 r13 r23 ?expr (list "R12" "R13" "R23"))
 
 (addSubwindow)
+;(plot l12 l13 ?expr (list "L12" "L13"))
 (plot l12 l13 l23 ?expr (list "L12" "L13" "L23"))
 
 (addSubwindow)
@@ -78,5 +79,6 @@ Rnew = (quotient 1.0
 
 (awvPlaceXMarker winId 5G ?subwindow 1) 
 (awvPlaceXMarker winId 5G ?subwindow 2) 
-(awvPlaceXMarker winId 5G ?subwindow 3) 
+(awvPlaceXMarker winId 5G ?subwindow 3)
+(awvPlaceXMarker winId 10G ?subwindow 2) 
 (awvPlaceXMarker winId 5G ?subwindow 4) 

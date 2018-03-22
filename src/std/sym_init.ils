@@ -20,7 +20,8 @@
                    qub:::foldr
                    qub:::sum
                    qub:::lcmp
-                   qub:::takeN))
+                   qub:::takeN
+				   qub:::dropN))
 
 ; list.ils
 (addToExportList '(qub:::joinLists

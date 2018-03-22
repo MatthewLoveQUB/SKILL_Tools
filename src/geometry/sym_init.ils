@@ -20,4 +20,10 @@
                    
 ; shapes.ils
 (addToExportList '(qub:::apothemToCircumradius
-                   qub:::internalAngle))                   
+                   qub:::internalAngle
+                   qub:::genOctagon
+                   qub:::genOctagons
+                   qub:::octagonsToCoil))
+
+; line.ils
+(addToExportList '(qub:::findIntersectPoint))				   
