@@ -126,7 +126,7 @@
   )
   
   (letseq ((pathCellId (dbOpenCellViewByType "mloveLib28nm"
-                                             "frlan"
+                                             "frlanCoilSection"
                                              "layout")))
     (dbCreateParamInst pcCellView
                        pathCellId
