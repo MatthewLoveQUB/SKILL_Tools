@@ -1,21 +1,21 @@
-; Process a one-port S-Parameter simulation to measure the inductance of a circuit
+; Process a one-port S-Parameter simulation to measure the capacitance of a circuit
 
 f = (qub::sToF)
 w = (times 2 qub::m.PI f)
 
 z1 = (zpm "sp" 1 1)
 
-L1 = (quotient (imag z1) w)
+C1 = (-1 / ((imag z1) * w))
 
 r1 = (real z1)
 
-q1 = (quotient (imag z1) r1)
+q1 = ((-1 * (imag z1)) /  r1)
 
 winId = (newWindow)
 (plot q1 r1 ?expr (list "Q1" "R1"))
 
 (addSubwindow)
-(plot L1 ?expr (list "L1"))
+(plot C1 ?expr (list "C1"))
 
 (awvPlaceXMarker winId 5G ?subwindow 1) 
 (awvPlaceXMarker winId 5G ?subwindow 2) 
