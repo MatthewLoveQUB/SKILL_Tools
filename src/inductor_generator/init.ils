@@ -15,3 +15,7 @@
         `(qub::createSymmInductorPCell ,libname)
         `(qub::createTransformerA ,libname)
         `(qub::createTransformerB ,libname)))
+        
+(defun qub::loadFrlanPCells ()
+  (load "./code/src/inductor_generator/frlan.ils")
+  (load "./code/src/inductor_generator/frlanMultiMetal.ils"))

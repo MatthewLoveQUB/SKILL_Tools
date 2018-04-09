@@ -1,0 +1,150 @@
+;; This file creates a PCell for an octagonal Frlan Cell
+
+; Converts a list of octagons into a frlan coil
+(defun octagonsToFrlan (shapes nSegs)
+  (letseq (; Join the shapes into a single list
+           (inList (qub::joinLists shapes))
+           ; Create the output list with the first point added
+           (outList (list (nth 0 inList)))
+           ; A counter for the required segments
+           (segCount 0)
+           ; Index for the current segment
+           (segIndex 1))
+    ; Loop until we have all of the points
+    (while (neq segCount nSegs)
+      (cond
+        ; If we're moving to the next shape
+        ; e.g. index 8 would be the first coordinate of the new shape
+        ; then make a bridge and move to the next shape.
+        ((zerop (mod segIndex 8))
+         (letseq ((lastPoint (nth (segIndex-1) inList))
+                  (secondLastPoint (nth (segIndex-2) inList))
+                  (thisPoint (nth segIndex inList))
+                  (nextPoint (nth (segIndex+7) inList))
+                  (bridgePoint (qub::findIntersectPoint lastPoint
+                                                        secondLastPoint
+                                                        thisPoint
+                                                        nextPoint)))
+           ; Add the bridge point
+           (qub::pushEnd bridgePoint outList)
+           ; Add the new point
+           (qub::pushEnd thisPoint outList)
+           ; Increment the counts
+           (setq segCount (segCount + 1))
+           (setq segIndex (segIndex + 1))))
+        ; If we're at the top right of the shape
+        ; e.g. index 3
+        ; then move to the next shape.
+        ((eq 4 (mod segIndex 8))
+         (letseq ((lastPoint (nth (segIndex-1) inList))
+                  (secondLastPoint (nth (segIndex-2) inList))
+                  (thisPoint (nth (segIndex+7) inList))
+                  (nextPoint (nth (segIndex+8) inList))
+                  (bridgePoint (qub::findIntersectPoint lastPoint
+                                                        secondLastPoint
+                                                        thisPoint
+                                                        nextPoint)))
+           ; Add the bridge point
+           (qub::pushEnd bridgePoint outList)
+           ; Add the new point
+           (qub::pushEnd nextPoint outList)
+           ; Increment the counts
+           (setq segCount (segCount + 1))
+           (setq segIndex (segIndex + 9))))
+        ; Otherwise just add the new coordinate and increment the counts
+        (t
+         (progn (qub::pushEnd (nth segIndex inList) outList)
+                (setq segCount (segCount + 1))
+                (setq segIndex (segIndex + 1))))))
+    outList))
+
+
+; PCell definition for one part of the coil
+(pcDefinePCell
+  ; Define target cellview
+  (list (ddGetObj "mloveLib28nm") "frlanCoilSection" "layout")
+
+  ; Define Parameter List
+  (
+    (width "float" 15.0)
+    (spacing "float" 2.0)
+    (apothem "float" 30.0)
+    (turns "float" 3.0)
+    (metalLayer "string" "AP")
+  )
+
+  ; Define the cellview contents
+  (letseq (; Metal Layer Purpose Pair
+           (layerPP (list metalLayer "drawing"))
+           ; Number of shapes to be generated
+           (nShapes ((turns * 2) + 1))
+           ; List of octagon shapes
+           (octagons (qub::genOctagons width spacing apothem nShapes))
+           ; Length of a segment relative to the turn
+           (segLen (quotient 1.0 8.0))
+           ; Number of segments needed
+           (nSegs (floor (quotient turns segLen)))
+           ; Process the coordinates into a coil
+           ; We add an extra segment so we can have a good spot
+           ; for the IO pins
+           (coords (octagonsToFrlan octagons (1+nSegs)))
+           ; Get the last two points (we added an extra one)
+           ; and find the midpoint of the two of them
+           ; Then set the last point as the midpoint
+           (nCoords (length coords))
+           (lastPoint (nth (nCoords-1) coords))
+           (secondLastPoint (nth (nCoords-2) coords))
+           (midPoint (qub::midPoint lastPoint secondLastPoint))
+           ; Get the angle of the final two points
+           ; Add 90 degrees for the output section
+           (ang (qub::getAngleToPt secondLastPoint lastPoint))
+           (newAng (ang + 90.0))
+           (finalPoint (qub::moveAtAngle midPoint width newAng)))
+    ; Mutate the final value of the last and change it to the midpoint
+    (setf (nth (nCoords-1) coords) midPoint)
+    ; Add the output point
+    (qub::pushEnd finalPoint coords)
+    ; Draw the coil itself
+    (rodCreatePath ?name "path"
+                   ?layer layerPP
+                   ?width width
+                   ?pts coords)))
+
+
+; Define the two interwound coils
+(pcDefinePCell
+  ; Define target cellview
+  (list (ddGetObj "mloveLib28nm") "frlanCoilMulti" "layout")
+
+  ; Define Parameter List
+  (
+    (width "float" 15.0)
+    (spacing "float" 2.0)
+    (apothem "float" 30.0)
+    (turns "float" 3)
+    (metalLayer1 "string" "AP")
+    (metalLayer2 "string" "M8")
+    (metalLayer3 "string" "M7")
+  )
+
+  (letseq ((pathCellId (dbOpenCellViewByType "mloveLib28nm"
+                                             "frlanCoilSection"
+                                             "layout"))
+           (makeCoil (lambda (name metLyr rot)
+                       (dbCreateParamInst pcCellView
+                             pathCellId
+                             name
+                             0:0
+                             rot
+                             1
+                             (list (list "width" "float" width)
+                               (list "spacing" "float" spacing)
+                               (list "apothem" "float" apothem)
+                               (list "turns" "float" turns)
+                               (list "metalLayer" "string" metLyr))))))
+    (apply makeCoil (list "coil1" metalLayer1 "R0"))
+    (apply makeCoil (list "coil2" metalLayer1 "R180"))
+    (apply makeCoil (list "coil3" metalLayer2 "R0"))
+    (apply makeCoil (list "coil4" metalLayer2 "R180"))
+    (apply makeCoil (list "coil5" metalLayer3 "R0"))
+    (apply makeCoil (list "coil6" metalLayer3 "R180"))))
