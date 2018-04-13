@@ -1,4 +1,4 @@
 ; Defines the generic function for draw.
 ; This is placed in its own file as this should be loaded
-; once as redefining a generic function will   
-(defgeneric qub::draw (device) t)
+; once as redefining a generic function will wipe the existing methods
+(defgeneric qub::draw (device @rest _args) t)

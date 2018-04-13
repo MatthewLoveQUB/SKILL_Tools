@@ -6,7 +6,9 @@
   (modload "symmetric_inductor.ils")
   (modload "symm_ind_pcell.ils")
   (modload "transformerA.ils")
-  (modload "transformerB.ils"))
+  (modload "transformerB.ils")
+  (modload "frlan_segment.ils")
+  (modload "frlan.ils"))
 
 (defmacro qub::createInductorPCells (libname)
   (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
@@ -14,8 +16,6 @@
         `(qub::createOctInductorPCell ,libname)
         `(qub::createSymmInductorPCell ,libname)
         `(qub::createTransformerA ,libname)
-        `(qub::createTransformerB ,libname)))
-        
-(defun qub::loadFrlanPCells ()
-  (load "./code/src/inductor_generator/frlan.ils")
-  (load "./code/src/inductor_generator/frlanMultiMetal.ils"))
+        `(qub::createTransformerB ,libname)
+        `(qub::createFrlanSegmentPCell ,libname)
+        `(qub::createFrlanPCell ,libname)))
