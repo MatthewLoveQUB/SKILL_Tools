@@ -41,5 +41,13 @@
                    qub:::transformerB))
 
 ; init.ils
-(addToExportList '(qub:::createInductorPCells
-                   qub:::loadFrlanPCells))
+(addToExportList '(qub:::createInductorPCells))
+
+; frlan_segment.ils
+(addToExportList '(qub:::octagonsToFrlan
+                   qub:::frlanSegmentPCell
+                   qub:::createFrlanSegmentPCell))
+                   
+; frlan.ils
+(addToExportList '(qub:::frlanPCell
+                   qub:::createFrlanPCell))
