@@ -8,3 +8,6 @@
 
 ; capOnePort.ocn
 (addToExportList '(qub:::ocnCapOnePort))
+
+; indOnePort.ocn
+(addToExportList '(qub:::ocnIndOnePort))

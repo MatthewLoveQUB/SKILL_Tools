@@ -1,21 +1,33 @@
 ; Process a one-port S-Parameter simulation to measure the inductance of a circuit
 
-f = (qub::sToF)
-w = (times 2 qub::m.PI f)
+(defun qub::ocnIndOnePort (f0)
+  f = (qub::sToF)
+  w = (times 2 qub::m.PI f)
 
-z1 = (zpm "sp" 1 1)
+  ; Complex impedance
+  Z = (zpm "sp" 1 1)
 
-L1 = (quotient (imag z1) w)
+  ; Resistance and reactance
+  R = (real Z)
+  XL = (imag Z)
 
-r1 = (real z1)
+  ; Inductance
+  L = XL/w
 
-q1 = (quotient (imag z1) r1)
+  ; Q Factor
+  Q = XL/R
 
-winId = (newWindow)
-(plot q1 r1 ?expr (list "Q1" "R1"))
+  ; Parallel resistance, reactance and inductance
+  Rp = (XL**2 + R**2)/R
+  Xp = (XL**2 + R**2)/XL
+  Lp = Xp/w
 
-(addSubwindow)
-(plot L1 ?expr (list "L1"))
+  ; Plot the data
+  winId = (newWindow)
+  (plot Q R XL Rp Xp ?expr (list "Q" "R" "XL" "Rp" "Xp"))
 
-(awvPlaceXMarker winId 5G ?subwindow 1) 
-(awvPlaceXMarker winId 5G ?subwindow 2) 
+  (addSubwindow)
+  (plot L Lp ?expr (list "L" "Lp"))
+
+  (awvPlaceXMarker winId f0 ?subwindow 1) 
+  (awvPlaceXMarker winId f0 ?subwindow 2))
