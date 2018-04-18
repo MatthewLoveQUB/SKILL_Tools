@@ -1,0 +1,7 @@
+; General functions for designing passive networks
+
+; Convert series RL/RC to parallel
+(defun qub::seriesToParallel (X R)
+  Xp = (R**2 + X**2)/R
+  Rp = (R**2 + X**2)/X
+  (list nil 'Xp Xp 'Rp Rp))
