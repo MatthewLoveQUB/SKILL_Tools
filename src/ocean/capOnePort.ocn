@@ -7,20 +7,21 @@ f = (qub::sToF)
   z1 = (zpm "sp" 1 1)
   
   ; Reactance
-  XC = (abs (imag z1))
+  XC = (imag z1)
+  XC_abs = (abs XC)
   
   ; Capacitance
-  C = 1.0/(XC*w)
+  C = 1.0/(XC_abs*w)
 
   ; Resistance
   R = (real z1)
 
   ; Q Factor
-  Q = XC/R
+  Q = XC_abs/R
 
   ; Parallel resistance, reactance and capacitance
-  Rp = (R**2 + XC**2)/R
-  Xp = (R**2 + XC**2)/XC
+  Rp = (R**2 + XC_abs**2)/R
+  Xp = (R**2 + XC_abs**2)/XC_abs
   Cp = 1/(Xp*w)
   
   winId = (newWindow)
