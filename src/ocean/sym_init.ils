@@ -2,3 +2,9 @@
 (addToExportList '(qub:::simPreamble
                    qub:::createSmith
                    qub:::sToF))
+                   
+; coupledCoil.ocn
+(addToExportList '(qub:::ocnCoupledCoil))
+
+; capOnePort.ocn
+(addToExportList '(qub:::ocnCapOnePort))

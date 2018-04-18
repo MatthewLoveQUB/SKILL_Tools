@@ -1,2 +1,4 @@
 (qubCreateModule "ocean/"
-  (modload "oceanHelpers.ils"))
+  (modload "oceanHelpers.ils")
+  (modload "capOnePort.ocn")
+  (modload "coupledCoil.ocn"))

@@ -1,110 +1,111 @@
 ; A two port measurement that uses both the Y and Z parameters of a coupled
 ; coil to get both its T and Pi representations.
 
-f = (qub::sToF)
-w = (times 2 qub::m.PI f)
+(defun qub::ocnCoupledCoil (f0)
+  f = (qub::sToF)
+  w = (times 2 qub::m.PI f)
 
-; T Network representation using Z-Parameters.
-; T network is assumed to be in the following form.
-;
-; O---Za-----Zb---O
-;         |
-;         Zc
-;         |
-; O---------------O
+  ; T Network representation using Z-Parameters.
+  ; T network is assumed to be in the following form.
+  ;
+  ; O---Za-----Zb---O
+  ;         |
+  ;         Zc
+  ;         |
+  ; O---------------O
 
-Za = (zpm "sp" 1 1) - (zpm "sp" 1 2)
-Zb = (zpm "sp" 2 2) - (zpm "sp" 1 2)
-Zc = (zpm "sp" 1 2)
+  Za = (zpm "sp" 1 1) - (zpm "sp" 1 2)
+  Zb = (zpm "sp" 2 2) - (zpm "sp" 1 2)
+  Zc = (zpm "sp" 1 2)
 
-Ra = (real Za)
-Rb = (real Zb)
-Rc = (real Zc)
+  Ra = (real Za)
+  Rb = (real Zb)
+  Rc = (real Zc)
 
-Xa = (imag Za)
-Xb = (imag Zb)
-Xc = (imag Zc)
+  Xa = (imag Za)
+  Xb = (imag Zb)
+  Xc = (imag Zc)
 
-Qa = (quotient Xa Ra)
-Qb = (quotient Xb Rb)
-Qc = (quotient Xc Rc)
+  Qa = (quotient Xa Ra)
+  Qb = (quotient Xb Rb)
+  Qc = (quotient Xc Rc)
 
-La = (quotient Xa w)
-Lb = (quotient Xb w)
-Lc = (quotient Xc w)
+  La = (quotient Xa w)
+  Lb = (quotient Xb w)
+  Lc = (quotient Xc w)
 
-; La = Lx
-; Lc = M
-; M = k*Lx
-; k = M / Lx
-Kac = (quotient Lc La)
-Kbc = (quotient Lc Lb)
+  ; La = Lx
+  ; Lc = M
+  ; M = k*Lx
+  ; k = M / Lx
+  Kac = (quotient Lc La)
+  Kbc = (quotient Lc Lb)
 
-; Y Network Parameters
-; Assumed to be in the following form.
-;
-; O----Zz----O
-;   |      |
-;   Zx     Zy
-;   |      |
-; O----------O
+  ; Y Network Parameters
+  ; Assumed to be in the following form.
+  ;
+  ; O----Zz----O
+  ;   |      |
+  ;   Zx     Zy
+  ;   |      |
+  ; O----------O
 
-Y12 = (ypm "sp" 1 2)
-Y11 = (ypm "sp" 1 1)
-Y22 = (ypm "sp" 2 2)
+  Y12 = (ypm "sp" 1 2)
+  Y11 = (ypm "sp" 1 1)
+  Y22 = (ypm "sp" 2 2)
 
-Zz = (quotient -1.0 Y12)
-Zx = (quotient 1.0 (plus Y11 Y12))
-Zy = (quotient 1.0 (plus Y22 Y12))
+  Zz = (quotient -1.0 Y12)
+  Zx = (quotient 1.0 (plus Y11 Y12))
+  Zy = (quotient 1.0 (plus Y22 Y12))
 
-Rx = (real Zx)
-Ry = (real Zy)
-Rz = (real Zz)
+  Rx = (real Zx)
+  Ry = (real Zy)
+  Rz = (real Zz)
 
-Xx = (imag Zx)
-Xy = (imag Zy)
-Xz = (imag Zz)
+  Xx = (imag Zx)
+  Xy = (imag Zy)
+  Xz = (imag Zz)
 
-Lx = (quotient Xx w)
-Ly = (quotient Xy w)
-Lz = (quotient Xz w)
+  Lx = (quotient Xx w)
+  Ly = (quotient Xy w)
+  Lz = (quotient Xz w)
 
-Qx = (quotient Xx Rx)
-Qy = (quotient Xy Ry)
-Qz = (quotient Xz Rz)
+  Qx = (quotient Xx Rx)
+  Qy = (quotient Xy Ry)
+  Qz = (quotient Xz Rz)
 
-; Additional measurements for using the coil
-top = Rz**2 + Xz**2
-Rz_parallel = top / Rz
-Xz_parallel = top / Xz
-Lz_parallel = (quotient Xz_parallel w)
+  ; Additional measurements for using the coil
+  top = Rz**2 + Xz**2
+  Rz_parallel = top / Rz
+  Xz_parallel = top / Xz
+  Lz_parallel = (quotient Xz_parallel w)
 
-; To resonate out Lz_parallel
-Cres = (quotient 1.0 
-                 (times (pow w 2.0) Lz_parallel))
+  ; To resonate out Lz_parallel
+  Cres = (quotient 1.0 
+                   (times (pow w 2.0) Lz_parallel))
 
 
-                        
-; Plotting the results
-winId = (newWindow)
-(addTitle "Coupled Coil Analysis")
+                          
+  ; Plotting the results
+  winId = (newWindow)
+  (addTitle "Coupled Coil Analysis")
 
-(addSubwindowTitle "Q Factors")
-(plot Qa Qb Qc Qx Qy Qx ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)" "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)"))
+  (addSubwindowTitle "Q Factors")
+  (plot Qa Qb Qc Qx Qy Qx ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)" "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)"))
 
-(addSubwindow)
-(addSubwindowTitle "Resistances")
-(plot Ra Rb Rc Rx Ry Rz ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)" "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)"))
+  (addSubwindow)
+  (addSubwindowTitle "Resistances")
+  (plot Ra Rb Rc Rx Ry Rz ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)" "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)"))
 
-(addSubwindow)
-(addSubwindowTitle "Inductances")
-(plot La Lb Lc Lx Ly Lz ?expr (list "La (T)" "Lb (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)"))
+  (addSubwindow)
+  (addSubwindowTitle "Inductances")
+  (plot La Lb Lc Lx Ly Lz ?expr (list "La (T)" "Lb (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)"))
 
-(addSubwindow)
-(addSubwindowTitle "Miscellaneous")
-(plot Cres Lz_parallel Rz_parallel ?expr (list "Cres" "Lz (Parallel RL)" "Rz (Parallel RL)"))
+  (addSubwindow)
+  (addSubwindowTitle "Miscellaneous")
+  (plot Cres Lz_parallel Rz_parallel ?expr (list "Cres" "Lz (Parallel RL)" "Rz (Parallel RL)"))
 
-(awvPlaceXMarker winId 5G ?subwindow 1) 
-(awvPlaceXMarker winId 5G ?subwindow 2) 
-(awvPlaceXMarker winId 5G ?subwindow 3)
-(awvPlaceXMarker winId 5G ?subwindow 4)
+  (awvPlaceXMarker winId f0 ?subwindow 1) 
+  (awvPlaceXMarker winId f0 ?subwindow 2) 
+  (awvPlaceXMarker winId f0 ?subwindow 3)
+  (awvPlaceXMarker winId f0 ?subwindow 4))
