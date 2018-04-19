@@ -5,3 +5,6 @@
   Xp = (R**2 + X**2)/X
   Rp = (R**2 + X**2)/R
   (list nil 'Rp Rp 'Xp Xp))
+  
+(defun qub::parallelResistors (@rest args)
+  (quotient 1.0 (qub::sum (mapcar (lambda (x) 1.0/x) args))))
