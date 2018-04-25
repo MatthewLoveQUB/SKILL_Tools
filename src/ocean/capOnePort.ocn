@@ -21,8 +21,8 @@ f = (qub::sToF)
 
   ; Parallel resistance, reactance and capacitance
   Rp = (R**2 + XC_abs**2)/R
-  Xp = (R**2 + XC_abs**2)/XC_abs
-  Cp = 1/(Xp*w)
+  Xp = (R**2 + XC_abs**2)/XC
+  Cp = -1.0/(Xp*w)
   
   winId = (newWindow)
   (plot Q R XC Rp Xp ?expr (list "Q" "R" "XC" "R (Parallel)" "X (Parallel)"))

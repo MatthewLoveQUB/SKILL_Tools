@@ -1,3 +1,4 @@
 ; passives.ils
 (addToExportList '(qub:::seriesToParallel
-                   qub:::parallelResistors))
+                   qub:::parallelResistors
+                   qub:::parallelToSeries))
