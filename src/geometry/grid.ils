@@ -1,0 +1,13 @@
+; Rounds values to the nearest 5nm assuming um coords used
+; 0.124 = 0.125 etc
+(defun qub::roundValue5nm (x)
+  x_round = (round 1000.0*x)
+  x_floor = 10.0*(floor 100.0*x)
+  (cond ((x_round < x_floor + 3) x_floor/1000.0)
+       ((x_round > x_floor + 6) (x_floor+10.0)/1000.0)
+       (t (x_floor+5.0)/1000.0)))
+
+(defun qub::roundCoord5nm (x)
+  first = (car x)
+  second = (cadr x)
+  (list (qub::roundValue5nm first) (qub::roundValue5nm second)))

@@ -2,4 +2,5 @@
   (modload "point2d.ils")
   (modload "trig.ils")
   (modload "shapes.ils")
-  (modload "line2d.ils"))
+  (modload "line2d.ils")
+  (modload "grid.ils"))

@@ -97,11 +97,20 @@
            ; Add 90 degrees for the output section
            (ang (qub::getAngleToPt secondLastPoint lastPoint))
            (newAng (ang + 90.0))
-           (finalPoint (qub::moveAtAngle midPoint width newAng)))
+           (finalPoint (qub::moveAtAngle midPoint width newAng))
+           ; Get the midpoint of the first two points so it's easy to 
+           ; connect the insides together
+           (firstPoint (nth 0 coords))
+           (secondPoint (nth 1 coords))
+           (initMidpoint (qub::midPoint firstPoint secondPoint)))
     ; Mutate the final value of the last and change it to the midpoint
     (setf (nth (nCoords-1) coords) midPoint)
+    ; Mutate the first value with the midpoint
+    (setf (nth 0 coords) initMidpoint)
     ; Add the output point
     (qub::pushEnd finalPoint coords)
+    ; Fix the coordinates to a 5nm grid value
+    (setf coords (mapcar qub::roundCoord5nm coords))
     ; Draw the coil itself
     (rodCreatePath ?name "path"
                    ?layer layerPP

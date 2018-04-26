@@ -27,3 +27,7 @@
 
 ; line.ils
 (addToExportList '(qub:::findIntersectPoint))				   
+
+; grid.ils
+(addToExportList '(qub:::roundCoord5nm
+                   qub:::roundValue5nm))
