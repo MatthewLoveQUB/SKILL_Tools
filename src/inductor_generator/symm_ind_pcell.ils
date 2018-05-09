@@ -22,7 +22,12 @@
            (objects nil)
            (mode "truncateExtend")
            (cp (lambda (pts metLyr)
-             (pushf (dbCreatePath cv (list metLyr) pts w mode) objects)))
+             (pushf (dbCreatePath cv 
+                                  (list metLyr) 
+                                  (mapcar qub::roundCoord5nm pts)
+                                  w 
+                                  mode) 
+                    objects)))
            (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
            
       ; Generating main turns
