@@ -1,6 +1,7 @@
 (defclass qub::symmInductorPCell (qub::PcellParam)
   ((turns @initform (qub::defineParam "int" 2))
    (width @initform (qub::defineParam "float" 10.0))
+   (underpassWidth @initform (qub::defineParam "underpassWidth" 10.0))
    (spacing @initform (qub::defineParam "float" 5.0))
    (apothem @initform (qub::defineParam "float" 50.0))
    (nsides @initform (qub::defineParam "int" 8))
@@ -9,6 +10,7 @@
 
 (defmethod qub::draw ((device qub::symmInductorPCell))
   (letseq ((w (qub::getParamValue device 'width))
+           (underWidth (qub::getParamValue device 'underpassWidth))
            (metalLayers (parseString (qub::getParamValue device 'metalStack)))
            (cv (slotValue device 'cvId))
            (points 
@@ -21,23 +23,23 @@
                ?portLen (qub::getParamValue device 'portLength)))
            (objects nil)
            (mode "truncateExtend")
-           (cp (lambda (pts metLyr)
+           (cp (lambda (pts metLyr width)
              (pushf (dbCreatePath cv 
                                   (list metLyr) 
                                   (mapcar qub::roundCoord5nm pts)
-                                  w 
+                                  width
                                   mode) 
                     objects)))
-           (drawPts (lambda (pts metal) (foreach p pts (cp p metal)))))
+           (drawPts (lambda (pts metal width) (foreach p pts (cp p metal width)))))
            
       ; Generating main turns
       (foreach turn points->spiralCoords
-        (cp turn->left (car metalLayers))
-        (cp turn->right (car metalLayers)))
+        (cp turn->left (car metalLayers) w)
+        (cp turn->right (car metalLayers) w))
         
       ; Generating interconnects
-      (drawPts points->intercons->topMetal (car metalLayers))
-      (drawPts points->intercons->botMetal (cadr metalLayers))
+      (drawPts points->intercons->topMetal (car metalLayers) w)
+      (drawPts points->intercons->botMetal (cadr metalLayers) underWidth)
       (setq objects (leMergeShapes objects))
         
       (letseq ((metalLayer (list (car metalLayers) "pin"))
@@ -71,6 +73,7 @@
     (list (ddGetObj ,library) "symmInd" "layout")
     ((turns "int" 2)
      (width "float" 10.0)
+     (underpassWidth "float" 10.0)
      (spacing "float" 5.0)
      (apothem "float" 50.0)
      (nsides "int" 8)
