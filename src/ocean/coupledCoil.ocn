@@ -34,12 +34,13 @@
   Lb = (quotient Xb w)
   Lc = (quotient Xc w)
 
-  ; La = Lx
+  Lax = (quotient (imag (zpm "sp" 1 1)) w)
+  Lbx = (quotient (imag (zpm "sp" 2 2)) w)
   ; Lc = M
   ; M = k*Lx
   ; k = M / Lx
-  Kac = (quotient Lc La)
-  Kbc = (quotient Lc Lb)
+  Kac = (quotient Lc Lax)
+  Kbc = (quotient Lc Lbx)
 
   ; Y Network Parameters
   ; Assumed to be in the following form.
@@ -99,7 +100,7 @@
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
-  (plot La Lb Lc Lx Ly Lz ?expr (list "La (T)" "Lb (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)"))
+  (plot La Lax Lb Lbx Lc Lx Ly Lz Kac Kbc ?expr (list "La (T)" "Lax (T)" "Lb (T)" "Lbx (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)" "Kac" "Kbc"))
 
   (addSubwindow)
   (addSubwindowTitle "Miscellaneous")
