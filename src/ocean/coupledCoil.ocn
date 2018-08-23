@@ -82,8 +82,7 @@
   Lz_parallel = (quotient Xz_parallel w)
 
   ; To resonate out Lz_parallel
-  Cres = (quotient 1.0 
-                   (times (pow w 2.0) Lz_parallel))
+  Cres = (1.0 / ((pow w 2.0) * Lz_parallel))
 
 
                           
@@ -100,8 +99,9 @@
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
-  (plot La Lax Lb Lbx Lc Lx Ly Lz Kac Kbc ?expr (list "La (T)" "Lax (T)" "Lb (T)" "Lbx (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)" "Kac" "Kbc"))
-
+  (plot La Lax Lb Lbx Lc Lx Ly Lz ?yNumber (list 1 1 1 1 1 1 1 1) ?expr (list "La (T)" "Lax (T)" "Lb (T)" "Lbx (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)"))
+  (plot Kac Kbc  ?yNumber (list 2 2) ?expr (list "Kac" "Kbc"))
+  
   (addSubwindow)
   (addSubwindowTitle "Miscellaneous")
   (plot Cres Lz_parallel Rz_parallel ?expr (list "Cres" "Lz (Parallel RL)" "Rz (Parallel RL)"))

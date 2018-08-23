@@ -11,3 +11,6 @@
 
 ; indOnePort.ocn
 (addToExportList '(qub:::ocnIndOnePort))
+
+; loadPullResults.ocn
+(addToExportList '(qub:::ocnLoadPull))

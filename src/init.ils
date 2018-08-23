@@ -11,7 +11,7 @@
 
 ; Have to load the symbols first to avoid namespace errors
 (qubCreateModule ""
-  (letseq ((dirFiles (qub::listFileRec "./code/"))
+  (letseq ((dirFiles (qub::listFileRec "~/code/"))
            (nsInitFiles (qub::findFiles dirFiles "ns_init.ils"))
            (symInitFiles (qub::findFiles dirFiles "sym_init.ils")))
     (mapc load nsInitFiles)
