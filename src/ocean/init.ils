@@ -3,4 +3,6 @@
   (modload "capOnePort.ocn")
   (modload "coupledCoil.ocn")
   (modload "indOnePort.ocn")
-  (modload "loadPullResults.ocn"))
+  (modload "loadPullResults.ocn")
+  (modload "piNetwork.ocn")
+  (modload "tNetwork.ocn"))

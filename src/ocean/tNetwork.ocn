@@ -1,0 +1,25 @@
+(defun qub::ocnTNetwork (f0)
+  ; T Network representation using Z-Parameters.
+  ; T network is assumed to be in the following form.
+  ;
+  ; O---Za-----Zb---O
+  ;         |
+  ;         Zc
+  ;         |
+  ; O---------------O
+
+  Za = (zpm "sp" 1 1) - (zpm "sp" 1 2)
+  Zb = (zpm "sp" 2 2) - (zpm "sp" 1 2)
+  Zc = (zpm "sp" 1 2)
+
+  Ra = (real Za)
+  Rb = (real Zb)
+  Rc = (real Zc)
+
+  Xa = (imag Za)
+  Xb = (imag Zb)
+  Xc = (imag Zc)
+  
+  winId = (newWindow)
+  (plot Xa Xb Xc Ra Rb Rc ?expr (list "Xa" "Xb" "Xc" "Ra" "Rb" "Rc") ?yNumber (list 1 1 1 2 2 2))
+  (awvPlaceXMarker winId f0 ?subwindow 1))

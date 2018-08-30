@@ -1,0 +1,29 @@
+(defun qub::ocnPiNetwork (f0)
+  ; Y Network Parameters
+  ; Assumed to be in the following form.
+  ;
+  ; O----Zz----O
+  ;   |      |
+  ;   Zx     Zy
+  ;   |      |
+  ; O----------O
+
+  Y12 = (ypm "sp" 1 2)
+  Y11 = (ypm "sp" 1 1)
+  Y22 = (ypm "sp" 2 2)
+
+  Zz = (quotient -1.0 Y12)
+  Zx = (quotient 1.0 (plus Y11 Y12))
+  Zy = (quotient 1.0 (plus Y22 Y12))
+
+  Xx = (imag Zx)
+  Xy = (imag Zy)
+  Xz = (imag Zz)
+  
+  Rx = (real Zx)
+  Ry = (real Zy)
+  Rz = (real Zz)
+
+  winId = (newWindow)
+  (plot Xx Xy Xz Rx Ry Rz ?expr (list "Xx" "Xy" "Xz" "Rx" "Ry" "Rz") ?yNumber (list 1 1 1 2 2 2))
+  (awvPlaceXMarker winId f0 ?subwindow 1))

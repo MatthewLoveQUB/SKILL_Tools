@@ -14,3 +14,9 @@
 
 ; loadPullResults.ocn
 (addToExportList '(qub:::ocnLoadPull))
+
+; piNetwork.ocn
+(addToExportList '(qub:::ocnPiNetwork))
+
+; tNetwork.ocn
+(addToExportList '(qub:::ocnTNetwork)
