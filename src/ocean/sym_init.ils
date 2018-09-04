@@ -19,4 +19,4 @@
 (addToExportList '(qub:::ocnPiNetwork))
 
 ; tNetwork.ocn
-(addToExportList '(qub:::ocnTNetwork)
+(addToExportList '(qub:::ocnTNetwork))
