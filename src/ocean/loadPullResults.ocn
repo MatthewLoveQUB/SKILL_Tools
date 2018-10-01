@@ -1,29 +1,38 @@
-(defun qub::ocnLoadPull (@key (minPout 0) (minPae 0))
-	; To plot these values you must add the input, output and DC
-	; voltages and currents to the ADE outputs
+; testType must be "pss" or "hb"
+(defun qub::ocnLoadPull (@key (minPout 0) 
+                              (minPae 0) 
+                              (outName nil) 
+                              (inName nil) 
+                              (vddName nil)
+                              (testType nil))
+	(cond ((not testType)
+         (error "testType not \"hb\" or \"pss\""))
+        ((not outName)
+         (error "Provide a name for the output port \"outName\"."))
+        ((not inName)
+         (error "Provide a name for the in port \"inName\"."))
+        ((not vddName)
+         (error "Provide a name for the supply component \"vddName\".")))
+  (qub::createSmith)
 
-	(qub::createSmith)
-
-	; Comment one out depending on if you're using a PSS or HB load-pull
-	;testName = "pss_fd"
-	testName = "hb_fd"
-
-	outCurrent = (i "/PORT1/PLUS" ?result testName)
-	outVoltage = (v "/out" ?result testName)
+  testType = (strcat testType "_fd")
+  
+	outCurrent = (i (sprintf nil "/%s/PLUS" outName) ?result testType)
+	outVoltage = (v "/out" ?result testType)
 	outPower = (spectralPower outCurrent outVoltage)
 
-	inCurrent = (i "/PORT0/PLUS" ?result testName)
-	inVoltage = (v "/in" ?result testName)
+	inCurrent = (i (sprintf nil "/%s/PLUS" inName) ?result testType)
+	inVoltage = (v "/in" ?result testType)
 	inPower = (spectralPower inCurrent inVoltage)
 
-	dcCurrent = (i "/V1/PLUS" ?result testName)
-	dcVoltage = (v "/supply" ?result testName)
+	dcCurrent = (i (sprintf nil "/%s/PLUS" vddName) ?result testType)
+	dcVoltage = (v "/supply" ?result testType)
 	dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
 
-	rfPower = (harmonic (plus outPower inPower) 1)
+	rfPower = (harmonic outPower 1) + (harmonic inPower 1)
 
-  PAE = (awvRfLoadPull (times 100.0 (quotient rfPower dcPower))
-					   ?maxValue 100
+  PAE = (awvRfLoadPull (100.0 * (rfPower/dcPower))
+					   ?maxValue 100.0
 					   ?minValue minPae
 					   ?numCont 6
 					   ?closeCont nil)
@@ -40,3 +49,5 @@
 							   ?modifier "dBm")
 
 	(plot powerContours ?expr '("Po")))
+  
+  
