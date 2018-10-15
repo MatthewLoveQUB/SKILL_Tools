@@ -1,49 +1,77 @@
-(qub::simPreamble "mlove_driver" "amp")
+; outName: instance name of the output port
+; inName: instance name of the input port
+; vddName: instance name of the DC voltage source
+; testType: varies if pss or hb
+; hb_fd: harmonic balance
+; pss_fd: pss (not verified)
+(defun qub::ocnAmpHb (@key (outName nil) 
+                              (inName nil) 
+                              (vddName nil)
+                              (testType nil))
+  ; Set up the terminals and ports
+  ; Output net
+  outNet = "/out"
+  ; Output port instance
+  outPortInst = "PORT1"
+  ; Output node
+  outNode = (sprintf nil "/%s/PLUS" outPortInst)
+  ; Input net
+  inNet = "/in"
+  ; Input port instance
+  inPortInst = "PORT0"
+  ; Input node
+  inNode = (sprintf nil "/%s/PLUS" inPortInst)
+  ; Voltage supply net
+  supplyNet = "/supply"
+  ; Voltage supply instance
+  suppleInst = "V0"
+  ; Voltage supply node
+  supplyNode = (sprintf nil "/%s/PLUS" suppleInst)
 
-(analysis 'pss 
-          ?engine "Harmonic Balance"  
-          ?flexbalance "yes"  
-          ?oversamplefactor ""  
-          ?fund "5G"  
-          ?harms "30"  
-          ?errpreset "conservative"  
-          ?dev "/PORT0"
-          ?param "dbm"  
-          ?start "-20"  
-          ?stop "15"  
-          ?sweepStep "1"  
-          ?step ""  
-          ?write ""  
-          ?writefinal ""  
-          ?swapfile ""  
-          ?checkpss ""  
-          ?backtracking "")
-(envOption 'analysisOrder (list "pss"))
-(temp 27)
-(run)
+  ; The output harmonic we want to extract
+  harmOut = 1
+  ; The DC harmonic 
+  harmDc = 0
+  ; The ground terminal
+  gndTerm = 0
+  ; Simulation type
+  simType = (if (equal testType "hb") 'hb 'pss)
+  ; Simulation results type
+  simResultType = (if (equal testType "hb") "hb_fd" "pss_fd")
+  ; Output power watts
+  pwrOutWatts = (pvi simType outNet gndTerm outNode gndTerm)
+  ; Output power dBm
+  pwrOutDbm = (dbm pwrOutWatts)
+  ; Input power watts
+  pwrInWatts = (- (pvi simType inNet gndTerm inNode gndTerm))
+  ; Gain
+  Gain = (db10 (pwrOutWatts / pwrInWatts))
 
-outCurrent = (i "/PORT1/PLUS" ?result "pss_fd")
-outVoltage = (v "/out" ?result "pss_fd")
-outPower = (spectralPower outCurrent outVoltage)
+  supplyVoltage = (v supplyNet ?result simResultType)
+  supplyCurrent = (i supplyNode ?result simResultType)
+  spectralPwrDc = (spectralPower supplyCurrent supplyVoltage)
 
-inCurrent = (i "/PORT0/PLUS" ?result "pss_fd")
-inVoltage = (v "/in" ?result "pss_fd")
-inPower = (spectralPower inCurrent inVoltage)
+  outCurrent = (i outNode ?result simResultType)
+  outVoltage = (v outNet ?result simResultType)
+  spectralPwrOut = (spectralPower outCurrent outVoltage)
 
-rfPower = (harmonic (plus outPower inPower) 1)
+  inCurrent = (i inNode ?result simResultType)
+  inVoltage = (v inNet ?result simResultType)
+  spectralPwrIn = (spectralPower inCurrent inVoltage)
 
-dcCurrent = (i "/V1/PLUS" ?result "pss_fd")
-dcVoltage = (v "/supply" ?result "pss_fd")
-dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+    ; Denominator and numerator for PAE
+  paeDenom = (100.0 * (harmonic (spectralPwrOut + spectralPwrIn) harmOut))
+  paeNum = (- (harmonic spectralPwrDc harmDc))
+  PAE = paeDenom / paeNum
+         
+  ; Numerator for drain efficiency
+  ; It shares the same denominator
+  deDenom = (100.0 * (harmonic spectralPwrOut harmOut))
+         
+  drainEff = deDenom / paeNum
 
-PAE = (times 100.0 (quotient rfPower dcPower))
-(plot PAE ?expr '("PAE"))
-
-ampGain = (db10 (quotient (pvi 'pss "/out" 0 "/PORT1/PLUS" 0 1) 
-                          (minus (pvi 'pss "/in" 0 "/PORT0/PLUS" 0 1))))
-
-(plot ampGain ?expr '("Gain"))
-
-pout = (dbm (pvr 'pss "/out" "/gnd!" 50.0 1))
-
-(plot pout ?expr '("Power"))
+  winId = (newWindow)
+  (addTitle (sprintf nil "Amp HB (PAE: %.2f%%, DE: %.2f%%)" PAE drainEff))
+  (plot pwrOutDbm ?expr (list "Pout"))
+  (addSubwindow)
+  (plot Gain ?expr (list "Gain")))

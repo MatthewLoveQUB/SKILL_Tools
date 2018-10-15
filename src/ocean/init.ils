@@ -5,4 +5,6 @@
   (modload "indOnePort.ocn")
   (modload "loadPullResults.ocn")
   (modload "piNetwork.ocn")
-  (modload "tNetwork.ocn"))
+  (modload "tNetwork.ocn")
+  (modload "ampHbPsweep.ocn")
+  (modload "ampHB.ocn"))

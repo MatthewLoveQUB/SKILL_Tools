@@ -4,7 +4,8 @@
                               (outName nil) 
                               (inName nil) 
                               (vddName nil)
-                              (testType nil))
+                              (testType nil)
+                              (nContours 6))
 	(cond ((not testType)
          (error "testType not \"hb\" or \"pss\""))
         ((not outName)
@@ -34,7 +35,7 @@
   PAE = (awvRfLoadPull (100.0 * (rfPower/dcPower))
 					   ?maxValue 100.0
 					   ?minValue minPae
-					   ?numCont 6
+					   ?numCont nContours
 					   ?closeCont nil)
 
 	(plot PAE ?expr '("PAE"))
@@ -43,7 +44,7 @@
 							   outVoltage
 							   '1
 							   ?refImp 50.0
-							   ?numCont 6
+							   ?numCont nContours
 							   ?minPower minPout
 							   ?closeCont nil
 							   ?modifier "dBm")

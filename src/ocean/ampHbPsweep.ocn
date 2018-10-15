@@ -1,0 +1,74 @@
+; outName: instance name of the output port
+; inName: instance name of the input port
+; vddName: instance name of the DC voltage source
+; testType: varies if pss or hb
+; hb_fd: harmonic balance
+; pss_fd: pss (not verified)
+(defun qub::ocnHbPsweep (@key (outName nil) 
+                              (inName nil) 
+                              (vddName nil)
+                              (testType nil))
+  ; Set up the terminals and ports
+  ; Output net
+  outNet = "/out"
+  ; Output port instance
+  outPortInst = outName
+  ; Output node
+  outNode = (sprintf nil "/%s/PLUS" outPortInst)
+  ; Input net
+  inNet = "/in"
+  ; Input port instance
+  inPortInst = inName
+  ; Input node
+  inNode = (sprintf nil "/%s/PLUS" inPortInst)
+  ; Voltage supply net
+  supplyNet = "/supply"
+  ; Voltage supply instance
+  suppleInst = vddName
+  ; Voltage supply node
+  supplyNode = (sprintf nil "/%s/PLUS" suppleInst)
+
+  ; The output harmonic we want to extract
+  harmOut = 1
+  ; The DC harmonic 
+  harmDc = 0
+  ; The ground terminal
+  gndTerm = 0
+  ; Simulation type
+  simType = (if (equal testType "hb") 'hb 'pss)
+  ; Simulation results type
+  simResultType = (if (equal testType "hb") "hb_fd" "pss_fd")
+  ; Output power watts
+  pwrOutWatts = (pvi simType outNet gndTerm outNode gndTerm harmOut)
+  ; Output power dBm
+  pwrOutDbm = (dbm pwrOutWatts)
+  ; Input power watts
+  pwrInWatts = (- (pvi simType inNet gndTerm inNode gndTerm harmOut))
+  ; Gain
+  Gain = (db10 (pwrOutWatts / pwrInWatts))
+
+  supplyVoltage = (v supplyNet ?result simResultType)
+  supplyCurrent = (i supplyNode ?result simResultType)
+  spectralPwrDc = (spectralPower supplyCurrent supplyVoltage)
+
+  outCurrent = (i outNode ?result simResultType)
+  outVoltage = (v outNet ?result simResultType)
+  spectralPwrOut = (spectralPower outCurrent outVoltage)
+
+  inCurrent = (i inNode ?result simResultType)
+  inVoltage = (v inNet ?result simResultType)
+  spectralPwrIn = (spectralPower inCurrent inVoltage)
+
+  ; Denominator and numerator for PAE
+  paeDenom = (100.0 * (harmonic (spectralPwrOut + spectralPwrIn) harmOut))
+  paeNum = (- (harmonic spectralPwrDc harmDc))
+  PAE = paeDenom / paeNum
+         
+  ; Numerator for drain efficiency
+  ; It shares the same denominator
+  deDenom = (100.0 * (harmonic spectralPwrOut harmOut))
+         
+  drainEff = deDenom / paeNum
+
+  (plot pwrOutDbm Gain PAE drainEff 
+        ?expr (list "Pout" "Gain" "PAE" "DE")))

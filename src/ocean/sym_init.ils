@@ -20,3 +20,9 @@
 
 ; tNetwork.ocn
 (addToExportList '(qub:::ocnTNetwork))
+
+; ampHbPsweep.ocn
+(addToExportList '(qub:::ocnHbPsweep))
+
+; ampHB.ocn
+(addToExportList '(qub:::ocnAmpHb))
