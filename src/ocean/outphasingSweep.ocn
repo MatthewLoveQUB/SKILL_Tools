@@ -1,0 +1,86 @@
+; outName: instance name of the output port
+; inName: instance name of the input port
+; vddName: instance name of the DC voltage source
+; testType: varies if pss or hb
+; hb_fd: harmonic balance
+; pss_fd: pss (not verified)
+(defun qub::ocnOutphasingSweep (@key (outName nil) 
+                                     (inName1 nil)
+                                     (inName2 nil)
+                                     (vddName nil)
+                                     (testType nil)
+                                     (supplyNet nil)
+                                     (outNet nil)
+                                     (inNet1 nil)
+                                     (inNet2 nil))
+  ; Set up the terminals and ports
+  outputNode = (sprintf nil "/%s/PLUS" outName)
+  inputNode1 = (sprintf nil "/%s/PLUS" inName1)
+  inputNode2 = (sprintf nil "/%s/PLUS" inName2)
+  supplyNode = (sprintf nil "/%s/PLUS" vddName)
+
+  fundamentalHarmonicIndex = 1
+  dcHarmonicIndex = 0
+  gndNet = 0
+
+  ; Determine simulation type
+  ; Should only really be HB or PSS
+  simType = (if (equal testType "hb") 'hb 'pss)
+  simResultType = (if (equal testType "hb") "hb_fd" "pss_fd")
+  (printf "Assuming sim type: '%s'\n" simType)
+
+  outputPowerWatts = (pvi simType
+                          outNet gndNet
+                          outputNode gndNet
+                          fundamentalHarmonicIndex)
+  outputPowerDbm = (dbm outputPowerWatts)
+  inputPowerWatts1 = (- (pvi simType
+                        inNet1 gndNet
+                        inputNode1 gndNet
+                        fundamentalHarmonicIndex))
+  inputPowerWatts2 = (- (pvi simType
+                             inNet2 gndNet
+                             inputNode2 gndNet
+                             fundamentalHarmonicIndex))
+
+  supplyVoltage = (v supplyNet ?result simResultType)
+  supplyCurrent = (i supplyNode ?result simResultType)
+  spectralDcPower = (spectralPower supplyCurrent supplyVoltage)
+
+  outCurrent = (i outputNode ?result simResultType)
+  outVoltage = (v outNet ?result simResultType)
+  spectralOutputPower = (spectralPower outCurrent outVoltage)
+
+  inCurrent1 = (i inputNode1 ?result simResultType)
+  inVoltage1 = (v inNet1 ?result simResultType)
+  spectralInputPower1 = (spectralPower inCurrent1 inVoltage1)
+  inCurrent2 = (i inputNode2 ?result simResultType)
+  inVoltage2 = (v inNet2 ?result simResultType)
+  spectralInputPower2 = (spectralPower inCurrent2 inVoltage2)
+
+  paeNumerator =
+    (times 100.0 (harmonic (plus spectralOutputPower
+                                 spectralInputPower1
+                                 spectralInputPower2)
+                           fundamentalHarmonicIndex))
+  paeDenominator = (- (harmonic spectralDcPower dcHarmonicIndex))
+  PAE = paeNumerator / paeDenominator
+
+  drainEfficiencyNumerator =
+    (100.0 * (harmonic spectralOutputPower fundamentalHarmonicIndex))
+
+  drainEfficiency = drainEfficiencyNumerator / paeDenominator
+
+  backoff_simulated = outputPowerDbm - (ymax outputPowerDbm)
+
+  (plot outputPowerDbm
+        drainEfficiency
+        ?expr (list "Output Power (dBm)" "Drain Efficiency"))
+  (awvSetXAxisLabel (currentWindow) "Phase Angle (rad)")
+
+  (addSubwindow)
+  (ocnYvsYplot ?wavex backoff_simulated
+               ?wavey drainEfficiency
+               ?titleList (list "Drain Efficiency")
+               ?colorList (list "y2"))
+  (awvSetXAxisLabel (currentWindow) "Backoff"))

@@ -7,22 +7,19 @@
 (defun qub::ocnHbPsweep (@key (outName nil) 
                               (inName nil) 
                               (vddName nil)
-                              (testType nil))
+                              (testType nil)
+                              (supplyNet nil)
+                              (outNet nil)
+                              (inNet nil))
   ; Set up the terminals and ports
-  ; Output net
-  outNet = "/out"
   ; Output port instance
   outPortInst = outName
   ; Output node
   outNode = (sprintf nil "/%s/PLUS" outPortInst)
-  ; Input net
-  inNet = "/in"
   ; Input port instance
   inPortInst = inName
   ; Input node
   inNode = (sprintf nil "/%s/PLUS" inPortInst)
-  ; Voltage supply net
-  supplyNet = "/supply"
   ; Voltage supply instance
   suppleInst = vddName
   ; Voltage supply node
@@ -36,6 +33,7 @@
   gndTerm = 0
   ; Simulation type
   simType = (if (equal testType "hb") 'hb 'pss)
+  (printf "Assuming sim type: '%s'\n" simType)
   ; Simulation results type
   simResultType = (if (equal testType "hb") "hb_fd" "pss_fd")
   ; Output power watts

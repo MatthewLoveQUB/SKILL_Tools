@@ -26,3 +26,6 @@
 
 ; ampHB.ocn
 (addToExportList '(qub:::ocnAmpHb))
+
+; outphasingSweep.ocn
+(addToExportList '(qub:::ocnOutphasingSweep))
