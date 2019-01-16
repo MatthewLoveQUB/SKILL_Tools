@@ -64,28 +64,8 @@
 							   ?closeCont nil
 							   ?modifier "dBm")
                
-  ; x_pout = (pvi simType outNet 0 outNode 0 1)      
-  ; x_pin = (pvi simType inNet 0 inNode 0 1)      
-  ; x_pdc = (- (pvi simType supplyNet 0 supplyNode 0 0))
-  
-  ; powerContours = (awvRfLoadPull 
-    ; (dBm x_pout)
-    ; ?minValue minPout 
-    ; ?numCont nContours
-    ; ?closeCont nil)
-    
-  ; drainEff = (awvRfLoadPull 
-    ; (x_pout / x_pdc)
-    ; ?minValue minDrainEff 
-    ; ?numCont nContours
-    ; ?closeCont nil)
-  
-  ; PAE = (awvRfLoadPull 
-    ; ((x_pout - x_pin) / x_pdc)
-    ; ?minValue minPae 
-    ; ?numCont nContours
-    ; ?closeCont nil)
-  
-  (plot powerContours drainEff PAE ?expr (list "Po" "DE" "PAE")))
+  (plot powerContours ?expr (list "Po"))
+  (plot drainEff ?expr (list "DE"))
+  (plot PAE ?expr (list "PAE")))
   
   
