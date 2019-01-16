@@ -1,0 +1,5 @@
+; cv = cellview object
+(defun qub::getInstTermNet (cv inst_name term_name)
+  (letseq ((inst (dbGetInstanceByName cv inst_name))
+           (term (car (setof term inst->instTerms term->name==term_name))))
+    term->net->name))

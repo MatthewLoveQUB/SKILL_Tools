@@ -29,3 +29,13 @@
 
 ; outphasingSweep.ocn
 (addToExportList '(qub:::ocnOutphasingSweep))
+
+; transistor.ils
+(addToExportList '(qub:::getMosVds
+                   qub:::getMosVsd
+                   qub:::getMosVgs
+                   qub:::getMosVsg
+                   qub:::getNetVoltage
+                   qub:::getMosVxx
+                   qub:::getNetVoltageSafe
+                   qub:::getMosVx))

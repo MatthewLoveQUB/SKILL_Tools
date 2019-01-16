@@ -1,2 +1,4 @@
 (addToExportList '(qub:::bboxWidth
                    qub:::bboxHeight))
+                   
+(addToExportList '(qub:::getInstTermNet))                   

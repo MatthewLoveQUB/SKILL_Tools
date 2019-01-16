@@ -1,0 +1,28 @@
+; For plotting transistory things
+
+; Return 0 if the net is "gnd!" as it's not readable
+; s_ana = analysis type ('hb, 'pss, 'tran)
+(defun qub::getNetVoltageSafe (s_ana net_name)
+  (if (equal net_name "gnd!")
+      0
+      (vtime s_ana net_name)))
+
+(defun qub::getMosVx (cv s_ana inst_name term_name)
+  (qub::getNetVoltageSafe s_ana (qub::getInstTermNet cv inst_name term_name)))
+
+(defun qub::getMosVxx (cv s_ana inst_name term1 term2)
+  (difference 
+    (qub::getMosVx cv s_ana inst_name term1)
+    (qub::getMosVx cv s_ana inst_name term2)))
+
+(defun qub::getMosVds (cv s_ana inst_name)
+  (qub::getMosVxx cv s_ana inst_name "d" "s"))
+
+(defun qub::getMosVsd (cv s_ana inst_name)
+  (qub::getMosVxx cv s_ana inst_name "s" "s"))
+
+(defun qub::getMosVgs (cv s_ana inst_name)
+  (qub::getMosVxx cv s_ana inst_name "g" "s"))
+
+(defun qub::getMosVsg (cv s_ana inst_name)
+  (qub::getMosVxx cv s_ana inst_name "s" "g"))
