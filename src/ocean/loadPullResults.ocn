@@ -1,11 +1,15 @@
 ; testType must be "pss" or "hb"
 (defun qub::ocnLoadPull (@key (minPout 0) 
-                              (minPae 0) 
+                              (minPae 0)
+                              (minDrainEff 0)
                               (outName nil) 
                               (inName nil) 
                               (vddName nil)
                               (testType nil)
-                              (nContours 6))
+                              (nContours 6)
+                              (supplyNet nil)
+                              (outNet nil)
+                              (inNet nil))
 	(cond ((not testType)
          (error "testType not \"hb\" or \"pss\""))
         ((not outName)
@@ -14,23 +18,30 @@
          (error "Provide a name for the in port \"inName\"."))
         ((not vddName)
          (error "Provide a name for the supply component \"vddName\".")))
+
   (qub::createSmith)
 
+  simType = (if (equal testType "hb") 'hb 'pss)
+  (printf "Assuming sim type: '%s'\n" simType)
   testType = (strcat testType "_fd")
+    
+  outNode = (sprintf nil "/%s/PLUS" outName)
+  inNode = (sprintf nil "/%s/PLUS" inName)
+  supplyNode = (sprintf nil "/%s/PLUS" vddName)
   
-	outCurrent = (i (sprintf nil "/%s/PLUS" outName) ?result testType)
-	outVoltage = (v "/out" ?result testType)
+	outCurrent = (i outNode ?result testType)
+	outVoltage = (v outNet ?result testType)
 	outPower = (spectralPower outCurrent outVoltage)
 
-	inCurrent = (i (sprintf nil "/%s/PLUS" inName) ?result testType)
-	inVoltage = (v "/in" ?result testType)
-	inPower = (spectralPower inCurrent inVoltage)
+	inCurrent = (i inNode ?result testType)
+	inVoltage = (v inNet ?result testType)
+	inPower = (- (spectralPower inCurrent inVoltage))
 
-	dcCurrent = (i (sprintf nil "/%s/PLUS" vddName) ?result testType)
-	dcVoltage = (v "/supply" ?result testType)
-	dcPower = (minus (harmonic (spectralPower dcCurrent dcVoltage) 0))
+	dcCurrent = (i supplyNode ?result testType)
+	dcVoltage = (v supplyNet ?result testType)
+	dcPower = (- (harmonic (spectralPower dcCurrent dcVoltage) 0))
 
-	rfPower = (harmonic outPower 1) + (harmonic inPower 1)
+	rfPower = (harmonic outPower 1) - (harmonic inPower 1)
 
   PAE = (awvRfLoadPull (100.0 * (rfPower/dcPower))
 					   ?maxValue 100.0
@@ -38,7 +49,11 @@
 					   ?numCont nContours
 					   ?closeCont nil)
 
-	(plot PAE ?expr '("PAE"))
+  drainEff = (awvRfLoadPull (100.0 * ((harmonic outPower 1)/dcPower))
+					   ?maxValue 100.0
+					   ?minValue minDrainEff
+					   ?numCont nContours
+					   ?closeCont nil)
 
 	powerContours = (cPwrContour outCurrent
 							   outVoltage
@@ -48,7 +63,9 @@
 							   ?minPower minPout
 							   ?closeCont nil
 							   ?modifier "dBm")
-
-	(plot powerContours ?expr '("Po")))
+               
+  (plot powerContours ?expr (list "Po"))
+  (plot drainEff ?expr (list "DE"))
+  (plot PAE ?expr (list "PAE")))
   
   

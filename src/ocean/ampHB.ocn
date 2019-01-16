@@ -5,26 +5,24 @@
 ; hb_fd: harmonic balance
 ; pss_fd: pss (not verified)
 (defun qub::ocnAmpHb (@key (outName nil) 
-                              (inName nil) 
-                              (vddName nil)
-                              (testType nil))
+                           (inName nil) 
+                           (vddName nil)
+                           (testType nil)
+                           (supplyNet nil)
+                           (outNet nil)
+                           (inNet nil))
+                           
   ; Set up the terminals and ports
-  ; Output net
-  outNet = "/out"
   ; Output port instance
-  outPortInst = "PORT1"
+  outPortInst = outName
   ; Output node
   outNode = (sprintf nil "/%s/PLUS" outPortInst)
-  ; Input net
-  inNet = "/in"
   ; Input port instance
-  inPortInst = "PORT0"
+  inPortInst = inName
   ; Input node
   inNode = (sprintf nil "/%s/PLUS" inPortInst)
-  ; Voltage supply net
-  supplyNet = "/supply"
   ; Voltage supply instance
-  suppleInst = "V0"
+  suppleInst = vddName
   ; Voltage supply node
   supplyNode = (sprintf nil "/%s/PLUS" suppleInst)
 
@@ -36,6 +34,7 @@
   gndTerm = 0
   ; Simulation type
   simType = (if (equal testType "hb") 'hb 'pss)
+  (printf "Assuming sim type: '%s'\n" simType)
   ; Simulation results type
   simResultType = (if (equal testType "hb") "hb_fd" "pss_fd")
   ; Output power watts
