@@ -19,7 +19,7 @@
   (qub::getMosVxx cv s_ana inst_name "d" "s"))
 
 (defun qub::getMosVsd (cv s_ana inst_name)
-  (qub::getMosVxx cv s_ana inst_name "s" "s"))
+  (qub::getMosVxx cv s_ana inst_name "s" "d"))
 
 (defun qub::getMosVgs (cv s_ana inst_name)
   (qub::getMosVxx cv s_ana inst_name "g" "s"))
