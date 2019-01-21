@@ -39,3 +39,7 @@
                    qub:::getMosVxx
                    qub:::getNetVoltageSafe
                    qub:::getMosVx))
+                   
+;stability_calculations
+(addToExportList '(qub:::rollett_delta
+                   qub:::mu_stability_factor))

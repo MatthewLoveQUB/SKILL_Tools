@@ -9,4 +9,5 @@
   (modload "tNetwork.ocn")
   (modload "ampHbPsweep.ocn")
   (modload "ampHB.ocn")
-  (modload "outphasingSweep.ocn"))
+  (modload "outphasingSweep.ocn")
+  (modload "stability_calculations.ils"))
