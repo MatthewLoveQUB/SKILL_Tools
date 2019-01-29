@@ -1,2 +1,3 @@
 (qubCreateModule "circuits/"
-  (modload "passives.ils"))
+  (modload "passives.ils")
+  (modload "unit_conversion.ils"))

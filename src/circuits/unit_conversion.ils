@@ -1,0 +1,2 @@
+(defun qub::dBmToWatts (x)
+  (quotient (pow 10.0 (quotient x 10.0)) 1e3))

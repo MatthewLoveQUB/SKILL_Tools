@@ -2,3 +2,5 @@
 (addToExportList '(qub:::seriesToParallel
                    qub:::parallelResistors
                    qub:::parallelToSeries))
+                   
+(addToExportList '(qub:::dBmToWatts))                   
