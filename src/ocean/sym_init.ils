@@ -24,7 +24,7 @@
 ; ampHbPsweep.ocn
 (addToExportList '(qub:::ocnHbPsweep))
 
-; ampHB.ocn
+; ampHB.ils
 (addToExportList '(qub:::ocnAmpHb))
 
 ; outphasingSweep.ocn

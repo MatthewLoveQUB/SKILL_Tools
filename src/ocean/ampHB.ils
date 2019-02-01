@@ -1,0 +1,28 @@
+; out = (list net node)
+; in = (list net node)
+; supplies = (list (list net node) (list net node) ...)
+; testType =  'hb or 'pss
+; pwrInWatts: Can be a list or float. Used for gain and PAE
+(defun qub::ocnAmpHb (@key (out nil) 
+                           (in nil) 
+                           (supplies nil)
+                           (testType 'hb)
+                           (pwrInWatts nil))
+  getPwr = (lambda (x) (pvi testType (nth 0 x) 0 (nth 1 x) 0))
+  
+  pwrOutWatts = (getPwr out)
+  pwrOutWattsF0 = (harmonic pwrOutWatts 1)
+  pwrDc = (qub::sum 
+            (qub::lcmp (abs (harmonic (getPwr src) 0)) for src in supplies))
+  
+  gain = (db10 (pwrOutWattsF0 / pwrInWatts))
+  pae = 100.0 * (quotient (pwrOutWattsF0 - pwrInWatts) pwrDc)
+  drain_efficiency = 100.0 * (quotient pwrOutWattsF0 pwrDc)
+
+  (printf "Pout (f0): %.2f dBm\n" (dBm pwrOutWattsF0))
+  (printf "PAE: %.2f%%\n" pae)
+  (printf "DE: %.2f%%\n" drain_efficiency)
+  (printf "Gain: %.2f dB\n" gain)
+  
+  winId = (newWindow)
+  (plot (dbm pwrOutWatts) ?expr (list "Pout")))
