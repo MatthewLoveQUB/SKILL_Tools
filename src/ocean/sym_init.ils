@@ -6,12 +6,6 @@
 ; coupledCoil.ocn
 (addToExportList '(qub:::ocnCoupledCoil))
 
-; capOnePort.ocn
-(addToExportList '(qub:::ocnCapOnePort))
-
-; indOnePort.ocn
-(addToExportList '(qub:::ocnIndOnePort))
-
 ; loadPullResults.ocn
 (addToExportList '(qub:::ocnLoadPull))
 
@@ -43,3 +37,6 @@
 ;stability_calculations
 (addToExportList '(qub:::rollett_delta
                    qub:::mu_stability_factor))
+                   
+; passiveOnePort.ils
+(addToExportList '(qub:::ocnPassiveOnePort))                   

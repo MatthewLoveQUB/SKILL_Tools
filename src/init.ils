@@ -22,5 +22,5 @@
   (modload "design_environment/init.ils")
   (modload "geometry/init.ils")
   (modload "inductor_generator/init.ils")
-  (modload "ocean/init.ils")
-  (modload "circuits/init.ils"))
+  (modload "circuits/init.ils")
+  (modload "ocean/init.ils"))

@@ -1,6 +1,10 @@
 ; passives.ils
 (addToExportList '(qub:::seriesToParallel
                    qub:::parallelResistors
-                   qub:::parallelToSeries))
+                   qub:::parallelToSeries
+                   qub:::XToC
+                   qub:::XToL
+                   qub:::BToC
+                   qub:::BToL))
                    
 (addToExportList '(qub:::dBmToWatts))                   

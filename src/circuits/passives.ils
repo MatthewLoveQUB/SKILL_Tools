@@ -17,3 +17,15 @@
 ; Calculate value of parallel resistors
 (defun qub::parallelResistors (@rest args)
   (quotient 1.0 (qub::sum (mapcar (lambda (x) 1.0/x) args))))
+  
+(defun qub::XToC (reactance angular_frequency)
+  (quotient -1.0 (times reactance angular_frequency)))
+  
+(defun qub::XToL (reactance angular_frequency)
+  (quotient reactance angular_frequency))
+
+(defun qub::BToC (susceptance angular_frequency)
+  (quotient susceptance angular_frequency))
+  
+(defun qub::BToL (susceptance angular_frequency)
+  (quotient -1.0 (times susceptance angular_frequency)))
