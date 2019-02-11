@@ -1,8 +1,20 @@
-; out = (list net node)
-; in = (list net node)
-; supplies = (list (list net node) (list net node) ...)
-; testType =  'hb or 'pss
-; pwrInWatts: Can be a list or float. Used for gain and PAE
+; For a power amplifier circuit, plot the following: 
+;     output power
+;     gain
+;     drain efficiency
+;     power added efficiency
+;
+; Args:
+;     out (list net node): 
+;         The net and node of the output port, represented as strings.
+;     in (list net node): 
+;         The net and node of the input port, represented as strings.
+;     supplies (list (list net node) (list net node) ...):
+;         The nets and nodes of the power supplies, represented as strings.
+;         Unlike out and in, this is a list of lists as you may have 
+;         multiple inputs.
+;     testType (sym): 'hb or 'pss for Harmonic Balance and PSS analyses.
+;     pwrInWatts (list of floats or a float): Used for gain and PAE.
 (defun qub::ocnAmpHb (@key (out nil) 
                            (in nil) 
                            (supplies nil)
