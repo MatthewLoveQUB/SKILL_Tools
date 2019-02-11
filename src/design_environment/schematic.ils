@@ -1,5 +1,21 @@
-; cv = cellview object
-(defun qub::getInstTermNet (cv inst_name term_name)
-  (letseq ((inst (dbGetInstanceByName cv inst_name))
-           (term (car (setof term inst->instTerms term->name==term_name))))
-    term->net->name))
+; Code taken (and shortened) from CCSgetHierNetName.il
+; "SKILL utility to show hierarchical net name 
+; for a selected wire in a schematic"
+;
+; Args
+; net: A net object
+; window: A window object
+(defun qub::getHierNetName (net @key (win (getCurrentWindow)))
+  (letseq ((netName (strcat "/" 
+                            (buildString 
+                              (qub::lcmp (dbGetMemName (car i)->name (cadr i)) 
+                                         for i in (geGetHierMemInst win))
+                              "/"))))
+   (geGetAdjustedPath win (if (netName=="/") 
+                              (strcat netName net->name) 
+                              (strcat netName "/" net->name)))))
+           
+; Get the full net string of an instance
+(defun qub::getInstTermNet (inst term_name)
+  (letseq ((term (car (setof term inst->instTerms term->name==term_name))))
+    (qub::getHierNetName term->net)))

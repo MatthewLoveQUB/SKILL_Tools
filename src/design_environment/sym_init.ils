@@ -1,4 +1,5 @@
 (addToExportList '(qub:::bboxWidth
                    qub:::bboxHeight))
                    
-(addToExportList '(qub:::getInstTermNet))                   
+(addToExportList '(qub:::getInstTermNet
+                   qub:::getHierNetName))
