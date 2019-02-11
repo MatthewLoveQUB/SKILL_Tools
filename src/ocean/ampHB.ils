@@ -27,7 +27,11 @@
              (printf "DE: %.2f%%\n" drain_efficiency)
              (printf "Gain: %.2f dB\n" gain)
              (plot (dbm pwrOutWatts) ?expr (list "Pout")))
-      (progn (plot (dBm pwrOutWattsF0) ?expr (list "Pout (dBm)"))
-             (plot gain ?expr (list "Gain (dB)"))
-             (plot pae ?expr (list "PAE (%)") ?yNumber 2)
-             (plot drain_efficiency ?expr (list "DE (%)") ?yNumber 2))))
+      (progn (plot gain 
+                   (dBm pwrOutWattsF0)
+                   drain_efficiency
+                   pae
+                   ?expr (list "Gain (dB)" 
+                               "Pout (dBm)" 
+                               "DE (%)" 
+                               "PAE (%)")))))
