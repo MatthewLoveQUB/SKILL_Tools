@@ -9,7 +9,7 @@
                            (testType 'hb)
                            (pwrInWatts nil)
                            (sweepMode nil))
-  getPwr = (lambda (x) (pvi testType (nth 0 x) 0 (nth 1 x) 0))
+  getPwr = (lambda (x) (pvi testType (car x) 0 (cadr x) 0))
   
   pwrOutWatts = (getPwr out)
   pwrOutWattsF0 = (harmonic pwrOutWatts 1)
