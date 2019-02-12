@@ -15,9 +15,6 @@
 ; tNetwork.ocn
 (addToExportList '(qub:::ocnTNetwork))
 
-; ampHbPsweep.ocn
-(addToExportList '(qub:::ocnHbPsweep))
-
 ; ampHB.ils
 (addToExportList '(qub:::ocnAmpHb))
 

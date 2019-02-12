@@ -6,7 +6,6 @@
   (modload "loadPullResults.ocn")
   (modload "piNetwork.ocn")
   (modload "tNetwork.ocn")
-  (modload "ampHbPsweep.ocn")
   (modload "ampHB.ils")
   (modload "outphasingSweep.ocn")
   (modload "stability_calculations.ils")
