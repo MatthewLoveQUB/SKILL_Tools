@@ -1,6 +1,9 @@
 ; Evaluate a component using a one-port s-parameter simulation
 ; mode can be 'C, 'L, or 'all
-(defun qub::ocnPassiveOnePort (@key (port 1) (mode 'all) (markerFreq nil))
+(defun qub::ocnPassiveOnePort (@key (port 1) 
+                                    (mode 'all) 
+                                    (markerFreq nil)
+                                    (plotTitle "Passive Plot"))
   (letseq ((f (qub::sToF))
            (w (times 2.0 qub::m.PI f))
            (Z (zpm "sp" port port))
@@ -16,6 +19,7 @@
            (Cp (qub::XToC Xp w))
            (winId (newWindow))
            (numSubwindows (if (equal mode 'all) 4 2)))
+    (addTitle plotTitle)
     (if (or (equal mode 'all) (equal mode 'L))
         (progn (addSubwindowTitle "Series RL")
                (plot Rs X Qs ?expr (list "R" "X" "Q"))
@@ -30,6 +34,7 @@
         (progn (addSubwindowTitle "Series RC")
                (plot Rs X Qs ?expr (list "R" "X" "Q"))
                (plot Cs ?expr (list "C") ?yNumber 2)
+               (plot (abs Z) ?expr (list "|Z|"))
                (addSubwindow)
                (addSubwindowTitle "Parallel RC")
                (plot Rp Xp ?expr (list "R" "X"))
