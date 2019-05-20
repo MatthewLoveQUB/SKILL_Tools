@@ -20,11 +20,14 @@
                            (supplies nil)
                            (testType 'hb)
                            (pwrInWatts nil)
-                           (sweepMode nil))
+                           (sweepMode nil)
+                           (nHarmonics 3))
   getPwr = (lambda (x) (pvi testType (car x) 0 (cadr x) 0))
   
   pwrOutWatts = (getPwr out)
-  pwrOutWattsF0 = (harmonic pwrOutWatts 1)
+  harmIdxs = (qub::range ?start 1 ?stop nHarmonics+1 ?step 1)
+  pwrOutWattsHarms = (qub::lcmp (harmonic pwrOutWatts x) for x in harmIdxs)
+  pwrOutWattsF0 = (car pwrOutWattsHarms)                                           
   pwrDc = (qub::sum 
             (qub::lcmp (abs (harmonic (getPwr src) 0)) for src in supplies))
   
@@ -39,11 +42,8 @@
              (printf "DE: %.2f%%\n" drain_efficiency)
              (printf "Gain: %.2f dB\n" gain)
              (plot (dbm pwrOutWatts) ?expr (list "Pout")))
-      (progn (plot gain 
-                   (dBm pwrOutWattsF0)
-                   drain_efficiency
-                   pae
-                   ?expr (list "Gain (dB)" 
-                               "Pout (dBm)" 
-                               "DE (%)" 
-                               "PAE (%)")))))
+      (progn (plot gain drain_efficiency pae
+                   ?expr (list "Gain (dB)" "DE (%)" "PAE (%)"))
+             (foreach idx (qub::range ?start 0 ?stop nHarmonics ?step 1)
+               (plot (dbm (nth idx pwrOutWattsHarms)) 
+                     ?expr (list (sprintf nil "Pout (dBm, %df0)" idx+1)))))))
