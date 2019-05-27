@@ -9,7 +9,8 @@
                               (nContours 6)
                               (supplyNet nil)
                               (outNet nil)
-                              (inNet nil))
+                              (inNet nil)
+                              (closeContours nil))
 	(cond ((not testType)
          (error "testType not \"hb\" or \"pss\""))
         ((not outName)
@@ -47,13 +48,13 @@
 					   ?maxValue 100.0
 					   ?minValue minPae
 					   ?numCont nContours
-					   ?closeCont nil)
+					   ?closeCont closeContours)
 
   drainEff = (awvRfLoadPull (100.0 * ((harmonic outPower 1)/dcPower))
 					   ?maxValue 100.0
 					   ?minValue minDrainEff
 					   ?numCont nContours
-					   ?closeCont nil)
+					   ?closeCont closeContours)
 
 	powerContours = (cPwrContour outCurrent
 							   outVoltage
@@ -61,7 +62,7 @@
 							   ?refImp 50.0
 							   ?numCont nContours
 							   ?minPower minPout
-							   ?closeCont nil
+							   ?closeCont closeContours
 							   ?modifier "dBm")
                
   (plot powerContours ?expr (list "Po"))
