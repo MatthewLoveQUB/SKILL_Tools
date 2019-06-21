@@ -1,0 +1,2 @@
+(defun qub::adeDirectPlot ()
+  (sevDirectPlot (sevSession (getCurrentWindow)) 'asiDirectPlotResultsMenuCB))

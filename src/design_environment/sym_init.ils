@@ -3,3 +3,5 @@
                    
 (addToExportList '(qub:::getInstTermNet
                    qub:::getHierNetName))
+                   
+(addToExportList '(qub:::adeDirectPlot))
