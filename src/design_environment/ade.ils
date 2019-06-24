@@ -1,2 +1,3 @@
+; Loads the ADE Direct Plot window for the current active window
 (defun qub::adeDirectPlot ()
   (sevDirectPlot (sevSession (getCurrentWindow)) 'asiDirectPlotResultsMenuCB))
