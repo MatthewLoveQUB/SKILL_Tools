@@ -20,7 +20,6 @@
                            (supplies nil)
                            (testType 'hb)
                            (pwrInWatts nil)
-                           (sweepMode nil)
                            (nHarmonics 3))
   getPwr = (lambda (x) (pvi testType (car x) 0 (cadr x) 0))
   
@@ -36,7 +35,7 @@
   drain_efficiency = 100.0 * (quotient pwrOutWattsF0 pwrDc)
     
   winId = (newWindow)
-  (if (null sweepMode)
+  (if (not (drIsWaveform pae))
       (progn (printf "Pout (f0): %.2f dBm\n" (dBm pwrOutWattsF0))
              (printf "PAE: %.2f%%\n" pae)
              (printf "DE: %.2f%%\n" drain_efficiency)
