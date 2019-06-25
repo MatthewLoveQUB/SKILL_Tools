@@ -1,14 +1,21 @@
 # SKILL Tools
 
 Tools to ease working with SKILL and SKILL++ in Cadence Virtuoso. The main feature of interest is the unit testing framework in the folder `qtest`.
+This repo contains the code that I use regularly in my PhD so it's also available in case anyone finds any use for it.
+There's not a lot of SKILL code in the wild beyond the Cadence forums.
 
 ## Project Structure
 
 | Folder | Namespace | Purpose
 |---|---|---|
-|`geometry` | `qub` | A side project currently under development and should be ignored.
-|`qtest` | `qtest` | All code for the unit testing.
+| `circuits` | `qub` | Circuit analysis
+| `design_environment` | `qub` | Manipulating the Cadence Virtuoso design environment
+| `geometry` | `qub` | Geometry calculations
+| `ocean` | `qub` | Processing simulation results
+| `pcell` | `qub` | Generating custom PCells
+| `qtest` | `qtest` | Unit testing.
 | `std` | `qub` | A "standard library" of useful functions.
+| `inductor_generator` | `qub` | A side project on generating spiral inductors. Should be ignored.
 
 ## Importing the project
 
