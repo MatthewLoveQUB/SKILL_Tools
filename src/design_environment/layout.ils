@@ -1,0 +1,6 @@
+; Hides palettes in the layout that end with a number in brackets e.g. (3)
+; My Virtuoso instance has a bug where every palette member is duplicated
+; when Virtuoso is loaded and this function removes them all
+(defun qub::hidePaletteDuplicates ()
+  (foreach setname (pteGetAllLayerSets)
+    (if (rexMatchp ".*([0-9])$" setname) (pteSetLSEnable setname nil))))

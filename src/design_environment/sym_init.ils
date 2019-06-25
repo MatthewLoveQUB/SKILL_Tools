@@ -1,7 +1,13 @@
+; bbox.ils
 (addToExportList '(qub:::bboxWidth
                    qub:::bboxHeight))
-                   
+
+; schematic.ils
 (addToExportList '(qub:::getInstTermNet
                    qub:::getHierNetName))
-                   
+
+; ade.ils
 (addToExportList '(qub:::adeDirectPlot))
+
+; layout.ils
+(addToExportList '(qub:::hidePaletteDuplicates))
