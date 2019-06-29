@@ -1,17 +1,43 @@
-; Rough versions of haskell's fold functions
-; Function should be in the form (accumulator list-value) => accumulator
+; A rough version of haskell's fold left function
+; Args:
+;   fn: The function to apply
+;       It should be in the form (accumulator list-value) => accumulator
+;   accumulator: object
+;                The accumulator value
+;   lst: The list to be folded
+; Example:
+;   >>> (qub::foldl (lambda (acc val) (plus acc val)) 0 (list 1 2 3))
+;   6
+;   >>> (qub::foldl (lambda (acc val) (strcat acc val)) "" (list "a" "b" "c"))
+;   "abc"
 (defun qub::foldl (fn accumulator lst)
   (mapc (lambda (x) (setq accumulator (fn accumulator x))) lst)
   accumulator)
-
+  
+; See qub::foldl
+; It folds from right to left
+; Example:
+;   >>> (qub::foldr (lambda (acc val) (strcat acc val)) "" (list "a" "b" "c"))
+;   "cba"
 (defun qub::foldr (fn init lst)
   (qub::foldl fn init (reverse lst)))
 
 ; Sums a list
+; Returns:
+;   The value of the summed list values
+; Args:
+;   lst: list
+;        The list being summed.
+; Example:
+;   >>> (qub::sum (list 1 2 4))
+;   7
 (defun qub::sum (lst)
   (qub::foldl plus 0 lst))
 
 ; List comprehension modelled after python's
+; Example:
+;   >>> (qub::lcmp x**2 for x in (list 1 2 3))
+;   (1 4 9)
 (define_syntax qub::lcmp
   (syntax_rules (for in if)
     ((lcmp expression for element in list)
@@ -19,9 +45,28 @@
     ((lcmp expression for element in list if predicate)
      (mapcar (lambda (element) expression) (setof element list predicate)))))
      
-     
+; Take the first N values of a list
+; Returns:
+;   list
+; Args:
+;   n: int
+;      The number of elements to take
+;   lst: list
+;        The list to take from
+; Example:
+;   >>> (qub::takeN 2 (list 1 2 3 4 5))
+;   (1 2)
 (defun qub::takeN (n lst)
   (mapcar (lambda (x) (nth x lst)) (qub::range ?start 0 ?stop n)))
-     
+
+; Returns:
+;   The input list with the first n elements removed
+; Args:
+;   n: int
+;      The number of elements to drop
+;   lst: The list we're extracting elements from
+; Example:
+;   >>> (qub::dropN 2 (list 1 2 3 4 5))
+;   (3 4 5) 
 (defun qub::dropN (n lst)
   (mapcar (lambda (x) (nth x lst)) (qub::range ?start n ?stop (length lst))))

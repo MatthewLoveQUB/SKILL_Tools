@@ -1,3 +1,9 @@
+; Recursively get all files within a directory with their full paths
+; Returns:
+;   A list of strings of paths
+; Args:
+;   rel_path: string
+;             The parent directory
 (defun qub::listFileRec (rel_path)
   (labels ((helper (pth)
              (if (isFile pth)
@@ -7,16 +13,56 @@
     (qub::flattenList (helper rel_path))))
 
 ; Removes . .. and dotted files from list
+; Returns:
+;   List of paths with only "undotted" files
+; Args:
+;   files: (list string)
+;          A list of path strings to filter
+; Example:
+;   >>> (qub::filterUnwanted (list ".." "." "foo.ils" "bar.ils" ".baz"))
+;   ("foo.ils" "bar.ils")
 (defun qub::filterUnwanted (files)
   (setof x files (and (nequal x ".")
                       (nequal x "..")
                       (nequal (getchar x 1) '\.))))
 
+; Strips the directory information from a file's full path
+; Return:
+;   String of the file name
+; Args:
+;   path: The path to be processed
+; Example:
+;   >>> (qub::getFileName "x/y/z/foo.ils")
+;   "foo.ils"
 (defun qub::getFileName (path)
   (car (last (parseString path "/"))))             
 
+; Finds all paths in a list where the files begin with a certain prefix
+; Returns:
+;   A list of paths
+; Args:
+;   files: (list string)
+;          The paths to filter
+;   prefix: string
+;           The prefix to search for
+; Example:
+;   >>> paths = (list "x/x_1" "x/x_2" "x/y_1" "y/x_1")
+;   ("x/x_1" "x/x_2" "x/y_1" "y/x_1")
+;   >>> (qub::findFilesWithPrefix paths "x_")
+;   ("x/x_1" "x/x_2" "y/x_1")
 (defun qub::findFilesWithPrefix (files prefix)
   (setof x files (qub::startsWith (qub::getFileName x) prefix)))
-  
+
+; Get the paths of files with a certain name
+; Return:
+;   List of paths
+; Args:
+;   files: (list string)
+;          List of paths
+;   name: string
+;         The filename to search for
+; Example:
+;   >>> (qub::findFiles (list "x/foo.ils" "y/foo.ils" "z/bar.ils") "foo.ils")
+;   ("x/foo.ils" "y/foo.ils")
 (defun qub::findFiles (files name)
   (setof x files (equal name (qub::getFileName x))))

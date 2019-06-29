@@ -1,3 +1,11 @@
+; Checks if string starts with a particular substring
+; Returns:
+;   bool
+; Args:
+;   str: string
+;        The string to check
+;   prefix: string
+;           The substring we're checking for within str
 (defun qub::startsWith (str prefix)
   (equal 0 (strncmp str prefix (strlen prefix))))
 

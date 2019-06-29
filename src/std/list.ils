@@ -1,8 +1,22 @@
 ; Join a list of lists
+; Return:
+;   list
+; Args:
+;   lst: A list of lists
+; Example:
+;   >>> (qub::joinLists (list (list 1) (list 2)))
+;   (1 2)
 (defun qub::joinLists (lst)
   (qub::foldl append (list) lst))
 
-  ; Recursively flatten all lists
+; Recursively flatten all lists
+; Return:
+;   list
+; Args:
+;   lst: A list of lists of any depth
+; Example:
+;   >>> (qub::flattenList (list 1 (list 2) (list (list (list 3)) (list 4))))
+;       (1 2 3 4)
 (defun qub::flattenList (lst)
   (letseq ((outputList (list)))
     (labels  ((helper (a)
@@ -12,10 +26,21 @@
       (helper lst)
     (reverse outputList))))
 
-; Start is inclusive
-; End is exclusive
-; (qub::range ?start 0 ?stop 5)
-; (0 1 2 3 4)
+; Creates a list of numbers. Modelled on Python 3's range function.
+; Return:
+;   list of integers
+; Args:
+;   start: int
+;          The starting value. It is inclusive and will be in the output list.
+;   stop: int
+;         The stop value. It is exclusive and will not be in the list
+;   step: int
+;         The step value of the internal loop
+; Example:
+;   >>> (qub::range ?start 0 ?stop 5)
+;   (0 1 2 3 4)
+;   >>> (qub::range ?start 1 ?stop 11 ?step 2)
+;   (1 3 5 7 9)
 (defun qub::range (@key (start 0) (stop -1) (step 1))
   (if (lessp stop start)
       (error "End value is lower than start value")
@@ -26,16 +51,45 @@
           (setq cur_val (plus cur_val step)))
         (reverse values))))
         
-; Push a new item to the end of a list		
+; Mutate a list by adding a new value to the end.
+; Returns:
+;   The value that was added to the list.
+;   The original list is mutated
+; Args:
+;   val: object
+;        The value to be added to the list
+;   lst: list
+;        The list to be mutated
+; Example:
+;   >>> my_list = (list 1 2)
+;   (1 2)
+;   >>> (qub::pushEnd 3 my_list)
+;   (3)
+;   >>> my_list
+;   (1 2 3)		
 (defun qub::pushEnd (val lst)
   (pushf val (cdr (last lst))))
   
-; Get the last atom from a list  
+; Get the last atom from a list.
+; Returns:
+;   The final atom in a list
+; Args:
+;   lst: list
+;        The list to extract the atom from
+; Example:
+;   >>> (qub::lastAtom (list 1 2 3))
+;   3
 (defun qub::lastAtom (lst)
   (car (last lst)))
   
-; Sum values in two lists 
-; >>> (qub::addListElems (list 1 2 3) (list 1 2 3))
-; (2 4 6)
+; Adds each value in a list with the corresponding element in another list.
+; Return:
+;   A list of values
+; Args:
+;   a: A list of numbers
+;   b: A list of numbers
+; Example:
+;   >>> (qub::addListElems (list 1 2 3) (list 1 2 3))
+;   (2 4 6)
 (defun qub::addListElems (a b)
   (mapcar plus a b))
