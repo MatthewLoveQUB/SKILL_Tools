@@ -1,7 +1,9 @@
-;;;; file for generating spiral inductors
-;;;; only use floats for coordinates                 
-;;;; 0 degrees is east. 90 degrees is north
+;;;; All coordinates assume polar plot
+;;;; e.g. 0 degrees is east, 90 degrees is north etc
 
+; Restrict a number between 0 and 360
+; Args:
+;   angle: float or int
 (defgeneric qub::fixAngle (angle))
 
 (defmethod qub::fixAngle ((angle fixnum))
@@ -12,14 +14,18 @@
       (plus 360.0 (modf angle 360.0))
   (modf angle 360.0)))
 
- 
-; Degrees to radians
-(defun qub::degToRad (value)
+; Convert angle in degrees to radians
+; Args:
+;   angle: float
+(defun qub::degToRad (angle)
   (times 
     qub::m.PI 
     (quotient 
-      value 
+      angle
       180.0)))
-      
-(defun qub::radToDeg (value)
-  (times 180.0 (quotient value qub::m.PI)))
+
+; Convert an angle from radians to degrees
+; Args:
+;   angle: float
+(defun qub::radToDeg (angle)
+  (times 180.0 (quotient angle qub::m.PI)))
