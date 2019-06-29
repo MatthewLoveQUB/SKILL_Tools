@@ -1,3 +1,7 @@
+; Plot the resistances and reactances of a passive network's T model
+; Args:
+;   f0: float
+;       The frequency for the plot markers
 (defun qub::ocnTNetwork (f0)
   ; T Network representation using Z-Parameters.
   ; T network is assumed to be in the following form.

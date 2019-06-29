@@ -6,19 +6,19 @@
 ; coupledCoil.ocn
 (addToExportList '(qub:::ocnCoupledCoil))
 
-; loadPullResults.ocn
+; loadPullResults.ils
 (addToExportList '(qub:::ocnLoadPull))
 
-; piNetwork.ocn
+; piNetwork.ils
 (addToExportList '(qub:::ocnPiNetwork))
 
-; tNetwork.ocn
+; tNetwork.ils
 (addToExportList '(qub:::ocnTNetwork))
 
 ; ampHB.ils
 (addToExportList '(qub:::ocnAmpHb))
 
-; outphasingSweep.ocn
+; outphasingSweep.ils
 (addToExportList '(qub:::ocnOutphasingSweep))
 
 ; transistor.ils

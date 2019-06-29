@@ -1,8 +1,17 @@
-; Evaluate a component using a one-port s-parameter simulation
-; mode can be 'sL, 'pL, 'sC, 'pC
-; markerFreq places a vertical marker in all plots at the desired frequency
-; singleFreq (Single frequency) only displays values for the given frequency
-; If singleFreq is used then markerFreq is ignored
+; Evaluate a passive component using a one-port S-parameter simulation
+; Args:
+;   port: int
+;         The index of the S-parameter port to analyse
+;   plotMode: symbol
+;             Can be 'sL, 'pL, 'sC, 'pC for 
+;             series inductance, parallel inductance etc
+;   markerFreq: float
+;               Places a vertical marker in all plots at the desired frequency
+;   singleFreq: float
+;               Restrict the plot to values for a single frequency
+;               If it is not nil, markerFreq is ignored
+;   plotTitle: string
+;              The title of the ViVA plot
 (defun qub::ocnPassiveOnePort (@key (port 1) 
                                     (markerFreq nil)
                                     (plotTitle "Passive Plot")

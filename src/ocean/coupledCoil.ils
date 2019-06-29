@@ -1,6 +1,8 @@
 ; A two port measurement that uses both the Y and Z parameters of a coupled
 ; coil to get both its T and Pi representations.
-
+; Args:
+;   f0: float
+;       The frequency for the plot markers
 (defun qub::ocnCoupledCoil (f0)
   f = (qub::sToF)
   w = (times 2 qub::m.PI f)

@@ -1,3 +1,7 @@
+; Plot the resistances and reactances of a passive network's Pi model
+; Args:
+;   f0: float
+;       The frequency of the plot marker
 (defun qub::ocnPiNetwork (f0)
   ; Y Network Parameters
   ; Assumed to be in the following form.

@@ -1,9 +1,19 @@
+; Get the delta term used to calculate the Rollett stability factor
 ; Assumes two-port S-parameters
+; Args:
+;   s11: waveform
+;   s12: waveform
+;   s21: waveform
+;   s22: waveform
 (defun qub::rollett_delta (s11 s12 s21 s22)
-  (difference (times s11 s22)
-              (times s12 s21)))
+  (difference (times s11 s22) (times s12 s21)))
 
-
+; Return the mu stability factor
+; Args:
+;   s11: waveform
+;   s12: waveform
+;   s21: waveform
+;   s22: waveform
 (defun qub::mu_stability_factor (s11 s12 s21 s22)
   (let ((D (qub::rollett_delta s11 s12 s21 s22))
         (s11_c (conjugate s11))

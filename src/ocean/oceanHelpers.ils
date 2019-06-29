@@ -21,11 +21,15 @@
     (createNetlist ?recreateAll t)
     (resultsDir (sprintf nil "/user/p_outpa/mlove/%s/%s/" ,lib ,schem))))
  
+; Create a new window in the smith chart mode
+; Args:
+;   smithTypeStr: string
+;                 Either "impedance", "admittance", or "polar"
 (defun qub::createSmith (@optional (smithTypeStr "impedance"))
   (newWindow)
   (displayMode "smith")
   (smithType smithTypeStr))
 
-; Gets the frequency from a S-Parameter value
+; Gets the frequency data from the results of an S-Parameter simulation
 (defun qub::sToF ()
   (xval (getData "/s11" ?result "sp")))

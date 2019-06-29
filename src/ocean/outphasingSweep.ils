@@ -1,9 +1,19 @@
-; outName: instance name of the output port
-; inName: instance name of the input port
-; vddName: instance name of the DC voltage source
-; testType: varies if pss or hb
-; hb_fd: harmonic balance
-; pss_fd: pss (not verified)
+; Plot drain efficiency (DE) and power-added efficiency (PAE) for an amplifier
+; where the two inputs are outphased.
+; Assuming the simulation was done by sweeping the phase difference
+; between the power of the two input ports, the DE and PAE will be plotted
+; against the phase angle in radians and the output power back-off
+; Args:
+;   outName: string
+;            Instance name of the output port
+;
+;   inName: string
+;           Instance name of the input port
+;   vddName: string 
+;            Instance name of the DC voltage source
+;   testType: string
+;             Either "hb" or "pss" for harmonic balance or periodic steady
+;             state simulations respectively.
 (defun qub::ocnOutphasingSweep (@key (outName nil) 
                                      (inName1 nil)
                                      (inName2 nil)

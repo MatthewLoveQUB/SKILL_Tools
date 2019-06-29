@@ -1,4 +1,30 @@
-; testType must be "pss" or "hb"
+; Plot the results of a load-pull simulation on a smith chart
+; Args:
+;   minPout: float
+;            The minimum output power to display. Value in dBm.
+;   minPae: float
+;           The minimum power-added efficiency to display. Value in %.
+;   minDrainEff: float
+;           The minimum drain efficiency to display. Value in %.
+;   outName: string
+;            Instance name of the output port
+;   inName: string
+;           Instance name of the input port
+;   vddName: string
+;            Instance name of the supply voltage source
+;   testType: string
+;             The type of simulation, either "pss" or "hb" for periodic steady
+;             state or harmonic balance.
+;   nContours: int
+;              The number of load-pull contours to display for each measurement
+;   supplyNet: string
+;              The net connected to the supply voltage source
+;   outNet: string
+;           The net connected to the output port
+;   inNet: string
+;          The net connected to the input port
+;   closeContours: bool
+;                  Contours are closed if true, can be incomplete if nil
 (defun qub::ocnLoadPull (@key (minPout 0) 
                               (minPae 0)
                               (minDrainEff 0)
