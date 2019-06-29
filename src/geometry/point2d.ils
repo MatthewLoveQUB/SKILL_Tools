@@ -1,36 +1,60 @@
+; Return the point with the greater y coordinate
 (defun qub::topPoint (a b)
   (if (greaterp (yCoord a) (yCoord b))
       a
       b))
-      
+
+; Return the point with the smaller y coordinate      
 (defun qub::bottomPoint (a b)
   (if (lessp (yCoord a) (yCoord b))
       a
       b))
       
+; Return the left-most point
 (defun qub::leftPoint (a b)
   (if (lessp (xCoord a) (xCoord b))
       a
       b))
 
+; Return the right-most point
 (defun qub::rightPoint (a b)
   (if (greaterp (xCoord a) (xCoord b))
       a
       b))
-      
+
+; Is a's y coordinate greater than b's?
 (defun qub::higherp (a b)
   (greaterp (yCoord a) (yCoord b)))
       
-; translation should be a list of (hor_mv vert_mov)
+; Move a point
+; Args:
+;   Point: (list x:float y:float)
+;   Translation: (list dx:float dx:float)
 (defun qub::movePoint (point translation)
   (qub::addListElems point translation))
-  
+
+; Move a point along its X axis
+; Args:
+;   pt: (list x:float y:float)
+;   dist: float
 (defun qub::mvPtX (pt dist)
   (qub::movePoint pt dist:0))
-  
+
+; Move a point along its Y axis
+; Args:
+;   pt: (list x:float y:float)
+;   dist: float
 (defun qub::mvPtY (pt dist)
   (qub::movePoint pt 0:dist))
   
+; Find a point along the line formed between two points
+; Args:
+;   p1: (list x:float y:float)
+;   p2: (list x:float y:float)
+;   distAlong: float
+;              The the point at a distance along the line from p1 to p2
+;              0 would correspond to p1, 1 to p2, and 0.5 to the exact 
+;              mid-point between the two
 (defun qub::midPoint (p1 p2 @key (distAlong 0.5))
   (let ((p1Scalar distAlong)
         (p2Scalar (difference 1.0 distAlong)))
@@ -38,21 +62,32 @@
     (plus (times p1Scalar (xCoord p1)) (times p2Scalar (xCoord p2)))
     (plus (times p1Scalar (yCoord p1)) (times p2Scalar (yCoord p2))))))
     
+; Return the angle from one point to another
+; Args:
+;   refPt: (list x:float y:float)
+;   targetPt: (list x:float y:float)
 (defun qub::getAngleToPt (refPt targetPt)
   (letseq ((d (mapcar difference targetPt refPt))
            (dx (xCoord d))
            (dy (yCoord d)))
     (qub::radToDeg (atan2 dy dx))))
     
-; Move a distance from a point at an angle
-; It assumes a polar plot
-; Angle is in degrees	
+; Move a distance away from a point at an angle
+; It assumes a polar plot i.e. east is 0 degrees
+; Args:
+;   pt: (list x:float y:float)
+;   dist: float
+;   angle: float
+;          The angle is in degrees
 (defun qub::moveAtAngle (pt dist angle)
   (let ((dx (times dist (cos (qub::degToRad angle))))
         (dy (times dist (sin (qub::degToRad angle)))))
     (qub::movePoint pt dx:dy)))
     
-; Calculate the distance between two points	
+; Return the distance between two points
+; Args:
+;   a: (list x:float y:float)
+;   b: (list x:float y:float)
 (defun qub::getDist (a b)
   (sqrt (plus 
           (expt (difference (yCoord a) (yCoord b)) 2)
