@@ -8,7 +8,7 @@
   
 ; Convert parallel RL/RC to series
 (defun qub::parallelToSeries (@key Rp Xp)
-  ; Eqn shared my both
+  ; Eqn shared by both
   core = (Rp*Xp)/(Rp**2 + Xp**2)
   Rs = core * Xp
   Xs = core * Rp
@@ -18,14 +18,18 @@
 (defun qub::parallelResistors (@rest args)
   (quotient 1.0 (qub::sum (mapcar (lambda (x) 1.0/x) args))))
   
+; Reactance to capacitance
 (defun qub::XToC (reactance angular_frequency)
   (quotient -1.0 (times reactance angular_frequency)))
-  
+
+; Reactance to inductance
 (defun qub::XToL (reactance angular_frequency)
   (quotient reactance angular_frequency))
 
+; Susceptance to capacitance
 (defun qub::BToC (susceptance angular_frequency)
   (quotient susceptance angular_frequency))
   
+; Susceptance to inductance
 (defun qub::BToL (susceptance angular_frequency)
   (quotient -1.0 (times susceptance angular_frequency)))

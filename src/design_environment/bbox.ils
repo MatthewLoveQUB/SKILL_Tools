@@ -1,5 +1,7 @@
+; Get the width of a bounding box
 (defun qub::bboxWidth (bbox)
   (difference (rightEdge bbox) (leftEdge bbox)))
-  
+
+; Get the height of a bounding box  
 (defun qub::bboxHeight (bbox)
   (difference (topEdge bbox) (bottomEdge bbox)))
