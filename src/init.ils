@@ -1,4 +1,4 @@
-; Loading some stdlib files so I have access to fileio functions
+; Loading some stdlib files to access file io functions
 (load "std/sym_init.ils")
 (load "std/fileio.ils")
 (load "std/list.ils")
@@ -10,8 +10,11 @@
     ,@body))
 
 ; Have to load the symbols first to avoid namespace errors
+; Make sure to set $QUB_CODE_REPO_DIR to this file's parent directory
 (qubCreateModule ""
-  (letseq ((dirFiles (qub::listFileRec "~/code/"))
+  (if (null (getShellEnvVar "QUB_CODE_REPO_DIR"))
+      (error "Env var QUB_CODE_REPO_DIR must be set to the repo parent dir"))
+  (letseq ((dirFiles (qub::listFileRec (getShellEnvVar "QUB_CODE_REPO_DIR")))
            (nsInitFiles (qub::findFiles dirFiles "ns_init.ils"))
            (symInitFiles (qub::findFiles dirFiles "sym_init.ils")))
     (mapc load nsInitFiles)

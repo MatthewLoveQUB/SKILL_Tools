@@ -19,6 +19,7 @@ There's not a lot of SKILL code in the wild beyond the Cadence forums.
 
 ## Importing the project
 
+Create the environment variable QUB_CODE_REPO_DIR and point it at the repo root directory.
 Run the SKILL `load` function on `init.ils` at the root of the repo and all other modules will be imported.
 
 ## Unit Testing
