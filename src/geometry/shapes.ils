@@ -1,19 +1,20 @@
-; Converts an apothem to a circumradius
+; Convert an apothem to a circumradius
+; Args:
+;   apothem: float
+;   num_sides: int or float
 (defun qub::apothemToCircumradius (apothem num_sides)
-  (quotient 
-    apothem 
-    (cos (quotient 
-           qub::m.PI
-           num_sides))))
+  (quotient apothem (cos (quotient qub::m.PI num_sides))))
   
 ; Find the internal angle of a regular polygon
+; Args:
+;   sides: int or float
 (defun qub::internalAngle (sides)
-  (quotient 
-    360.0 
-    sides))
+  (quotient 360.0 sides))
 	
 ; Generate the points of an octagon with a given apothem
-; a = apothem
+; Args:
+;   a: float
+;      The apothem of the octagon
 (defun qub::genOctagon (a)
   (letseq ((angle 45.0)
            (sides 8.0)
@@ -26,10 +27,16 @@
       for n in (qub::range ?start 0 ?stop sides))))
 
 ; Generate a list of octagons
-; w = width
-; s = spacing
-; a = apothem
-; n = number of octagons
+; Args:
+;   w: float
+;      Width of octagon line
+;   s: float
+;      Spacing between the inner octagon's outer edge and the outer octagon's
+;      inner edge
+;   a: float
+;      Apothem of the innermost octagon
+;   n: int or float
+;      The number of octagons to be generated
 (defun qub::genOctagons (w s a n)
   (let (; na = new apothem
         ; Calculate the apothem for the current octagon
@@ -40,7 +47,10 @@
       for n in (qub::range ?start 0 ?stop n))))
       
 ; Create a coil from a list of octagons
-; nSegs must be an integer as it is compared with segCount
+; Args:
+;   shapes: list of octagons which are generated from qub::genOctagons
+;   nSegs: int
+;          Number of segments of the shape
 (defun qub::octagonsToCoil (shapes nSegs)
   (letseq ((inList (qub::joinLists shapes))
            ; Create the output list with the first point added
@@ -76,6 +86,3 @@
           ; Otherwise do nothing
           nil))
     outList))
-      
-  
-        
