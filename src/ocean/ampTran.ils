@@ -1,0 +1,72 @@
+; For a transient simulations of a power amplifier circuit, plot the following: 
+;     output power
+;     gain
+;     drain efficiency
+;     power added efficiency
+; Args:
+;     out: (list net:string node:string)
+;         The net and node of the output port.
+;     in: (list net:string node:string)
+;         The net and node of the input port.
+;     supplies: (list (list net:string node:string)  ...)
+;         The nets and nodes of the power supplies.
+;         Unlike out and in, this is a list of lists to support multiple supplies.
+;     pwrInWatts (list of floats or a float): Used for gain and PAE.
+;     f0: float
+;         The fundamental frequency
+;     nSamples: integer
+;               The number of samples for the dft
+;     startTime: float
+;                The start of the sampling window for the dft
+;                If left nil, it will be one cycle before endTime
+;     endTime: float
+;              The end of the sampling window for the dft
+(defun qub::ocnAmpTran (@key (out nil) 
+                             (in nil) 
+                             (supplies nil)
+                             (pwrInWatts nil)
+                             (nHarmonics 3)
+                             (nSamples 64)
+                             (f0 nil)
+                             (startTime nil)
+                             (endTime nil))
+  (letseq ((t0 (quotient 1 f0))
+           (startTime (if (null startTime)
+                          (difference endTime t0)
+                          startTime))
+           (xdft (lambda (connection fn) (dft (fn 'tran connection)
+                                              startTime
+                                              endTime
+                                              nSamples)))
+           (vdft (lambda (net) (xdft net vtime)))
+           (idft (lambda (node) (xdft node itime)))
+           (getPwrX (lambda (connection scale_factor)
+                            (times scale_factor 
+                                   (abs (vdft (car connection)))
+                                   (abs (idft (cadr connection))))))
+           (getPwrSine (lambda (connection) (getPwrX connection 0.5))) 
+           (getPwrDC (lambda (connection) (getPwrX connection 1.0)))
+           (pwrOutWatts (getPwrSine out))
+           (harmIdxs (qub::range ?start 1 ?stop nHarmonics+1 ?step 1))
+           (pwrOutWattsHarms 
+             (qub::lcmp (value pwrOutWatts (times x f0)) for x in harmIdxs))
+           (pwrOutWattsF0 (car pwrOutWattsHarms))
+           (pwrDc (qub::sum 
+                    (qub::lcmp 
+                      (abs (value (getPwrDC src) 0))
+                      for src in supplies)))
+           (gain (db10 (pwrOutWattsF0 / pwrInWatts)))
+           (pae (times 100.0 (quotient (pwrOutWattsF0 - pwrInWatts) pwrDc)))
+           (drain_efficiency (times 100.0 (quotient pwrOutWattsF0 pwrDc)))
+           (winId (newWindow)))
+  (if (drIsWaveform pae)
+      (progn (plot gain drain_efficiency pae
+                   ?expr (list "Gain (dB)" "DE (%)" "PAE (%)"))
+             (foreach idx (qub::range ?start 0 ?stop nHarmonics ?step 1)
+               (plot (dbm (nth idx pwrOutWattsHarms)) 
+                     ?expr (list (sprintf nil "Pout (dBm, %df0)" idx+1)))))
+      (progn (printf "Pout (f0): %.2f dBm\n" (dBm pwrOutWattsF0))
+             (printf "PAE: %.2f%%\n" pae)
+             (printf "DE: %.2f%%\n" drain_efficiency)
+             (printf "Gain: %.2f dB\n" gain)
+             (plot (dbm pwrOutWatts) ?expr (list "Pout"))))))

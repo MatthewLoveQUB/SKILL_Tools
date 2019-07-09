@@ -9,4 +9,5 @@
   (modload "ampHB.ils")
   (modload "outphasingSweep.ils")
   (modload "stability_calculations.ils")
-  (modload "passiveOnePort.ils"))
+  (modload "passiveOnePort.ils")
+  (modload "ampTran.ils"))

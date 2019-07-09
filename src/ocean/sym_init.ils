@@ -37,3 +37,6 @@
                    
 ; passiveOnePort.ils
 (addToExportList '(qub:::ocnPassiveOnePort))                   
+
+; ampTran.ils
+(addToExportList '(qub:::ocnAmpTran))
