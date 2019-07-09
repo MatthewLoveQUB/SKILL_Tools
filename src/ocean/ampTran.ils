@@ -16,11 +16,11 @@
 ;         The fundamental frequency
 ;     nSamples: integer
 ;               The number of samples for the dft
-;     startTime: float
-;                The start of the sampling window for the dft
-;                If left nil, it will be one cycle before endTime
+;     nCycles: integer
+;              The number of cycles before endTime to be included in the dft
 ;     endTime: float
 ;              The end of the sampling window for the dft
+;              If left nil, final time value of the simulation is used.
 (defun qub::ocnAmpTran (@key (out nil) 
                              (in nil) 
                              (supplies nil)
@@ -28,12 +28,13 @@
                              (nHarmonics 3)
                              (nSamples 64)
                              (f0 nil)
-                             (startTime nil)
+                             (nCycles 1)
                              (endTime nil))
   (letseq ((t0 (quotient 1 f0))
-           (startTime (if (null startTime)
-                          (difference endTime t0)
-                          startTime))
+           (endTime (if (null endTime)
+                        (qub::lastAtom (sweepVarValues "time" ?result 'tran))
+                        endTime))
+           (startTime (difference endTime (nCycles * t0)))
            (xdft (lambda (connection fn) (dft (fn 'tran connection)
                                               startTime
                                               endTime
