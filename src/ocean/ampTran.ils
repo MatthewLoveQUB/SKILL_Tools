@@ -4,11 +4,17 @@
 ;     drain efficiency
 ;     power added efficiency
 ; Args:
-;     out: (list net:string node:string)
+;     out: (list positive_net:string 
+;                negative_net:string 
+;                node:string)
 ;         The net and node of the output port.
-;     in: (list net:string node:string)
+;     in: (list positive_net:string 
+;               negative_net:string 
+;               node:string)
 ;         The net and node of the input port.
-;     supplies: (list (list net:string node:string)  ...)
+;     supplies: (list (list positive_net:string 
+;                           negative_net:string 
+;                           node:string)  ...)
 ;         The nets and nodes of the power supplies.
 ;         Unlike out and in, this is a list of lists to support multiple supplies.
 ;     pwrInWatts (list of floats or a float): Used for gain and PAE.
@@ -35,16 +41,16 @@
                         (qub::lastAtom (sweepVarValues "time" ?result 'tran))
                         endTime))
            (startTime (difference endTime (nCycles * t0)))
-           (xdft (lambda (connection fn) (dft (fn 'tran connection)
-                                              startTime
-                                              endTime
-                                              nSamples)))
-           (vdft (lambda (net) (xdft net vtime)))
-           (idft (lambda (node) (xdft node itime)))
+           (xdft (lambda (signal) (dft signal startTime endTime nSamples)))
+           (vdft (lambda (pos_net neg_net) 
+                         (xdft (difference (vtime 'tran pos_net)
+                                           (vtime 'tran neg_net)))))
+           (idft (lambda (node) (xdft (itime 'tran node))))
            (getPwrX (lambda (connection scale_factor)
                             (times scale_factor 
-                                   (abs (vdft (car connection)))
-                                   (abs (idft (cadr connection))))))
+                                   (abs (vdft (nth 0 connection)
+                                              (nth 1 connection)))
+                                   (abs (idft (nth 2 connection))))))
            (getPwrSine (lambda (connection) (getPwrX connection 0.5))) 
            (getPwrDC (lambda (connection) (getPwrX connection 1.0)))
            (pwrOutWatts (getPwrSine out))
