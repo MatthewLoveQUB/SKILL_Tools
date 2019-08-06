@@ -66,7 +66,7 @@
            (pae (times 100.0 (quotient (pwrOutWattsF0 - pwrInWatts) pwrDc)))
            (drain_efficiency (times 100.0 (quotient pwrOutWattsF0 pwrDc)))
            (winId (newWindow)))
-  (if (drIsWaveform pae)
+  (if (or (drIsWaveform pae) (drIsParamWave pae))
       (progn (plot gain drain_efficiency pae
                    ?expr (list "Gain (dB)" "DE (%)" "PAE (%)"))
              (foreach idx (qub::range ?start 0 ?stop nHarmonics ?step 1)
