@@ -16,8 +16,11 @@
 ;                           negative_net:string 
 ;                           node:string)  ...)
 ;         The nets and nodes of the power supplies.
-;         Unlike out and in, this is a list of lists to support multiple supplies.
+;         Unlike out and in, this is a list of lists 
+;         to support multiple supplies.
 ;     pwrInWatts (list of floats or a float): Used for gain and PAE.
+;     nHarmonics: int
+;                 The number of harmonics to plot.
 ;     f0: float
 ;         The fundamental frequency
 ;     nSamples: integer
