@@ -38,13 +38,9 @@
 ;   n: int or float
 ;      The number of octagons to be generated
 (defun qub::genOctagons (w s a n)
-  (let (; na = new apothem
-        ; Calculate the apothem for the current octagon
-        (na (lambda (w s a n)
-              (a + w/2.0 + n*(w+s)))))
-    (qub::lcmp 
-      (qub::genOctagon (na w s a n)) 
-      for n in (qub::range ?start 0 ?stop n))))
+    ; For each octagon, calculate a new apothem and generate the co-ordinates 
+    (mapcar (lambda (i) (qub::genOctagon (a + w/2.0 + i*(w+s))))
+            (qub::range ?start 0 ?stop n)))
       
 ; Create a coil from a list of octagons
 ; Args:
