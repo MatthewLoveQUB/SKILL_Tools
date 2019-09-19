@@ -1,24 +1,31 @@
 ; A two port measurement that uses both the Y and Z parameters of a coupled
 ; coil to get both its T and Pi representations.
+;
+;
 ; Args:
 ;   f0: float
 ;       The frequency for the plot markers
-(defun qub::ocnCoupledCoil (f0)
+;   plotMode: symbol (Either 'all, 'T, or 'Pi)
+;       
+(defun qub::ocnCoupledCoil (@key (f0 nil)
+                                 (plotMode 'all)
+                                 (port1 nil)
+                                 (port2 nil))
   f = (qub::sToF)
   w = (times 2 qub::m.PI f)
 
   ; T Network representation using Z-Parameters.
   ; T network is assumed to be in the following form.
   ;
-  ; O---Za-----Zb---O
-  ;         |
-  ;         Zc
-  ;         |
-  ; O---------------O
+  ; P1  O---Za-----Zb---O P2
+  ;             |
+  ;             Zc
+  ;             |
+  ; Gnd O---------------O Gnd
 
-  Za = (zpm "sp" 1 1) - (zpm "sp" 1 2)
-  Zb = (zpm "sp" 2 2) - (zpm "sp" 1 2)
-  Zc = (zpm "sp" 1 2)
+  Za = (zpm "sp" port1 port1) - (zpm "sp" port1 port2)
+  Zb = (zpm "sp" port2 port2) - (zpm "sp" port1 port2)
+  Zc = (zpm "sp" port1 port2)
 
   Ra = (real Za)
   Rb = (real Zb)
@@ -32,30 +39,34 @@
   Qb = (quotient Xb Rb)
   Qc = (quotient Xc Rc)
 
+  ; The branch inductaces
   La = (quotient Xa w)
   Lb = (quotient Xb w)
   Lc = (quotient Xc w)
 
+  ; The uncoupled branch inductances
   Lax = (quotient (imag (zpm "sp" 1 1)) w)
   Lbx = (quotient (imag (zpm "sp" 2 2)) w)
-  ; Lc = M
+  ; M = Lc
   ; M = k*Lx
   ; k = M / Lx
   Kac = (quotient Lc Lax)
   Kbc = (quotient Lc Lbx)
+  ; k = M / sqrt(Lax * Lbx)
+  K = (quotient Lc (sqrt Lax * Lbx))
 
   ; Y Network Parameters
   ; Assumed to be in the following form.
   ;
-  ; O----Zz----O
-  ;   |      |
-  ;   Zx     Zy
-  ;   |      |
-  ; O----------O
-
-  Y12 = (ypm "sp" 1 2)
-  Y11 = (ypm "sp" 1 1)
-  Y22 = (ypm "sp" 2 2)
+  ; P1  O----Zz----O P2
+  ;       |      |
+  ;       Zx     Zy
+  ;       |      |
+  ; Gnd O----------O Gnd
+  
+  Y12 = (ypm "sp" port1 port2)
+  Y11 = (ypm "sp" port1 port1)
+  Y22 = (ypm "sp" port2 port2)
 
   Zz = (quotient -1.0 Y12)
   Zx = (quotient 1.0 (plus Y11 Y12))
@@ -89,26 +100,51 @@
 
                           
   ; Plotting the results
+  plotT = (or (eq plotMode 'all) (eq plotMode 'T))
+  plotPi = (or (eq plotMode 'all) (eq plotMode 'Pi))
+  
   winId = (newWindow)
   (addTitle "Coupled Coil Analysis")
 
   (addSubwindowTitle "Q Factors")
-  (plot Qa Qb Qc Qx Qy Qx ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)" "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)"))
+  (if plotT (plot Qa Qb Qc ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)")))
+  (if plotPi (plot Qx Qy Qx ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Resistances")
-  (plot Ra Rb Rc Rx Ry Rz ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)" "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)"))
+  (if plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
+  (if plotPi (plot Rx Ry Rz ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
-  (plot La Lax Lb Lbx Lc Lx Ly Lz ?yNumber (list 1 1 1 1 1 1 1 1) ?expr (list "La (T)" "Lax (T)" "Lb (T)" "Lbx (T)" "Lc (T-Virtual)" "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)"))
-  (plot Kac Kbc  ?yNumber (list 2 2) ?expr (list "Kac" "Kbc"))
+  (if plotT (plot La 
+                  Lax 
+                  Lb 
+                  Lbx 
+                  Lc 
+                  ?yNumber (list 1 1 1 1 1) 
+                  ?expr (list "La (T)" 
+                              "Lax (T)" 
+                              "Lb (T)" 
+                              "Lbx (T)" 
+                              "Lc (T-Virtual)")))
+  (if plotPi (plot Lx 
+                   Ly 
+                   Lz 
+                   ?yNumber (list 1 1 1) 
+                   ?expr (list "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)")))
+  (plot K ?yNumber (list 2) ?expr (list "K"))
   
-  (addSubwindow)
-  (addSubwindowTitle "Miscellaneous")
-  (plot Cres Lz_parallel Rz_parallel ?expr (list "Cres" "Lz (Parallel RL)" "Rz (Parallel RL)"))
-
-  (awvPlaceXMarker winId f0 ?subwindow 1) 
-  (awvPlaceXMarker winId f0 ?subwindow 2) 
-  (awvPlaceXMarker winId f0 ?subwindow 3)
-  (awvPlaceXMarker winId f0 ?subwindow 4))
+  (if plotPi (progn (addSubwindow)
+                    (addSubwindowTitle "Miscellaneous")
+                    (plot Cres 
+                          Lz_parallel 
+                          Rz_parallel 
+                          ?expr (list "Cres" 
+                                      "Lz (Parallel RL)" 
+                                      "Rz (Parallel RL)"))))
+  (if (or (floatp f0) (integerp f0))
+      (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
+             (awvPlaceXMarker winId f0 ?subwindow 2) 
+             (awvPlaceXMarker winId f0 ?subwindow 3)
+             (if plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
