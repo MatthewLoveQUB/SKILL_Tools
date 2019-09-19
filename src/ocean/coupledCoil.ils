@@ -6,7 +6,10 @@
 ;   f0: float
 ;       The frequency for the plot markers
 ;   plotMode: symbol (Either 'all, 'T, or 'Pi)
-;       
+;   port1: integer
+;          The index of the first port of the coil
+;   port2: integer
+;          The index of the second port of the coil
 (defun qub::ocnCoupledCoil (@key (f0 nil)
                                  (plotMode 'all)
                                  (port1 nil)
