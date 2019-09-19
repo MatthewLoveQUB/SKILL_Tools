@@ -119,14 +119,3 @@
                               ?pts (list bridgeLeftStart bridgeLeftEnd)))
            (tf (techGetTechFile cvId)))
     mainPath))
-
-; cur test des
-wx = 17
-w1 = wx
-w2 = wx
-s = 3.5
-a = 87
-trns = 1.0
-
-
-(define tst (drawShibata w1 w2 s a trns))
