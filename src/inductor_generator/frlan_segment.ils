@@ -1,6 +1,14 @@
 ; Create one of the sub-coils of a Frlan coil
 
-; Converts a list of octagons into a frlan coil
+; Convert a list of octagons into a frlan coil
+; Args:
+;   shapes: (list (list (list float float)))
+;           A list of octagon shapes
+;           Each octagon is a list of floating point co-ordinate pairs
+;   nSegs: integer
+;          The number of segments to be joined together
+; Returns:
+;   List of co-ordinates of the coil
 (defun qub::octagonsToFrlan (shapes nSegs)
   (letseq (; Join the shapes into a single list
            (inList (qub::joinLists shapes))
