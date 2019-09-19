@@ -1,11 +1,3 @@
-; Finds a point at a distance and angle from a reference point
-(defun qub::getPoint (angle dist @key (ref 0.0:0.0))
-  (let ((x (xCoord ref))
-        (y (yCoord ref))
-        (dx (dist * (cos (qub::degToRad angle))))
-        (dy (dist * (sin (qub::degToRad angle)))))
-    (range (x + dx) (y + dy))))
-    
 ; 0 = half of the internal angle e.g. 45 for a square
 ; 1 = next point anticlockwise = 135 for a square
 (defun qub::getPolyPoint (polyIdx 

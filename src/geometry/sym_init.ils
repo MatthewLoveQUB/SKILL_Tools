@@ -11,7 +11,8 @@
                    qub:::midPoint
                    qub:::getAngleToPt
                    qub:::moveAtAngle
-                   qub:::getDist))
+                   qub:::getDist
+                   qub:::getPoint))
                    
 ; trig.ils
 (addToExportList '(qub:::degToRad

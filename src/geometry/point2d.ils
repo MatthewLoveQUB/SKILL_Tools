@@ -92,3 +92,19 @@
   (sqrt (plus 
           (expt (difference (yCoord a) (yCoord b)) 2)
           (expt (difference (xCoord a) (xCoord b)) 2))))
+          
+; Finds a point at a distance and angle from a reference point
+; Args:
+;   angle: float
+;          The angle of the point from our reference
+;          The value is in degrees
+;   dist: float
+;         The distance of the point from the reference
+;   ref: (list float float)
+;        The reference point that we're moving away from
+(defun qub::getPoint (angle dist @key (ref 0.0:0.0))
+  (let ((x (xCoord ref))
+        (y (yCoord ref))
+        (dx (dist * (cos (qub::degToRad angle))))
+        (dy (dist * (sin (qub::degToRad angle)))))
+    (range (x + dx) (y + dy))))
