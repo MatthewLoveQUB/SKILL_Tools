@@ -1,7 +1,3 @@
-; inductor.ils
-(addToExportList '(qub:::getPolyPoint))
-  
-  
 ; oct_ind_pcell 
 (addToExportList '(qub:::createOctInductorPCell
                    qub:::octInductorPCell))

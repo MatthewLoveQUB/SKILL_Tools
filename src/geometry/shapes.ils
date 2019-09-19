@@ -86,3 +86,57 @@
           ; Otherwise do nothing
           nil))
     outList))
+    
+; Find the co-ordinate for a polygon being generated.
+; This is to be used with spiral generation so many of the parameters
+; assume you're creating nested shapes that you connect together into a spiral.
+; The co-ordinates are for the middle of the line, assuming you're making a 2D
+; path where it has width in addition to length.
+;
+; 0 = half of the internal angle e.g. 45 for a square (??)
+; 1 = next point anticlockwise = 135 for a square (??)
+;
+; Args:
+;   polyIdx: integer
+;            The index for our current polygon.
+;            e.g. polyIdx = 0 means that we're in the centre-most polygon
+;            polyIdx=1 would mean that we're in the next shape that encloses it
+;   pointIdx: integer
+;             The index of the current shape's co-ordinate
+;             The upper limit of the index is based on the shape
+;             e.g. square shapes would range from 0-3, pentagons 0-4, 
+;             hexagons 0-5, etc
+;   nSides: integer
+;           The number of sides of the polygon
+;   circumradius: float 
+;                 Distance from the centre to the middle of a side
+;   spacing: float
+;            The distance between adjacent paths
+;            This is assuming each shape forms a 2D path with width
+;   width: float
+;          The width of the path formed by the polygon
+;   ref: (list float float)
+;        Reference co-ordinate for the centre of the shape
+;   rotation_anticlockwise: float
+;                           The rotation of the shape
+(defun qub::getPolyPoint (polyIdx 
+                          pointIdx 
+                          nsides 
+                          circumradius 
+                          spacing 
+                          width
+                          @key 
+                          (ref 0.0:0.0)
+                          (rotation_anticlockwise 0.0))
+  (let ((a2c qub::apothemToCircumradius)
+        (fa qub::fixAngle)
+        (ia qub::internalAngle)
+        (n nsides))
+    (let ((d (circumradius + (polyIdx * ((a2c spacing n) + (a2c width n)))))
+          (angle (plus 
+                   (difference 90.0 ((ia nsides) / 2.0))
+                   rotation_anticlockwise
+                   (pointIdx * (ia nsides)))))
+      (qub::getPoint (fa angle) d ?ref ref))))
+    
+

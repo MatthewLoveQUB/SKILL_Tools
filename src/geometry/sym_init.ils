@@ -24,7 +24,8 @@
                    qub:::internalAngle
                    qub:::genOctagon
                    qub:::genOctagons
-                   qub:::octagonsToCoil))
+                   qub:::octagonsToCoil
+                   qub:::getPolyPoint))
 
 ; line.ils
 (addToExportList '(qub:::findIntersectPoint))				   
