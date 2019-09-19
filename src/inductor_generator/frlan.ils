@@ -26,29 +26,24 @@
            (metalLayer (gpv 'metalLayer))
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
-                                             "layout")))
-    (dbCreateParamInst pcCellView
-                       pathCellId
-                       "coil1"
-                       0:0
-                       "R0"
-                       1
-                       (list (list "width" "float" width)
-                             (list "spacing" "float" spacing)
-                             (list "apothem" "float" apothem)
-                             (list "turns" "float" turns)
-                             (list "metalLayer" "string" metalLayer)))
-    (dbCreateParamInst pcCellView
-                       pathCellId
-                       "coil2"
-                       0:0
-                       "R180"
-                       1
-                       (list (list "width" "float" width)
-                             (list "spacing" "float" spacing)
-                             (list "apothem" "float" apothem)
-                             (list "turns" "float" turns)
-                             (list "metalLayer" "string" metalLayer)))))
+                                             "layout"))
+           (makeLoop 
+             (lambda 
+               (rotation instName) 
+               (dbCreateParamInst 
+                 pcCellView
+                 pathCellId
+                 instName
+                 0:0
+                 rotation
+                 1
+                 (list (list "width" "float" width)
+                       (list "spacing" "float" spacing)
+                       (list "apothem" "float" apothem)
+                       (list "turns" "float" turns)
+                       (list "metalLayer" "string" metalLayer))))))
+    (makeLoop "R0" "coil1")
+    (makeLoop "R180" "coil2")))
 
 (defmacro qub::createFrlanPCell (@key (library nil)
                                       (defaultMetalLayer nil))
