@@ -4,7 +4,8 @@
   (qub::setParamValue device 'nsides 8)
   (callNextMethod))
 
-(defmacro qub::createOctInductorPCell (library)      
+(defmacro qub::createOctInductorPCell (@key (library nil) 
+                                            (defaultMetalLayer nil))      
   `(pcDefinePCell 
     (list (ddGetObj ,library) "octSpiralInd" "layout")
     ((completeTurns "int" 2)
@@ -12,7 +13,7 @@
      (width "float" 10.0)
      (spacing "float" 5.0)
      (apothem "float" 50.0)
-     (metalLayer "string" "M1"))
+     (metalLayer "string" ,defaultMetalLayer))
     (let ((pcell (makeInstance 'qub::octInductorPCell)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell))))

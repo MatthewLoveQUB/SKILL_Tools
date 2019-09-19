@@ -17,14 +17,19 @@
     (qub::setParamValue device 'metalStack s))
   (callNextMethod))
   
-(defmacro qub::createTransformerB (library)
+(defmacro qub::createTransformerB (@key (library nil)
+                                        (defaultTopMetalLayer nil)
+                                        (defaultTopMinusOneMetalLayer nil))
   `(pcDefinePCell 
     (list (ddGetObj ,library) "transformerB" "layout")
     ((width "float" 10.0)
      (spacing "float" 0.0)
      (apothem "float" 50.0)
      (coilRotation "string" "R0 R180")
-     (metalStack "string" "M1 M2")
+     (metalStack "string" 
+                 (strcat ,defaultTopMetalLayer 
+                         " "
+                         ,defaultTopMinusOneMetalLayer))
      (portLength "float" 25.0))
     (let ((pcell (makeInstance 'qub::transformerB)))
       (qub::setPcellParams pcell pcCellView)

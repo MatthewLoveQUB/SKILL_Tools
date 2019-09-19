@@ -26,7 +26,8 @@
       (dbCreatePath cv (list ml) points w "truncateExtend"))
       (callNextMethod)))
 
-(defmacro qub::createInductorPCell (library)      
+(defmacro qub::createInductorPCell (@key (library nil)
+                                         (defaultMetalLayer nil))
   `(pcDefinePCell 
     (list (ddGetObj ,library) "spiralInd" "layout")
     ((completeTurns "int" 2)
@@ -35,7 +36,7 @@
      (spacing "float" 5.0)
      (apothem "float" 50.0)
      (nsides "int" 8)
-     (metalLayer "string" "M1"))
+     (metalLayer "string" ,defaultMetalLayer))
     (let ((pcell (makeInstance 'qub::inductorPCell)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell))))

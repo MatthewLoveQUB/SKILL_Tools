@@ -43,14 +43,15 @@
                              (list "turns" "float" turns)
                              (list "metalLayer" "string" metalLayer)))))
 
-(defmacro qub::createFrlanPCell (library)
+(defmacro qub::createFrlanPCell (@key (library nil)
+                                      (defaultMetalLayer nil))
   `(pcDefinePCell 
     (list (ddGetObj ,library) "Frlan" "layout")
     ((width "float" 15.0)
      (spacing "float" 2.0)
      (apothem "float" 30.0)
      (turns "float" 3.0)
-     (metalLayer "string" "AP"))
+     (metalLayer "string" ,defaultMetalLayer))
     (let ((pcell (makeInstance 'qub::frlanPCell)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell 

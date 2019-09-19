@@ -42,7 +42,9 @@
       (dbMoveFig fg1 cv (list 0:0 (car rotation)))
       (dbMoveFig fg2 cv (list transform (cadr rotation)))))
   
-(defmacro qub::createTransformerA (library)
+(defmacro qub::createTransformerA (@key (library nil)
+                                        (defaultTopMetalLayer nil)
+                                        (defaultTopMinusOneMetalLayer nil))
   `(pcDefinePCell 
     (list (ddGetObj ,library) "transformerA" "layout")
     ((turns "int" 2)
@@ -54,7 +56,14 @@
      (coilRotation "string" "R0 R180")
      (secondCoilDirection "string" "up")
      (allowOverlap "boolean" "FALSE")
-     (metalStack "string" "M1 M2 M1 M2")
+     (metalStack "string" 
+                 (strcat ,defaultTopMetalLayer 
+                         " "
+                         ,defaultTopMinusOneMetalLayer
+                         " "
+                         ,defaultTopMetalLayer 
+                         " "
+                         ,defaultTopMinusOneMetalLayer))
      (portLength "float" 25.0))
     (let ((pcell (makeInstance 'qub::transformerA)))
       (qub::setPcellParams pcell pcCellView)

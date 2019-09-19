@@ -10,12 +10,37 @@
   (modload "frlan_segment.ils")
   (modload "frlan.ils"))
 
-(defmacro qub::createInductorPCells (libname)
+; Create inductor PCells for a library.
+; If this macro is too restrictive then you can always define your own macro
+; or look to see what the individual macros are doing to create a more custom
+; version.
+; Return:
+;   Nothing, it only generates side effects.
+; Args:
+;   libname: string
+;            The name of the library to create the PCells in
+;   metalLayers: list(string)
+;                The metal layers used for the coils.
+;                It's assumed that the first value is the top layer and so on.
+(defmacro qub::createInductorPCells (libname metalLayers)
   (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
-        `(qub::createInductorPCell ,libname)
-        `(qub::createOctInductorPCell ,libname)
-        `(qub::createSymmInductorPCell ,libname)
-        `(qub::createTransformerA ,libname)
-        `(qub::createTransformerB ,libname)
-        `(qub::createFrlanSegmentPCell ,libname)
-        `(qub::createFrlanPCell ,libname)))
+        `(qub::createInductorPCell ?library ,libname 
+                                   ?defaultMetalLayer (car ,metalLayers))
+        `(qub::createOctInductorPCell ?library ,libname 
+                                      ?defaultMetalLayer (car ,metalLayers))
+        `(qub::createSymmInductorPCell 
+           ?library ,libname
+           ?defaultTopMetalLayer (car ,metalLayers)
+           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+        `(qub::createTransformerA
+           ?library ,libname
+           ?defaultTopMetalLayer (car ,metalLayers)
+           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+        `(qub::createTransformerB
+           ?library ,libname
+           ?defaultTopMetalLayer (car ,metalLayers)
+           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+        `(qub::createFrlanSegmentPCell ?library ,libname 
+                                       ?defaultMetalLayer (car ,metalLayers))
+        `(qub::createFrlanPCell ?library ,libname 
+                                ?defaultMetalLayer (car ,metalLayers))))
