@@ -1,41 +1,53 @@
 ; Base class for all Pcells.
-; cvId will hold the pcCellView value
+; cvId holds the pcCellView value
 (defclass qub::PcellParam ()
   ((cvId @initarg cvId)))
   
-; A simple method to populate the Pcell parameters from the super master to
-; a Pcell device's slots
+; Populate the Pcell parameters from the super master to a Pcell device's slots
+; Args:
+;   device: qub::PcellParam
+;           The instance that we're mutating
+;   cv: cellView instance
 (defmethod qub::setPcellParams ((device qub::PcellParam) cv)
   (when (and cv (dbIsId cv))
     (setSlotValue device 'cvId cv)
     (foreach param cv~>parameters~>value
       (qub::setParamValue device (concat param~>name) param~>value))))
   
-; A function to define a Pcell parameter stored as a Pcell class' slot.
-; The optional argument _isParam is set to 't to indicate this parameter is
-; a Pcell parameter  
+; Define a Pcell parameter stored as a Pcell class' slot.
+; Args:
+;   g_type: string
+;           The type of the parameter
+;   g_value: The type of g_value should be the same as that stated by g_type 
+;            e.g. if g_type = "float" then g_value should be a float
+;   _isParam: bool
+;             Indicates the parameter is an active Pcell parameter
+;             Can be used to disable parameters
 (defun qub::defineParam (g_type g_value @optional (_isParam t))
   (list nil 'type g_type 'value g_value 'isParam _isParam))
   
-; A method to get Pcell parameter's type
-(defmethod qub::getParamType ((device qub::PcellParam) (propName symbol))
-  ((slotValue device propName)->type))
+; Get the Pcell parameter's type
+(defmethod qub::getParamType ((device qub::PcellParam) 
+                              (propertyName symbol))
+  ((slotValue device propertyName)->type))
   
-; A method to get Pcell parameter's value
-(defmethod qub::getParamValue ((device qub::PcellParam) (propName symbol))
-  (slotValue device propName)->value)
+; Get the Pcell parameter's value
+(defmethod qub::getParamValue ((device qub::PcellParam) 
+                               (propertyName symbol))
+  (slotValue device propertyName)->value)
   
-; A method to set Pcell parameter's value
-(defmethod qub::setParamValue ((device qub::PcellParam) (propName symbol) val)
-  ((slotValue device propName)->value = val))
+; Set the Pcell parameter's value
+(defmethod qub::setParamValue ((device qub::PcellParam) 
+                               (propertyName symbol) val)
+  ((slotValue device propertyName)->value = val))
   
-; A method to check is the given name a Pcell parameter or not. This is
-; based on the setting of the isParam attribute
-(defmethod qub::isParam ((device qub::PcellParam) (propName symbol))
-  (slotValue device propName)->isParam)
+; Check is the given name a Pcell parameter or not. 
+; Based on the setting of the isParam attribute
+(defmethod qub::isParam ((device qub::PcellParam) 
+                         (propertyName symbol))
+  (slotValue device propertyName)->isParam)
 
-; A method to get a list of Pcell parameters with their names, types and
-; values
+; Get a list of Pcell parameters with their names, types and values
 (defmethod qub::getPcellParams ((device qub::PcellParam))
   (let ((params nil))
     (setq params (setof p device->? (isParam device p)))

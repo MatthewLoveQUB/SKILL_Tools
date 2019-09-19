@@ -1,5 +1,4 @@
 ; Creates a Frlan PCell
-
 (defclass qub::frlanPCell (qub::PcellParam)
   ((width @initform (qub::defineParam "float" 15.0))
    (spacing @initform (qub::defineParam "float" 2.0))
@@ -7,16 +6,24 @@
    (turns @initform (qub::defineParam "float" 3.0))
    (metalLayer @initform (qub::defineParam "string" "AP"))))
 
-
+; Draw the PCell in the layout
+; Args:
+;  device: qub::frlanPCell
+;          The instance the method is acting on
+;  pcCellView: cellview object
+;              The cellview of the PCell instance
+;  segLib: string
+;          The library that the frlanSegment PCell resides in
 (defmethod qub::draw ((device qub::frlanPCell)
                       @key
                       pcCellView
                       segLib)
-  (letseq ((width (qub::getParamValue device 'width))
-           (spacing (qub::getParamValue device 'spacing))
-           (apothem (qub::getParamValue device 'apothem))
-           (turns (qub::getParamValue device 'turns))
-           (metalLayer (qub::getParamValue device 'metalLayer))
+  (letseq ((gpv (lambda (valName) (qub::getParamValue device valName)))
+           (width (gpv 'width))
+           (spacing (gpv 'spacing))
+           (apothem (gpv 'apothem))
+           (turns (gpv 'turns))
+           (metalLayer (gpv 'metalLayer))
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
                                              "layout")))
