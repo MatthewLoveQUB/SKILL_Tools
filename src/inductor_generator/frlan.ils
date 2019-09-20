@@ -4,7 +4,8 @@
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
    (turns @initform (qub::defineParam "float" 3.0))
-   (metalLayer @initform (qub::defineParam "string" "AP"))))
+   (metalLayer @initform (qub::defineParam "string" "AP"))
+   (drawConnectingBridge @initform (qub::defineParam "boolean" nil))))
 
 ; Draw the PCell in the layout
 ; Args:
@@ -24,6 +25,12 @@
            (apothem (gpv 'apothem))
            (turns (gpv 'turns))
            (metalLayer (gpv 'metalLayer))
+           (drawConnectingBridge 
+             (let ((outStr (gpv 'drawConnectingBridge)))
+               (cond ((equal outStr "FALSE") nil)
+                     ((equal outStr "TRUE") t)
+                     (t (error "drawConnectingBridge is neither 'TRUE' nor 'FALSE'")))))
+           (originPoint 0:0)
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
                                              "layout"))
@@ -34,16 +41,37 @@
                  pcCellView
                  pathCellId
                  instName
-                 0:0
+                 originPoint
                  rotation
                  1
                  (list (list "width" "float" width)
                        (list "spacing" "float" spacing)
                        (list "apothem" "float" apothem)
                        (list "turns" "float" turns)
-                       (list "metalLayer" "string" metalLayer))))))
-    (makeLoop "R0" "coil1")
-    (makeLoop "R180" "coil2")))
+                       (list "metalLayer" "string" metalLayer)))))
+           (coil1 (makeLoop "R0" "coil1"))
+           (coil2 (makeLoop "R180" "coil2"))
+           (coil1Points (car coil1->master->shapes)->points)
+           (coil2Points (car coil2->master->shapes)->points)
+           (bridgePoint1 (car coil1Points))
+           ; PCell points are given for their internal cellview
+           ; and not the cellview that they reside in.
+           ; We need to rotate the second point by 180 degrees
+           ; in order to get the actual point.
+           (coil2FirstPoint (car coil2Points))
+           (bridgePoint2 (qub::rotatePoint originPoint coil2FirstPoint 180.0))
+           (bridgePoints (list bridgePoint1 bridgePoint2))
+           (layerPP (list metalLayer "drawing"))
+           (bridgePath (if drawConnectingBridge
+                           (rodCreatePath ?name "Frlan Bridge"
+                                          ?layer layerPP
+                                          ?width width
+                                          ?pts bridgePoints
+                                          ?endType "variable"
+                                          ?beginExt (quotient width 2)
+                                          ?endExt (quotient width 2))
+                            nil)))
+    t))
 
 (defmacro qub::createFrlanPCell (@key (library nil)
                                       (defaultMetalLayer nil))
@@ -53,7 +81,8 @@
      (spacing "float" 2.0)
      (apothem "float" 30.0)
      (turns "float" 3.0)
-     (metalLayer "string" ,defaultMetalLayer))
+     (metalLayer "string" ,defaultMetalLayer)
+     (drawConnectingBridge "boolean" nil))
     (let ((pcell (makeInstance 'qub::frlanPCell)))
       (qub::setPcellParams pcell pcCellView)
       (qub::draw pcell 
