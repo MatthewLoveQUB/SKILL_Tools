@@ -45,27 +45,34 @@
 (defmacro qub::createTransformerA (@key (library nil)
                                         (defaultTopMetalLayer nil)
                                         (defaultTopMinusOneMetalLayer nil))
-  `(pcDefinePCell 
-    (list (ddGetObj ,library) "transformerA" "layout")
-    ((turns "int" 2)
-     (width "float" 10.0)
-     (spacing "float" 5.0)
-     (apothem "float" 50.0)
-     (nsides "int" 8)
-     (coilSpacing "float" 5.0)
-     (coilRotation "string" "R0 R180")
-     (secondCoilDirection "string" "up")
-     (allowOverlap "boolean" "FALSE")
-     (metalStack "string" 
-                 (strcat ,defaultTopMetalLayer 
-                         " "
-                         ,defaultTopMinusOneMetalLayer
-                         " "
-                         ,defaultTopMetalLayer 
-                         " "
-                         ,defaultTopMinusOneMetalLayer))
-     (portLength "float" 25.0))
-    (let ((pcell (makeInstance 'qub::transformerA)))
-      (qub::setPcellParams pcell pcCellView)
-      (qub::draw pcell))))
+  (letseq ((cellName "transformerA")
+           (cellType "layout")
+           (cellObj (ddGetObj library cellName)))
+    ; Delete the cell if it doesn't exist
+    ; As re-running the macro doesn't seem to refresh the PCell instance
+    (if cellObj 
+        (ddDeleteObj cellObj))
+    `(pcDefinePCell 
+      (list (ddGetObj ,library) ,cellName ,cellType)
+      ((turns "int" 2)
+       (width "float" 10.0)
+       (spacing "float" 5.0)
+       (apothem "float" 50.0)
+       (nsides "int" 8)
+       (coilSpacing "float" 5.0)
+       (coilRotation "string" "R0 R180")
+       (secondCoilDirection "string" "up")
+       (allowOverlap "boolean" "FALSE")
+       (metalStack "string" 
+                   (strcat ,defaultTopMetalLayer 
+                           " "
+                           ,defaultTopMinusOneMetalLayer
+                           " "
+                           ,defaultTopMetalLayer 
+                           " "
+                           ,defaultTopMinusOneMetalLayer))
+       (portLength "float" 25.0))
+      (let ((pcell (makeInstance 'qub::transformerA)))
+        (qub::setPcellParams pcell pcCellView)
+        (qub::draw pcell)))))
       

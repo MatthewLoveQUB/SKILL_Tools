@@ -127,13 +127,20 @@
 
 (defmacro qub::createFrlanSegmentPCell (@key (library nil)
                                              (defaultMetalLayer nil))
-  `(pcDefinePCell 
-    (list (ddGetObj ,library) "frlanSegment" "layout")
-    ((width "float" 15.0)
-     (spacing "float" 2.0)
-     (apothem "float" 30.0)
-     (turns "float" 3.0)
-     (metalLayer "string" ,defaultMetalLayer))
-    (let ((pcell (makeInstance 'qub::frlanSegmentPCell)))
-      (qub::setPcellParams pcell pcCellView)
-      (qub::draw pcell))))
+  (letseq ((cellName "frlanSegment")
+           (cellType "layout")
+           (cellObj (ddGetObj library cellName)))
+    ; Delete the cell if it doesn't exist
+    ; As re-running the macro doesn't seem to refresh the PCell instance
+    (if cellObj 
+        (ddDeleteObj cellObj))
+    `(pcDefinePCell 
+      (list (ddGetObj ,library) ,cellName ,cellType)
+      ((width "float" 15.0)
+       (spacing "float" 2.0)
+       (apothem "float" 30.0)
+       (turns "float" 3.0)
+       (metalLayer "string" ,defaultMetalLayer))
+      (let ((pcell (makeInstance 'qub::frlanSegmentPCell)))
+        (qub::setPcellParams pcell pcCellView)
+        (qub::draw pcell)))))

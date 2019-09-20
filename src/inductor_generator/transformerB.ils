@@ -20,18 +20,25 @@
 (defmacro qub::createTransformerB (@key (library nil)
                                         (defaultTopMetalLayer nil)
                                         (defaultTopMinusOneMetalLayer nil))
-  `(pcDefinePCell 
-    (list (ddGetObj ,library) "transformerB" "layout")
-    ((width "float" 10.0)
-     (spacing "float" 0.0)
-     (apothem "float" 50.0)
-     (coilRotation "string" "R0 R180")
-     (metalStack "string" 
-                 (strcat ,defaultTopMetalLayer 
-                         " "
-                         ,defaultTopMinusOneMetalLayer))
-     (portLength "float" 25.0))
-    (let ((pcell (makeInstance 'qub::transformerB)))
-      (qub::setPcellParams pcell pcCellView)
-      (qub::draw pcell))))
+  (letseq ((cellName "transformerB")
+           (cellType "layout")
+           (cellObj (ddGetObj library cellName)))
+    ; Delete the cell if it doesn't exist
+    ; As re-running the macro doesn't seem to refresh the PCell instance
+    (if cellObj 
+        (ddDeleteObj cellObj))
+    `(pcDefinePCell 
+      (list (ddGetObj ,library) ,cellName ,cellType)
+      ((width "float" 10.0)
+       (spacing "float" 0.0)
+       (apothem "float" 50.0)
+       (coilRotation "string" "R0 R180")
+       (metalStack "string" 
+                   (strcat ,defaultTopMetalLayer 
+                           " "
+                           ,defaultTopMinusOneMetalLayer))
+       (portLength "float" 25.0))
+      (let ((pcell (makeInstance 'qub::transformerB)))
+        (qub::setPcellParams pcell pcCellView)
+        (qub::draw pcell)))))
       
