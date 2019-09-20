@@ -108,3 +108,18 @@
         (dx (dist * (cos (qub::degToRad angle))))
         (dy (dist * (sin (qub::degToRad angle)))))
     (range (x + dx) (y + dy))))
+
+; Rotate a point by an angle in degrees
+; Args:
+;   refPt: (list float float)
+;          The reference point that we are rotating around
+;   pt: (list float float)
+;       The point we are rotating
+;   rotation: float
+;             The angle we are rotating by (degrees)
+; Returns:
+;   The rotated point (list float float)
+(defun qub::rotatePoint (refPt pt rotation)
+  (let ((distance (qub::getDist refPt pt))
+        (angle (qub::getAngleToPt refPt pt)))
+    (qub::getPoint (plus angle rotation) distance ?ref refPt)))
