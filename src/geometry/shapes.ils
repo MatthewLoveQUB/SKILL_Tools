@@ -21,8 +21,9 @@
            ; circumradius
            (cr (qub::apothemToCircumradius a sides)))
     (qub::lcmp
-      ; 90 degrees is north (polar)
-      ; Move by angle/2 clockwise so the shape is normal
+      ; Want the first point to start at the bottom left
+      ; Move by angle/2 clockwise to do this
+      ; Polar co-ordinates are used so 90 degrees is north, 0 degrees east etc
       (qub::getPoint (difference 202.5 (times n angle)) cr)
       for n in (qub::range ?start 0 ?stop sides))))
 
