@@ -33,24 +33,24 @@
 ;   At the end, the lambda prints that the PCells were created.
 ;   I do not know why I wrote the macro like this.
 (defmacro qub::createInductorPCells (libname metalLayers)
-  (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
-        `(qub::createInductorPCell ?library ,libname 
-                                   ?defaultMetalLayer (car ,metalLayers))
-        `(qub::createOctInductorPCell ?library ,libname 
-                                      ?defaultMetalLayer (car ,metalLayers))
-        `(qub::createSymmInductorPCell 
-           ?library ,libname
-           ?defaultTopMetalLayer (car ,metalLayers)
-           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
-        `(qub::createTransformerA
-           ?library ,libname
-           ?defaultTopMetalLayer (car ,metalLayers)
-           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
-        `(qub::createTransformerB
-           ?library ,libname
-           ?defaultTopMetalLayer (car ,metalLayers)
-           ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
-        `(qub::createFrlanSegmentPCell ?library ,libname 
+  `(progn (qub::createInductorPCell ?library ,libname 
+                                    ?defaultMetalLayer (car ,metalLayers))
+          (qub::createOctInductorPCell ?library ,libname 
                                        ?defaultMetalLayer (car ,metalLayers))
-        `(qub::createFrlanPCell ?library ,libname 
-                                ?defaultMetalLayer (car ,metalLayers))))
+          (qub::createSymmInductorPCell 
+            ?library ,libname
+            ?defaultTopMetalLayer (car ,metalLayers)
+            ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+          (qub::createTransformerA
+            ?library ,libname
+            ?defaultTopMetalLayer (car ,metalLayers)
+            ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+          (qub::createTransformerB
+            ?library ,libname
+            ?defaultTopMetalLayer (car ,metalLayers)
+            ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
+          (qub::createFrlanSegmentPCell ?library ,libname 
+                                        ?defaultMetalLayer (car ,metalLayers))
+          (qub::createFrlanPCell ?library ,libname 
+                                  ?defaultMetalLayer (car ,metalLayers))
+          (printf "Created PCells in %s" ,libname)))
