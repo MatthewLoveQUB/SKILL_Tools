@@ -21,6 +21,17 @@
 ;   metalLayers: list(string)
 ;                The metal layers used for the coils.
 ;                It's assumed that the first value is the top layer and so on.
+;
+; How it works:
+;   The macro returns a standard lisp list which is evaluated in the program
+;   The first atom is a lambda function.
+;   The remaining atoms are function calls
+;   When the macro is evaluated the interpreter sees a list with a lambda 
+;   function as its first argument.
+;   The lambda function is called, each argument is passed to it, evaluated,
+;   and then ignored by the lambda function.
+;   At the end, the lambda prints that the PCells were created.
+;   I do not know why I wrote the macro like this.
 (defmacro qub::createInductorPCells (libname metalLayers)
   (list `(lambda (@rest x) (printf "Created PCells in %s" ,libname))
         `(qub::createInductorPCell ?library ,libname 
