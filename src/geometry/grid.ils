@@ -7,6 +7,6 @@
           ((x_round > x_floor + 6) (quotient (plus x_floor 10.0) 1000.0))
           (t (quotient (plus x_floor 5.0) 1000.0)))))
 
-; Apple qub::roundValue5nm to a two-element list
+; Apply qub::roundValue5nm to a two-element list
 (defun qub::roundCoord5nm (x)
   (list (qub::roundValue5nm (car x)) (qub::roundValue5nm (cadr x))))
