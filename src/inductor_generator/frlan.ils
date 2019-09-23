@@ -26,14 +26,14 @@
            (spacing (gpv 'spacing))
            (apothem (gpv 'apothem))
            (turns (gpv 'turns))
-           (topMetalLayer (gpv 'topMetalLayer))
+           (topMetalLayers (parseString (gpv 'topMetalLayer)))
            (originPoint 0:0)
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
                                              "layout"))
            (makeLoop 
              (lambda 
-               (rotation instName) 
+               (rotation instName metalLayer) 
                (dbCreateParamInst 
                  pcCellView
                  pathCellId
@@ -45,20 +45,35 @@
                        (list "spacing" "float" spacing)
                        (list "apothem" "float" apothem)
                        (list "turns" "float" turns)
-                       (list "metalLayer" "string" topMetalLayer)))))
-           (coil1 (makeLoop "R0" "coil1"))
-           (coil2 (makeLoop "R180" "coil2"))
-           (innerBridge
+                       (list "metalLayer" "string" metalLayer)))))
+           
+           (coils1 (mapcar (lambda (x) (makeLoop "R0" 
+                                                 (sprintf nil "coil1_%s" x)
+                                                 x))
+                           topMetalLayers))
+           (coils2 (mapcar (lambda (x) (makeLoop "R180" 
+                                                 (sprintf nil "coil2_%s" x)
+                                                 x))
+                           topMetalLayers))
+           (innerBridges
              (when (qub::getPcellBoolParamVal device 'drawConnectingBridge)
-               (qub::createFrlanInnerBridge 
-                 coil1 coil2 originPoint topMetalLayer width "Frlan Bridge")))
+               (mapcar 
+                 (lambda (x) 
+                   (let ((instName (sprintf nil "Frlan Bridge_%s" x)))
+                     (qub::createFrlanInnerBridge (car coils1) 
+                                                  (car coils2) 
+                                                  originPoint 
+                                                  x 
+                                                  width 
+                                                  instName)))
+                 topMetalLayers)))                      
            (inputConnector 
              (qub::createFrlanInputConnector device
                                              (gpv 'underpassMetalLayer)
                                              width
                                              (gpv 'inputConnectorType)
-                                             coil1
-                                             coil2)))
+                                             (car coils1)
+                                             (car coils2))))
                                                             
     t))
 
