@@ -5,7 +5,8 @@
    (apothem @initform (qub::defineParam "float" 30.0))
    (turns @initform (qub::defineParam "int" 2))
    (metalLayer @initform (qub::defineParam "string" "AP"))
-   (drawConnectingBridge @initform (qub::defineParam "boolean" nil))))
+   (drawConnectingBridge @initform (qub::defineParam "boolean" nil))
+   (inputConnectorType "string" "None")))
 
 ; Draw the PCell in the layout
 ; Args:
@@ -25,11 +26,6 @@
            (apothem (gpv 'apothem))
            (turns (gpv 'turns))
            (metalLayer (gpv 'metalLayer))
-           (drawConnectingBridge 
-             (let ((outStr (gpv 'drawConnectingBridge)))
-               (cond ((equal outStr "FALSE") nil)
-                     ((equal outStr "TRUE") t)
-                     (t (error "drawConnectingBridge is neither 'TRUE' nor 'FALSE'")))))
            (originPoint 0:0)
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
@@ -51,6 +47,21 @@
                        (list "metalLayer" "string" metalLayer)))))
            (coil1 (makeLoop "R0" "coil1"))
            (coil2 (makeLoop "R180" "coil2"))
+           (frlanInnerBridge 
+             (qub::createFrlanInnerBridge coil1 coil2 gpv originPoint)))
+    t))
+
+; Returns nil or the bridge ROD object
+; gpv is the "get parameter value" lambda defined in qub::draw
+(defun qub::createFrlanInnerBridge (coil1 coil2 gpv originPoint)
+  (letseq ((errMsg "drawConnectingBridge is neither 'TRUE' nor 'FALSE'")
+           (drawConnectingBridge 
+             (let ((outStr (gpv 'drawConnectingBridge)))
+               (cond ((equal outStr "FALSE") nil)
+                     ((equal outStr "TRUE") t)
+                     (t (error errMsg)))))
+           (metalLayer (gpv 'metalLayer))
+           (width (gpv 'width))
            (coil1Points (car coil1->master->shapes)->points)
            (coil2Points (car coil2->master->shapes)->points)
            (bridgePoint1 (car coil1Points))
@@ -61,17 +72,15 @@
            (coil2FirstPoint (car coil2Points))
            (bridgePoint2 (qub::rotatePoint originPoint coil2FirstPoint 180.0))
            (bridgePoints (list bridgePoint1 bridgePoint2))
-           (layerPP (list metalLayer "drawing"))
-           (bridgePath (if drawConnectingBridge
-                           (rodCreatePath ?name "Frlan Bridge"
-                                          ?layer layerPP
-                                          ?width width
-                                          ?pts bridgePoints
-                                          ?endType "variable"
-                                          ?beginExt (quotient width 2)
-                                          ?endExt (quotient width 2))
-                            nil)))
-    t))
+           (layerPP (list metalLayer "drawing")))
+    (if drawConnectingBridge (rodCreatePath ?name "Frlan Bridge"
+                                            ?layer layerPP
+                                            ?width width
+                                            ?pts bridgePoints
+                                            ?endType "variable"
+                                            ?beginExt (quotient width 2)
+                                            ?endExt (quotient width 2))
+                             nil)))
     
 (defun qub::createFrlanCdf (library cellName defaultMetalLayer)
   (letseq ((cellId (ddGetObj ,library ,cellName))
@@ -108,7 +117,14 @@
                     ?prompt "Connect inner."
                     ?type "boolean"
                     ?defValue nil
-                    ?description "Connect the inner ends of both loops")))
+                    ?description "Connect the inner ends of both loops")
+    (cdfCreateParam cdfId
+                    ?name "inputConnectorType"
+                    ?prompt "Add input bridge"
+                    ?type "radio"
+                    ?choices (list "None" "Coil Centre" "Loop Centre")
+                    ?defValue "None"
+                    ?description "Connect the inner ends of both loops")
     
 (defmacro qub::createFrlanPCell (@key (library nil)
                                       (defaultMetalLayer nil))
@@ -126,7 +142,8 @@
                 (apothem "float" 30.0)
                 (turns "int" 2)
                 (metalLayer "string" ,defaultMetalLayer)
-                (drawConnectingBridge "boolean" nil))
+                (drawConnectingBridge "boolean" nil)
+                (inputConnectorType "string" "None"))
                (let ((pcell (makeInstance 'qub::frlanPCell)))
                  (qub::setPcellParams pcell pcCellView)
                  (qub::draw pcell 
