@@ -45,4 +45,5 @@
                    
 ; frlan.ils
 (addToExportList '(qub:::frlanPCell
-                   qub:::createFrlanPCell))
+                   qub:::createFrlanPCell
+                   qub:::createFrlanCdf))

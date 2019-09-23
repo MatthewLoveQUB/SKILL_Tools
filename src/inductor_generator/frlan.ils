@@ -3,7 +3,7 @@
   ((width @initform (qub::defineParam "float" 15.0))
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
-   (turns @initform (qub::defineParam "float" 3.0))
+   (turns @initform (qub::defineParam "int" 2))
    (metalLayer @initform (qub::defineParam "string" "AP"))
    (drawConnectingBridge @initform (qub::defineParam "boolean" nil))))
 
@@ -72,7 +72,44 @@
                                           ?endExt (quotient width 2))
                             nil)))
     t))
-
+    
+(defun qub::createFrlanCdf (library cellName defaultMetalLayer)
+  (letseq ((cellId (ddGetObj ,library ,cellName))
+           (cdfId (cdfCreateBaseCellCDF cellId)))
+    (cdfCreateParam cdfId
+                    ?name "width"
+                    ?prompt "Path Width"
+                    ?type "float"
+                    ?defValue 15.0)
+    (cdfCreateParam 
+      cdfId
+      ?name "spacing"
+      ?prompt "Spacing"
+      ?type "float"
+      ?defValue 2.0
+      ?description "The space between the paths of adjacent coils")
+    (cdfCreateParam cdfId
+                    ?name "apothem"
+                    ?prompt "Inner Diameter"
+                    ?type "float"
+                    ?defValue 30.0)
+    (cdfCreateParam cdfId
+                    ?name "turns"
+                    ?prompt "Turns"
+                    ?type "int"
+                    ?defValue 2)
+    (cdfCreateParam cdfId
+                    ?name "metalLayer"
+                    ?prompt "Metal Layer"
+                    ?type "string"
+                    ?defValue defaultMetalLayer)
+    (cdfCreateParam cdfId
+                    ?name "drawConnectingBridge"
+                    ?prompt "Connect inner."
+                    ?type "boolean"
+                    ?defValue nil
+                    ?description "Connect the inner ends of both loops")))
+    
 (defmacro qub::createFrlanPCell (@key (library nil)
                                       (defaultMetalLayer nil))
   (letseq ((cellName "Frlan")
@@ -82,17 +119,17 @@
     ; As re-running the macro doesn't seem to refresh the PCell instance
     (if cellObj 
         (ddDeleteObj cellObj))
-    `(pcDefinePCell 
-      (list (ddGetObj ,library) ,cellName ,cellType)
-      ((width "float" 15.0)
-       (spacing "float" 2.0)
-       (apothem "float" 30.0)
-       (turns "float" 3.0)
-       (metalLayer "string" ,defaultMetalLayer)
-       (drawConnectingBridge "boolean" nil))
-      (let ((pcell (makeInstance 'qub::frlanPCell)))
-        (qub::setPcellParams pcell pcCellView)
-        (qub::draw pcell 
-                   ?pcCellView pcCellView
-                   ?segLib ,library)))))
-      
+    `(progn (pcDefinePCell 
+               (list (ddGetObj ,library) ,cellName ,cellType)
+               ((width "float" 15.0)
+                (spacing "float" 2.0)
+                (apothem "float" 30.0)
+                (turns "int" 2)
+                (metalLayer "string" ,defaultMetalLayer)
+                (drawConnectingBridge "boolean" nil))
+               (let ((pcell (makeInstance 'qub::frlanPCell)))
+                 (qub::setPcellParams pcell pcCellView)
+                 (qub::draw pcell 
+                            ?pcCellView pcCellView
+                            ?segLib ,library)))
+            (qub::createFrlanCdf ,library ,cellName ,defaultMetalLayer))))
