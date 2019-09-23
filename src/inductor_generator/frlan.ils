@@ -55,26 +55,24 @@
                                                  (sprintf nil "coil2_%s" x)
                                                  x))
                            topMetalLayers))
+           (coil1 (car coils1))
+           (coil2 (car coils2))
            (innerBridges
              (when (qub::getPcellBoolParamVal device 'drawConnectingBridge)
                (mapcar 
                  (lambda (x) 
                    (let ((instName (sprintf nil "Frlan Bridge_%s" x)))
-                     (qub::createFrlanInnerBridge (car coils1) 
-                                                  (car coils2) 
-                                                  originPoint 
-                                                  x 
-                                                  width 
-                                                  instName)))
-                 topMetalLayers)))                      
-           (inputConnector 
-             (qub::createFrlanInputConnector device
-                                             (gpv 'underpassMetalLayer)
-                                             width
-                                             (gpv 'inputConnectorType)
-                                             (car coils1)
-                                             (car coils2))))
-                                                            
+                     (qub::createFrlanInnerBridge 
+                       coil1 coil2 originPoint x  width  instName)))
+                 topMetalLayers)))
+           (bbox (device->cvId->bBox))
+           (lowEdge (bottomEdge bbox))                 
+           (inputConnector
+             (mapcar 
+               (lambda (x) 
+                 (qub::createFrlanInputConnector 
+                   lowEdge x width (gpv 'inputConnectorType) coil1 coil2))
+               (parseString (gpv 'underpassMetalLayer)))))
     t))
 
 ; Returns nil or the bridge ROD object
@@ -104,15 +102,13 @@
                    ?beginExt (quotient width 2)
                    ?endExt (quotient width 2))))
 
-(defun qub::createFrlanInputConnector (device 
+(defun qub::createFrlanInputConnector (lowEdge 
                                        metalLayer 
                                        width 
                                        connType 
                                        coil1 
                                        coil2)
-  (letseq ((bbox (device->cvId->bBox))
-           (lowEdge (bottomEdge bbox))
-           (pathName "inputConnector")
+  (letseq ((pathName (sprintf nil "inputConnector_%s" metalLayer))
            (layerPP (list metalLayer "drawing"))
            (createCentreBridge 
              (lambda ()
@@ -130,9 +126,10 @@
     (cond ((equal connType "None") nil)
           ((equal connType "Coil Centre") (createCentreBridge))
           ((equal connType "Coil Centre (Wide)")
-           (progn (createCentreBridge)
-                  (qub::createFrlanInnerBridge 
-                    coil1 coil2 0:0 metalLayer width "Bridge Under")))
+           (let ((underpassName (sprintf nil "Bridge Under %s" metalLayer)))
+             (createCentreBridge)
+             (qub::createFrlanInnerBridge 
+              coil1 coil2 0:0 metalLayer width underpassName)))
           ((equal connType "Loop Centre") nil))
     t))
                              
