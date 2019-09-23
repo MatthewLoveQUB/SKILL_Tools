@@ -67,14 +67,15 @@
   ;       |      |
   ; Gnd O----------O Gnd
   
-  Y12 = (ypm "sp" port1 port2)
   Y11 = (ypm "sp" port1 port1)
   Y22 = (ypm "sp" port2 port2)
-
-  Zz = (quotient -1.0 Y12)
+  Y12 = (ypm "sp" port1 port2)
+  
+  
   Zx = (quotient 1.0 (plus Y11 Y12))
   Zy = (quotient 1.0 (plus Y22 Y12))
-
+  Zz = (quotient -1.0 Y12)
+  
   Rx = (real Zx)
   Ry = (real Zy)
   Rz = (real Zz)
@@ -111,12 +112,12 @@
 
   (addSubwindowTitle "Q Factors")
   (if plotT (plot Qa Qb Qc ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)")))
-  (if plotPi (plot Qx Qy Qx ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
+  (if plotPi (plot Qx Qy Qz ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Resistances")
   (if plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
-  (if plotPi (plot Rx Ry Rz ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
+  (if plotPi (plot Rx Ry Rz ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
