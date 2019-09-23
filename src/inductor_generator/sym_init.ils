@@ -47,4 +47,5 @@
 (addToExportList '(qub:::frlanPCell
                    qub:::createFrlanPCell
                    qub:::createFrlanCdf
-                   qub:::createFrlanInnerBridge))
+                   qub:::createFrlanInnerBridge
+                   qub:::createFrlanInputConnector))

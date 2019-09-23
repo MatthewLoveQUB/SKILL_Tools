@@ -40,6 +40,8 @@
             ?defaultTopMinusOneMetalLayer (cadr ,metalLayers))
           (qub::createFrlanSegmentPCell ?library ,libname 
                                         ?defaultMetalLayer (car ,metalLayers))
-          (qub::createFrlanPCell ?library ,libname 
-                                  ?defaultMetalLayer (car ,metalLayers))
+          (qub::createFrlanPCell 
+            ?library ,libname 
+            ?defaultTopMetalLayer (car ,metalLayers)
+            ?defaultBridgeMetalLayer (cadr ,metalLayers))
           (printf "Created PCells in %s" ,libname)))

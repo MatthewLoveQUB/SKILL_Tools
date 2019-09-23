@@ -4,7 +4,8 @@
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
    (turns @initform (qub::defineParam "int" 2))
-   (metalLayer @initform (qub::defineParam "string" "AP"))
+   (topMetalLayer @initform (qub::defineParam "string" "LB"))
+   (underpassMetalLayer @initform (qub::defineParam "string" "IB"))
    (drawConnectingBridge @initform (qub::defineParam "boolean" nil))
    (inputConnectorType "string" "None")))
 
@@ -25,7 +26,7 @@
            (spacing (gpv 'spacing))
            (apothem (gpv 'apothem))
            (turns (gpv 'turns))
-           (metalLayer (gpv 'metalLayer))
+           (topMetalLayer (gpv 'topMetalLayer))
            (originPoint 0:0)
            (pathCellId (dbOpenCellViewByType segLib
                                              "frlanSegment"
@@ -44,11 +45,17 @@
                        (list "spacing" "float" spacing)
                        (list "apothem" "float" apothem)
                        (list "turns" "float" turns)
-                       (list "metalLayer" "string" metalLayer)))))
+                       (list "metalLayer" "string" topMetalLayer)))))
            (coil1 (makeLoop "R0" "coil1"))
            (coil2 (makeLoop "R180" "coil2"))
-           (frlanInnerBridge 
-             (qub::createFrlanInnerBridge coil1 coil2 gpv originPoint)))
+           (innerBridge 
+             (qub::createFrlanInnerBridge coil1 coil2 gpv originPoint))
+           (inputConnector 
+             (qub::createFrlanInputConnector device
+                                             (gpv 'underpassMetalLayer)
+                                             width
+                                             (gpv 'inputConnectorType))))
+                                                            
     t))
 
 ; Returns nil or the bridge ROD object
@@ -60,7 +67,7 @@
                (cond ((equal outStr "FALSE") nil)
                      ((equal outStr "TRUE") t)
                      (t (error errMsg)))))
-           (metalLayer (gpv 'metalLayer))
+           (topMetalLayer (gpv 'topMetalLayer))
            (width (gpv 'width))
            (coil1Points (car coil1->master->shapes)->points)
            (coil2Points (car coil2->master->shapes)->points)
@@ -72,17 +79,42 @@
            (coil2FirstPoint (car coil2Points))
            (bridgePoint2 (qub::rotatePoint originPoint coil2FirstPoint 180.0))
            (bridgePoints (list bridgePoint1 bridgePoint2))
+           (layerPP (list topMetalLayer "drawing")))
+    (when drawConnectingBridge 
+      (rodCreatePath ?name "Frlan Bridge"
+                     ?layer layerPP
+                     ?width width
+                     ?pts bridgePoints
+                     ?endType "variable"
+                     ?beginExt (quotient width 2)
+                     ?endExt (quotient width 2)))))
+
+(defun qub::createFrlanInputConnector (device metalLayer width connType)
+  (letseq ((bbox (device->cvId->bBox))
+           (lowEdge (bottomEdge bbox))
+           (pathName "inputConnector")
            (layerPP (list metalLayer "drawing")))
-    (if drawConnectingBridge (rodCreatePath ?name "Frlan Bridge"
-                                            ?layer layerPP
-                                            ?width width
-                                            ?pts bridgePoints
-                                            ?endType "variable"
-                                            ?beginExt (quotient width 2)
-                                            ?endExt (quotient width 2))
-                             nil)))
-    
-(defun qub::createFrlanCdf (library cellName defaultMetalLayer)
+    ;(break)
+    (cond ((equal connType "None") nil)
+          ((equal connType "Coil Centre")
+           (let ((bottomPoint 0:(difference lowEdge (times 1.5 width)))
+                 ; Should probably not hard-code this
+                 (topPoint 0:0))
+            (rodCreatePath ?name pathName
+                           ?layer layerPP
+                           ?width width
+                           ?pts (list topPoint bottomPoint)
+                           ?endType "variable"
+                           ?beginExt (quotient width 2)
+                           ?endExt 0)))
+          ((equal connType "Coil Centre (Wide)") nil)
+          ((equal connType "Loop Centre") nil))
+    t))
+                             
+(defun qub::createFrlanCdf (library 
+                            cellName 
+                            defaultTopMetalLayer
+                            defaultBridgeMetalLayer)
   (letseq ((cellId (ddGetObj ,library ,cellName))
            (cdfId (cdfCreateBaseCellCDF cellId)))
     (cdfCreateParam cdfId
@@ -108,10 +140,15 @@
                     ?type "int"
                     ?defValue 2)
     (cdfCreateParam cdfId
-                    ?name "metalLayer"
-                    ?prompt "Metal Layer"
+                    ?name "topMetalLayer"
+                    ?prompt "Top Metal Layer"
                     ?type "string"
-                    ?defValue defaultMetalLayer)
+                    ?defValue defaultTopMetalLayer)
+    (cdfCreateParam cdfId
+                    ?name "underpassMetalLayer"
+                    ?prompt "Underpass Metal Layer"
+                    ?type "string"
+                    ?defValue defaultBridgeMetalLayer)
     (cdfCreateParam cdfId
                     ?name "drawConnectingBridge"
                     ?prompt "Connect inner."
@@ -121,13 +158,17 @@
     (cdfCreateParam cdfId
                     ?name "inputConnectorType"
                     ?prompt "Add input bridge"
-                    ?type "radio"
-                    ?choices (list "None" "Coil Centre" "Loop Centre")
+                    ?type "cyclic"
+                    ?choices (list "None" 
+                                   "Coil Centre"
+                                   "Coil Centre (Wide)"
+                                   "Loop Centre")
                     ?defValue "None"
-                    ?description "Connect the inner ends of both loops")
+                    ?description "Connect the inner ends of both loops")))
     
 (defmacro qub::createFrlanPCell (@key (library nil)
-                                      (defaultMetalLayer nil))
+                                      (defaultTopMetalLayer nil)
+                                      (defaultBridgeMetalLayer nil))
   (letseq ((cellName "Frlan")
            (cellType "layout")
            (cellObj (ddGetObj library cellName)))
@@ -141,7 +182,8 @@
                 (spacing "float" 2.0)
                 (apothem "float" 30.0)
                 (turns "int" 2)
-                (metalLayer "string" ,defaultMetalLayer)
+                (topMetalLayer "string" ,defaultTopMetalLayer)
+                (underpassMetalLayer "string" ,defaultBridgeMetalLayer)
                 (drawConnectingBridge "boolean" nil)
                 (inputConnectorType "string" "None"))
                (let ((pcell (makeInstance 'qub::frlanPCell)))
@@ -149,4 +191,7 @@
                  (qub::draw pcell 
                             ?pcCellView pcCellView
                             ?segLib ,library)))
-            (qub::createFrlanCdf ,library ,cellName ,defaultMetalLayer))))
+            (qub::createFrlanCdf ,library 
+                                 ,cellName 
+                                 ,defaultTopMetalLayer
+                                 ,defaultBridgeMetalLayer))))
