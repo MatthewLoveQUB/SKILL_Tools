@@ -6,17 +6,17 @@
 ;   f0: float
 ;       The frequency for the plot markers
 ;   plotMode: symbol (Either 'all, 'T, or 'Pi)
-;   port1: integer
-;          The index of the first port of the coil
-;   port2: integer
-;          The index of the second port of the coil
+;   ports: (list integer integer)
+;          The indexes of the two ports of the coil
 (defun qub::ocnCoupledCoil (@key (f0 nil)
                                  (plotMode 'all)
-                                 (port1 nil)
-                                 (port2 nil))
+                                 (ports (list 1 2)))
   f = (qub::sToF)
   w = (times 2 qub::m.PI f)
 
+  port1 = (car ports)
+  port2 = (cadr ports)
+  
   ; T Network representation using Z-Parameters.
   ; T network is assumed to be in the following form.
   ;
