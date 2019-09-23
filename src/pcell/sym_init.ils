@@ -9,4 +9,5 @@
                    qub:::getParamValue
                    qub:::setParamValue
                    qub:::isParam
-                   qub:::getPcellParams))
+                   qub:::getPcellParams
+                   qub:::getPcellBoolParamVal))

@@ -48,28 +48,29 @@
                        (list "metalLayer" "string" topMetalLayer)))))
            (coil1 (makeLoop "R0" "coil1"))
            (coil2 (makeLoop "R180" "coil2"))
-           (innerBridge 
-             (qub::createFrlanInnerBridge coil1 coil2 gpv originPoint))
+           (innerBridge
+             (when (qub::getPcellBoolParamVal device 'drawConnectingBridge)
+               (qub::createFrlanInnerBridge 
+                 coil1 coil2 originPoint topMetalLayer width "Frlan Bridge")))
            (inputConnector 
              (qub::createFrlanInputConnector device
                                              (gpv 'underpassMetalLayer)
                                              width
-                                             (gpv 'inputConnectorType))))
+                                             (gpv 'inputConnectorType)
+                                             coil1
+                                             coil2)))
                                                             
     t))
 
 ; Returns nil or the bridge ROD object
 ; gpv is the "get parameter value" lambda defined in qub::draw
-(defun qub::createFrlanInnerBridge (coil1 coil2 gpv originPoint)
-  (letseq ((errMsg "drawConnectingBridge is neither 'TRUE' nor 'FALSE'")
-           (drawConnectingBridge 
-             (let ((outStr (gpv 'drawConnectingBridge)))
-               (cond ((equal outStr "FALSE") nil)
-                     ((equal outStr "TRUE") t)
-                     (t (error errMsg)))))
-           (topMetalLayer (gpv 'topMetalLayer))
-           (width (gpv 'width))
-           (coil1Points (car coil1->master->shapes)->points)
+(defun qub::createFrlanInnerBridge (coil1 
+                                    coil2 
+                                    originPoint 
+                                    metalLayer 
+                                    width
+                                    bridgeName)
+  (letseq ((coil1Points (car coil1->master->shapes)->points)
            (coil2Points (car coil2->master->shapes)->points)
            (bridgePoint1 (car coil1Points))
            ; PCell points are given for their internal cellview
@@ -79,35 +80,44 @@
            (coil2FirstPoint (car coil2Points))
            (bridgePoint2 (qub::rotatePoint originPoint coil2FirstPoint 180.0))
            (bridgePoints (list bridgePoint1 bridgePoint2))
-           (layerPP (list topMetalLayer "drawing")))
-    (when drawConnectingBridge 
-      (rodCreatePath ?name "Frlan Bridge"
-                     ?layer layerPP
-                     ?width width
-                     ?pts bridgePoints
-                     ?endType "variable"
-                     ?beginExt (quotient width 2)
-                     ?endExt (quotient width 2)))))
+           (layerPP (list metalLayer "drawing")))
+    (rodCreatePath ?name bridgeName
+                   ?layer layerPP
+                   ?width width
+                   ?pts bridgePoints
+                   ?endType "variable"
+                   ?beginExt (quotient width 2)
+                   ?endExt (quotient width 2))))
 
-(defun qub::createFrlanInputConnector (device metalLayer width connType)
+(defun qub::createFrlanInputConnector (device 
+                                       metalLayer 
+                                       width 
+                                       connType 
+                                       coil1 
+                                       coil2)
   (letseq ((bbox (device->cvId->bBox))
            (lowEdge (bottomEdge bbox))
            (pathName "inputConnector")
-           (layerPP (list metalLayer "drawing")))
+           (layerPP (list metalLayer "drawing"))
+           (createCentreBridge 
+             (lambda ()
+               (let ((bottomPoint 0:(difference lowEdge (times 1.5 width)))
+                     ; Should probably not hard-code this
+                     (topPoint 0:0))
+                     (rodCreatePath ?name pathName
+                                    ?layer layerPP
+                                    ?width width
+                                    ?pts (list topPoint bottomPoint)
+                                    ?endType "variable"
+                                    ?beginExt (quotient width 2)
+                                    ?endExt 0)))))
     ;(break)
     (cond ((equal connType "None") nil)
-          ((equal connType "Coil Centre")
-           (let ((bottomPoint 0:(difference lowEdge (times 1.5 width)))
-                 ; Should probably not hard-code this
-                 (topPoint 0:0))
-            (rodCreatePath ?name pathName
-                           ?layer layerPP
-                           ?width width
-                           ?pts (list topPoint bottomPoint)
-                           ?endType "variable"
-                           ?beginExt (quotient width 2)
-                           ?endExt 0)))
-          ((equal connType "Coil Centre (Wide)") nil)
+          ((equal connType "Coil Centre") (createCentreBridge))
+          ((equal connType "Coil Centre (Wide)")
+           (progn (createCentreBridge)
+                  (qub::createFrlanInnerBridge 
+                    coil1 coil2 0:0 metalLayer width "Bridge Under")))
           ((equal connType "Loop Centre") nil))
     t))
                              

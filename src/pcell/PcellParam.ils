@@ -55,3 +55,9 @@
                    (list p 
                          (qub::getParamType device p) 
                          (qub::getParamValue device p))))))
+                         
+(defun qub::getPcellBoolParamVal (device param)
+  (let ((outStr (qub::getParamValue device param)))
+    (cond ((equal outStr "FALSE") nil)
+           ((equal outStr "TRUE") t)
+           (t (error "drawConnectingBridge is neither 'TRUE' nor 'FALSE'")))))
