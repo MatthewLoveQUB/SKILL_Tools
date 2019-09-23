@@ -4,8 +4,8 @@
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
    (turns @initform (qub::defineParam "int" 2))
-   (topMetalLayer @initform (qub::defineParam "string" "LB"))
-   (underpassMetalLayer @initform (qub::defineParam "string" "IB"))
+   (topMetalLayers @initform (qub::defineParam "string" "LB"))
+   (underpassMetalLayers @initform (qub::defineParam "string" "IB"))
    (drawConnectingBridge @initform (qub::defineParam "boolean" nil))
    (inputConnectorType "string" "None")))
 
@@ -23,63 +23,47 @@
                       segLib)
   (letseq ((gpv (lambda (valName) (qub::getParamValue device valName)))
            (width (gpv 'width))
-           (spacing (gpv 'spacing))
-           (apothem (gpv 'apothem))
-           (turns (gpv 'turns))
-           (topMetalLayers (parseString (gpv 'topMetalLayer)))
-           (originPoint 0:0)
-           (pathCellId (dbOpenCellViewByType segLib
-                                             "frlanSegment"
-                                             "layout"))
+           (topMetalLayers (parseString (gpv 'topMetalLayers)))
+           (underpassMetalLayers (parseString (gpv 'underpassMetalLayers)))
+           (origin 0:0)
+           (pathCellId 
+             (dbOpenCellViewByType segLib "frlanSegment" "layout"))
            (makeLoop 
-             (lambda 
-               (rotation instName metalLayer) 
-               (dbCreateParamInst 
-                 pcCellView
-                 pathCellId
-                 instName
-                 originPoint
-                 rotation
-                 1
-                 (list (list "width" "float" width)
-                       (list "spacing" "float" spacing)
-                       (list "apothem" "float" apothem)
-                       (list "turns" "float" turns)
-                       (list "metalLayer" "string" metalLayer)))))
-           
-           (coils1 (mapcar (lambda (x) (makeLoop "R0" 
-                                                 (sprintf nil "coil1_%s" x)
-                                                 x))
-                           topMetalLayers))
-           (coils2 (mapcar (lambda (x) (makeLoop "R180" 
-                                                 (sprintf nil "coil2_%s" x)
-                                                 x))
-                           topMetalLayers))
+             (lambda (rotation instName metalLayer)
+               (let ((params (list (list "width" "float" width)
+                                   (list "spacing" "float" (gpv 'spacing))
+                                   (list "apothem" "float" (gpv 'apothem))
+                                   (list "turns" "float" (gpv 'turns))
+                                   (list "metalLayer" "string" metalLayer))))
+                 (dbCreateParamInst 
+                   pcCellView pathCellId instName origin rotation 1 params))))
+           (mkCoil (lambda (rot idx metal)
+                     (makeLoop rot (sprintf nil "coil%d_%s" idx metal) metal)))
+           (coils1 (mapcar (lambda (x) (mkCoil "R0" 1 x)) topMetalLayers))
+           (coils2 (mapcar (lambda (x) (mkCoil "R180" 2 x)) topMetalLayers))
            (coil1 (car coils1))
            (coil2 (car coils2))
-           (innerBridges
-             (when (qub::getPcellBoolParamVal device 'drawConnectingBridge)
-               (mapcar 
-                 (lambda (x) 
-                   (let ((instName (sprintf nil "Frlan Bridge_%s" x)))
-                     (qub::createFrlanInnerBridge 
-                       coil1 coil2 originPoint x  width  instName)))
-                 topMetalLayers)))
+           (mkBridge (lambda (x) 
+                       (let ((instName (sprintf nil "Frlan Bridge_%s" x)))
+                         (qub::createFrlanInnerBridge 
+                           coil1 coil2 origin x width instName))))
+           (drawInnerBridge 
+             (qub::getPcellBoolParamVal device 'drawConnectingBridge))
+           (innerBridges (when drawInnerBridge 
+             (mapcar mkBridge topMetalLayers)))
            (bbox (device->cvId->bBox))
-           (lowEdge (bottomEdge bbox))                 
-           (inputConnector
-             (mapcar 
-               (lambda (x) 
-                 (qub::createFrlanInputConnector 
-                   lowEdge x width (gpv 'inputConnectorType) coil1 coil2))
-               (parseString (gpv 'underpassMetalLayer)))))
+           (lowEdge (bottomEdge bbox))
+           (inConnType (gpv 'inputConnectorType))
+           (mkInConn (lambda (x) (qub::createFrlanInputConnector 
+                                   lowEdge x width inConnType coil1 coil2)))
+           (inputConnector (mapcar mkInConn underpassMetalLayers)))
     t))
 
 ; Returns nil or the bridge ROD object
 ; gpv is the "get parameter value" lambda defined in qub::draw
 (defun qub::createFrlanInnerBridge (coil1 
                                     coil2 
-                                    originPoint 
+                                    origin 
                                     metalLayer 
                                     width
                                     bridgeName)
@@ -91,7 +75,7 @@
            ; We need to rotate the second point by 180 degrees
            ; in order to get the actual point.
            (coil2FirstPoint (car coil2Points))
-           (bridgePoint2 (qub::rotatePoint originPoint coil2FirstPoint 180.0))
+           (bridgePoint2 (qub::rotatePoint origin coil2FirstPoint 180.0))
            (bridgePoints (list bridgePoint1 bridgePoint2))
            (layerPP (list metalLayer "drawing")))
     (rodCreatePath ?name bridgeName
@@ -162,13 +146,13 @@
                     ?type "int"
                     ?defValue 2)
     (cdfCreateParam cdfId
-                    ?name "topMetalLayer"
-                    ?prompt "Top Metal Layer"
+                    ?name "topMetalLayers"
+                    ?prompt "Top Metal Layer(s)"
                     ?type "string"
                     ?defValue defaultTopMetalLayer)
     (cdfCreateParam cdfId
-                    ?name "underpassMetalLayer"
-                    ?prompt "Underpass Metal Layer"
+                    ?name "underpassMetalLayers"
+                    ?prompt "Underpass Metal Layer(s)"
                     ?type "string"
                     ?defValue defaultBridgeMetalLayer)
     (cdfCreateParam cdfId
@@ -204,8 +188,8 @@
                 (spacing "float" 2.0)
                 (apothem "float" 30.0)
                 (turns "int" 2)
-                (topMetalLayer "string" ,defaultTopMetalLayer)
-                (underpassMetalLayer "string" ,defaultBridgeMetalLayer)
+                (topMetalLayers "string" ,defaultTopMetalLayer)
+                (underpassMetalLayers "string" ,defaultBridgeMetalLayer)
                 (drawConnectingBridge "boolean" nil)
                 (inputConnectorType "string" "None"))
                (let ((pcell (makeInstance 'qub::frlanPCell)))
