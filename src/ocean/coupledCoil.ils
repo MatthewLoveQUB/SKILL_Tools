@@ -117,7 +117,7 @@
   (addSubwindow)
   (addSubwindowTitle "Resistances")
   (if plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
-  (if plotPi (plot Rx Ry Rz ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
+  (if plotPi (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
