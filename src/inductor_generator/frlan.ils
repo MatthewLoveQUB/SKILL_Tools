@@ -3,7 +3,7 @@
   ((width @initform (qub::defineParam "float" 15.0))
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
-   (turns @initform (qub::defineParam "int" 2))
+   (turns @initform (qub::defineParam "float" 2.0))
    (topMetalLayers @initform (qub::defineParam "string" "LB"))
    (underpassMetalLayers @initform (qub::defineParam "string" "IB"))
    (drawConnectingBridge @initform (qub::defineParam "boolean" nil))
@@ -161,8 +161,8 @@
     (cdfCreateParam cdfId
                     ?name "turns"
                     ?prompt "Turns"
-                    ?type "int"
-                    ?defValue 2)
+                    ?type "float"
+                    ?defValue 2.0)
     (cdfCreateParam cdfId
                     ?name "topMetalLayers"
                     ?prompt "Top Metal Layer(s)"
@@ -205,7 +205,7 @@
                ((width "float" 15.0)
                 (spacing "float" 2.0)
                 (apothem "float" 30.0)
-                (turns "int" 2)
+                (turns "float" 2.0)
                 (topMetalLayers "string" ,defaultTopMetalLayer)
                 (underpassMetalLayers "string" ,defaultBridgeMetalLayer)
                 (drawConnectingBridge "boolean" nil)
