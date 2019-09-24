@@ -21,8 +21,11 @@
                       @key
                       pcCellView
                       segLib)
-  (letseq ((gpv (lambda (valName) (qub::getParamValue device valName)))
+  (letseq ((libObj (ddGetObj segLib))
+           (tf (techGetTechFile libObj))
+           (gpv (lambda (valName) (qub::getParamValue device valName)))
            (width (gpv 'width))
+           (limitWidth (lambda (layer) (qub::limitPathWidth tf width layer)))
            (topMetalLayers (parseString (gpv 'topMetalLayers)))
            (underpassMetalLayers (parseString (gpv 'underpassMetalLayers)))
            (origin 0:0)
@@ -30,11 +33,13 @@
              (dbOpenCellViewByType segLib "frlanSegment" "layout"))
            (makeLoop 
              (lambda (rotation instName metalLayer)
-               (let ((params (list (list "width" "float" width)
-                                   (list "spacing" "float" (gpv 'spacing))
-                                   (list "apothem" "float" (gpv 'apothem))
-                                   (list "turns" "float" (gpv 'turns))
-                                   (list "metalLayer" "string" metalLayer))))
+               (letseq ((newWidth (limitWidth metalLayer))
+                        (params (list (list "width" "float" width)
+                                     (list "spacing" "float" (gpv 'spacing))
+                                     (list "apothem" "float" (gpv 'apothem))
+                                     (list "turns" "float" (gpv 'turns))
+                                     (list "metalLayer" "string" metalLayer)
+                                     (list "drawnWidth" "float" newWidth))))
                  (dbCreateParamInst 
                    pcCellView pathCellId instName origin rotation 1 params))))
            (mkCoil (lambda (rot idx metal)
@@ -43,10 +48,15 @@
            (coils2 (mapcar (lambda (x) (mkCoil "R180" 2 x)) topMetalLayers))
            (coil1 (car coils1))
            (coil2 (car coils2))
-           (mkBridge (lambda (x) 
-                       (let ((instName (sprintf nil "Frlan Bridge_%s" x)))
-                         (qub::createFrlanInnerBridge 
-                           coil1 coil2 origin x width instName))))
+           (mkBridge 
+             (lambda (metLayer) 
+               (let ((instName (sprintf nil "Frlan Bridge_%s" metLayer)))
+                 (qub::createFrlanInnerBridge coil1 
+                                              coil2 
+                                              origin 
+                                              metLayer 
+                                              (limitWidth metLayer) 
+                                              instName))))
            (drawInnerBridge 
              (qub::getPcellBoolParamVal device 'drawConnectingBridge))
            (innerBridges (when drawInnerBridge 
@@ -54,9 +64,14 @@
            (bbox (device->cvId->bBox))
            (lowEdge (bottomEdge bbox))
            (inConnType (gpv 'inputConnectorType))
-           (mkInConn 
-             (lambda (x) (qub::createFrlanInputConnector 
-                           lowEdge x width inConnType coil1 coil2 origin)))
+           (mkInConn (lambda (metLayer) 
+                       (qub::createFrlanInputConnector lowEdge 
+                                                       metLayer 
+                                                       (limitWidth metLayer)  
+                                                       inConnType 
+                                                       coil1 
+                                                       coil2 
+                                                       origin)))
            (inputConnector (mapcar mkInConn underpassMetalLayers)))
     t))
 
@@ -113,10 +128,10 @@
              (qub::createFrlanInnerBridge 
               coil1 coil2 0:0 metalLayer width underpassName)))
           ((equal connType "Loop Centre")
-           (letseq ((coil1Points (car coil2->master->shapes)->points)
+           (letseq ((coilPoints (car coil2->master->shapes)->points)
                     (rot (lambda (x) (qub::rotatePoint origin x 180.0)))
-                    (pt1 (rot (nth 2 coil1Points)))
-                    (pt2 (rot (nth 3 coil1Points)))
+                    (pt1 (rot (nth 2 coilPoints)))
+                    (pt2 (rot (nth 3 coilPoints)))
                     (xVal (qub::mean (xCoord pt2) (xCoord pt1))))
             (createCentreBridge xVal))))))
                              

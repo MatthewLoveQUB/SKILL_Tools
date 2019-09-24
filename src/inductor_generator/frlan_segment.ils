@@ -72,7 +72,8 @@
    (spacing @initform (qub::defineParam "float" 2.0))
    (apothem @initform (qub::defineParam "float" 30.0))
    (turns @initform (qub::defineParam "float" 3.0))
-   (metalLayer @initform (qub::defineParam "string" "AP"))))
+   (metalLayer @initform (qub::defineParam "string" "AP"))
+   (drawnWidth @initform (qub::defineParam "float" 15.0))))
     
 (defmethod qub::draw ((device qub::frlanSegmentPCell))
   (letseq ((width (qub::getParamValue device 'width))
@@ -80,6 +81,7 @@
            (apothem (qub::getParamValue device 'apothem))
            (turns (qub::getParamValue device 'turns))
            (metalLayer (qub::getParamValue device 'metalLayer))
+           (drawnWidth (qub::getParamValue device 'drawnWidth))
            ; Metal Layer Purpose Pair
            (layerPP (list metalLayer "drawing"))
            ; Number of shapes to be generated
@@ -122,7 +124,7 @@
     ; Draw the coil itself
     (rodCreatePath ?name "path"
                    ?layer layerPP
-                   ?width width
+                   ?width drawnWidth
                    ?pts coords)))
 
 (defmacro qub::createFrlanSegmentPCell (@key (library nil)
@@ -140,7 +142,8 @@
        (spacing "float" 2.0)
        (apothem "float" 30.0)
        (turns "float" 3.0)
-       (metalLayer "string" ,defaultMetalLayer))
+       (metalLayer "string" ,defaultMetalLayer)
+       (drawnWidth "float" 15.0))
       (let ((pcell (makeInstance 'qub::frlanSegmentPCell)))
         (qub::setPcellParams pcell pcCellView)
         (qub::draw pcell)))))

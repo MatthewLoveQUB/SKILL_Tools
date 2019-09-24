@@ -10,4 +10,5 @@
 (addToExportList '(qub:::adeDirectPlot))
 
 ; layout.ils
-(addToExportList '(qub:::hidePaletteDuplicates))
+(addToExportList '(qub:::hidePaletteDuplicates
+                   qub:::limitPathWidth))

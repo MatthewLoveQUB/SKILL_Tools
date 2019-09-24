@@ -4,3 +4,19 @@
 (defun qub::hidePaletteDuplicates ()
   (foreach setname (pteGetAllLayerSets)
     (if (rexMatchp ".*([0-9])$" setname) (pteSetLSEnable setname nil))))
+
+; Limit the path width to the maximum given in the techfile
+; Args:
+;   techfile: database object
+;             The library techfile object
+;             Often retrieved using techGetTechFile
+;   width: float
+;          The width of the path
+;   layer: string
+;          The layer the path is being drawn on
+(defun qub::limitPathWidth (techfile width layer)
+  (when techfile
+    (let ((maxWidth (techGetSpacingRule techfile "maxWidth" layer)))
+      (if maxWidth
+          (min width maxWidth)
+          width))))
