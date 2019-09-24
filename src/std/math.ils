@@ -41,3 +41,7 @@
 ; It just inverts the return value of qub::almostEqual                   
 (defun qub::notAlmostEqual (a b @key (rel_tol 0) (abs_tol 0))
   (not (qub::almostEqual a b ?rel_tol rel_tol ?abs_tol abs_tol)))
+  
+; Find the mean of some numbers
+(defun qub::mean (@rest x) 
+  (quotient (qub::sum x) (length x)))

@@ -34,7 +34,8 @@
 ; math.ils
 (addToExportList '(qub:::m
                    qub:::almostEqual
-                   qub:::notAlmostEqual))
+                   qub:::notAlmostEqual
+                   qub:::mean))
 
 ; string.ils
 (addToExportList '(qub:::startsWith))                   

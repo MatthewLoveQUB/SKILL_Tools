@@ -54,8 +54,9 @@
            (bbox (device->cvId->bBox))
            (lowEdge (bottomEdge bbox))
            (inConnType (gpv 'inputConnectorType))
-           (mkInConn (lambda (x) (qub::createFrlanInputConnector 
-                                   lowEdge x width inConnType coil1 coil2)))
+           (mkInConn 
+             (lambda (x) (qub::createFrlanInputConnector 
+                           lowEdge x width inConnType coil1 coil2 origin)))
            (inputConnector (mapcar mkInConn underpassMetalLayers)))
     t))
 
@@ -91,31 +92,33 @@
                                        width 
                                        connType 
                                        coil1 
-                                       coil2)
+                                       coil2
+                                       origin)
   (letseq ((pathName (sprintf nil "inputConnector_%s" metalLayer))
            (layerPP (list metalLayer "drawing"))
-           (createCentreBridge 
-             (lambda ()
-               (let ((bottomPoint 0:(difference lowEdge (times 1.5 width)))
-                     ; Should probably not hard-code this
-                     (topPoint 0:0))
-                     (rodCreatePath ?name pathName
-                                    ?layer layerPP
-                                    ?width width
-                                    ?pts (list topPoint bottomPoint)
-                                    ?endType "variable"
-                                    ?beginExt (quotient width 2)
-                                    ?endExt 0)))))
-    ;(break)
+           (bottomY (difference lowEdge (times 1.5 width)))
+           (createCentreBridge
+             (lambda (x) (rodCreatePath ?name pathName
+                                        ?layer layerPP
+                                        ?width width
+                                        ?pts (list x:0 x:bottomY)
+                                        ?endType "variable"
+                                        ?beginExt (quotient width 2)
+                                        ?endExt 0))))
     (cond ((equal connType "None") nil)
-          ((equal connType "Coil Centre") (createCentreBridge))
+          ((equal connType "Coil Centre") (createCentreBridge 0))
           ((equal connType "Coil Centre (Wide)")
            (let ((underpassName (sprintf nil "Bridge Under %s" metalLayer)))
-             (createCentreBridge)
+             (createCentreBridge 0)
              (qub::createFrlanInnerBridge 
               coil1 coil2 0:0 metalLayer width underpassName)))
-          ((equal connType "Loop Centre") nil))
-    t))
+          ((equal connType "Loop Centre")
+           (letseq ((coil1Points (car coil2->master->shapes)->points)
+                    (rot (lambda (x) (qub::rotatePoint origin x 180.0)))
+                    (pt1 (rot (nth 2 coil1Points)))
+                    (pt2 (rot (nth 3 coil1Points)))
+                    (xVal (qub::mean (xCoord pt2) (xCoord pt1))))
+            (createCentreBridge xVal))))))
                              
 (defun qub::createFrlanCdf (library 
                             cellName 
