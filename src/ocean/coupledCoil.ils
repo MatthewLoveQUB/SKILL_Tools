@@ -46,7 +46,9 @@
   La = (quotient Xa w)
   Lb = (quotient Xb w)
   Lc = (quotient Xc w)
-
+  delta_L_T = (abs (difference La Lb))
+  delta_L_T_increase = (times 100.0 (quotient delta_L_T (min La Lb)))
+  
   ; The uncoupled branch inductances
   Lax = (quotient (imag (zpm "sp" 1 1)) w)
   Lbx = (quotient (imag (zpm "sp" 2 2)) w)
@@ -87,7 +89,9 @@
   Lx = (quotient Xx w)
   Ly = (quotient Xy w)
   Lz = (quotient Xz w)
-
+  delta_L_Pi = (abs (difference Lx Ly))
+  delta_L_Pi_increase = (times 100.0 (quotient delta_L_Pi (min Lx Ly)))
+  
   Qx = (quotient Xx Rx)
   Qy = (quotient Xy Ry)
   Qz = (quotient Xz Rz)
@@ -100,8 +104,6 @@
 
   ; To resonate out Lz_parallel
   Cres = (1.0 / ((pow w 2.0) * Lz_parallel))
-
-
                           
   ; Plotting the results
   plotT = (or (eq plotMode 'all) (eq plotMode 'T))
@@ -125,18 +127,24 @@
                   Lax 
                   Lb 
                   Lbx 
-                  Lc 
-                  ?yNumber (list 1 1 1 1 1) 
+                  Lc
+                  delta_L_T_increase
+                  ?yNumber (list 1 1 1 1 1 2) 
                   ?expr (list "La (T)" 
                               "Lax (T)" 
                               "Lb (T)" 
                               "Lbx (T)" 
-                              "Lc (T-Virtual)")))
+                              "Lc (T-Virtual)"
+                              "LaLb Imbalance (%)")))
   (if plotPi (plot Lx 
                    Ly 
-                   Lz 
-                   ?yNumber (list 1 1 1) 
-                   ?expr (list "Lx (Pi)" "Ly (Pi)" "Lz (Pi-Virtual)")))
+                   Lz
+                   delta_L_Pi_increase
+                   ?yNumber (list 1 1 1 2) 
+                   ?expr (list "Lx (Pi)" 
+                               "Ly (Pi)" 
+                               "Lz (Pi-Virtual)" 
+                               "Delta L (%)")))
   (plot K ?yNumber (list 2) ?expr (list "K"))
   
   (if plotPi (progn (addSubwindow)
