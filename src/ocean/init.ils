@@ -1,5 +1,6 @@
 (qubCreateModule "ocean/"
   (modload "oceanHelpers.ils")
+  (modload "waveforms.ils")
   (modload "transistor.ils")
   (modload "passiveOnePort.ils")
   (modload "coupledCoil.ils")
@@ -10,4 +11,5 @@
   (modload "outphasingSweep.ils")
   (modload "stability_calculations.ils")
   (modload "passiveOnePort.ils")
-  (modload "ampTran.ils"))
+  (modload "ampTran.ils")
+  (modload "shoot_through.ils"))

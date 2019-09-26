@@ -40,3 +40,9 @@
 
 ; ampTran.ils
 (addToExportList '(qub:::ocnAmpTran))
+
+; shoot_through.ils
+(addToExportList '(qub:::ocnShootThoughCurrent))
+
+; waveforms.ils
+(addToExportList '(qub:::copyWaveform))

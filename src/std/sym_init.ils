@@ -29,7 +29,8 @@
                    qub:::range
                    qub:::pushEnd
                    qub:::lastAtom
-                   qub:::addListElems))
+                   qub:::addListElems
+                   qub:::copyObjProperties))
 
 ; math.ils
 (addToExportList '(qub:::m

@@ -93,3 +93,34 @@
 ;   (2 4 6)
 (defun qub::addListElems (a b)
   (mapcar plus a b))
+  
+; Copies the the values of a property list to a new property list.
+; The new list is mutated
+; Args:
+;   oldVals: property list
+;            The object you're copying from
+;   newVals: property list
+;            The object you're copying to
+; Returns:
+;   Nothing, the newVals list is mutated.
+; Example:
+; >>> x = (list nil 'a 1 'b 2)
+; (nil a 1 b 2)
+; >>> x->??
+; (a 1 b 2)
+; >>> y = (list nil)
+; (nil)
+; >>> y->??
+; nil
+; >>> (qub::copyObjProperties x y)
+; t
+; >>> y->??
+; (b 2 a 1)
+(defun qub::copyObjProperties (oldVals newVals)
+  (letseq ((properties oldVals->??)
+           (numProp (length properties)))
+    (foreach i (qub::range ?start 0 ?stop numProp ?step 2)
+      (let ((newSym (nth i properties))
+            (newVal (nth i+1 properties)))
+        (putprop newVals newVal newSym)))
+    t))

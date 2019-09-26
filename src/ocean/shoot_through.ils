@@ -1,0 +1,26 @@
+; Calculates the shoot-through current in a CMOS inverter
+; May not be totally correct as my method was arrived through intuition
+; but it gives me a rough answer that's enough to guage how bad
+; the shoot-through current really ismnugrploaded
+; Args:
+;   p: waveform object
+;      The waveform of the current flowing through the PMOS(s)
+;   n: waveform object
+;      The waveform of the current flowing through the NMOS(s)
+; Returns:
+;  A new waveform object with the shoot-through current
+(defun qub::ocnShootThoughCurrent (I_P I_N)
+  (letseq ((shootThrough (qub::copyWaveform I_N))
+           (stY (drGetWaveformYVec shootThrough))
+           (nElems (drVectorLength stY))
+           (pY (drGetWaveformYVec I_P))
+           (nY (drGetWaveformYVec I_N)))
+   (for i 0 (sub1 nElems)
+     (drSetElem stY
+                i                  
+                (let ((nval (drGetElem nY i))
+                      (pval (drGetElem pY i)))
+                  (if (greaterp nval pval)
+                      pval
+                      nval))))
+   shootThrough))                      

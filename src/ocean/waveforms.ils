@@ -1,0 +1,25 @@
+; Creates a new copy of a waveform object
+; Args:
+;   wf: A waveform object
+; Returns:
+;   A copy of the waveform object
+;   X and Y values are preserved, as are the units
+;   Nothing else is guaranteed
+(defun qub::copyWaveform (wf)
+  (letseq ((oldXVals (drGetWaveformXVec wf))
+           (oldXType (drGetWaveformXType wf))
+           (oldXLength (drVectorLength oldXVals))
+           (oldYVals (drGetWaveformYVec wf))
+           (oldYType (drGetWaveformYType wf))
+           (oldYLength (drVectorLength oldYVals))
+           (newX (drCreateVec oldXType oldXLength))
+           (newY (drCreateVec oldYType oldYLength))
+           (cpVals (lambda (oldLen oldVec newVec)
+                     (for i 0 (sub1 oldLen)
+                       (drSetElem newVec i (drGetElem oldVec i))))))
+    ; Populate the new waveform
+    (cpVals oldXLength oldXVals newX)
+    (cpVals oldYLength oldYVals newY)
+    (qub::copyObjProperties oldXVals newX)
+    (qub::copyObjProperties oldYVals newY)
+    (drCreateWaveform newX newY)))
