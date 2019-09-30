@@ -11,4 +11,6 @@
 ; Returns:
 ;  A mutated version of I_N with the shoot-through current
 (defun qub::ocnShootThoughCurrent (I_P I_N)
-  (min I_P I_N))
+  ; Take the max value after taking the min in the cases where the NMOS current
+  ; is negative
+  (max 0 (min I_P I_N)))
