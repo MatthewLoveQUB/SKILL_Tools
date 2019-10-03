@@ -188,7 +188,8 @@
                                    "Coil Centre (Wide)"
                                    "Loop Centre")
                     ?defValue "None"
-                    ?description "Connect the inner ends of both loops")))
+                    ?description "Connect the inner ends of both loops")
+    (cdfSaveCDF cdfId)))
     
 (defmacro qub::createFrlanPCell (@key (library nil)
                                       (defaultTopMetalLayer nil)
