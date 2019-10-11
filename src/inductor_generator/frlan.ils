@@ -7,7 +7,8 @@
    (topMetalLayers @initform (qub::defineParam "string" "LB"))
    (underpassMetalLayers @initform (qub::defineParam "string" "IB"))
    (drawConnectingBridge @initform (qub::defineParam "boolean" nil))
-   (inputConnectorType "string" "None")))
+   (inputConnectorType @initform (qub::defineParam "string" "None"))
+   (drawSecondInput @initform (qub::defineParam "boolean" nil))))
 
 ; Draw the PCell in the layout
 ; Args:
@@ -64,15 +65,22 @@
            (bbox (device->cvId->bBox))
            (lowEdge (bottomEdge bbox))
            (inConnType (gpv 'inputConnectorType))
-           (mkInConn (lambda (metLayer) 
+           (mkInConn (lambda (metLayer nameId rotation) 
                        (qub::createFrlanInputConnector lowEdge 
                                                        metLayer 
                                                        (limitWidth metLayer)  
                                                        inConnType 
                                                        coil1 
                                                        coil2 
-                                                       origin)))
-           (inputConnector (mapcar mkInConn underpassMetalLayers)))
+                                                       origin
+                                                       nameId
+                                                       rotation)))
+           (inputConnector 
+             (mapcar (lambda (x) (mkInConn x "A" nil)) underpassMetalLayers))
+           (inputConnector2
+             (when (qub::getPcellBoolParamVal device 'drawSecondInput) 
+               (mapcar (lambda (x) (mkInConn x "B" 180.0))
+                        underpassMetalLayers))))
     t))
 
 ; Returns nil or the bridge ROD object
@@ -108,18 +116,28 @@
                                        connType 
                                        coil1 
                                        coil2
-                                       origin)
-  (letseq ((pathName (sprintf nil "inputConnector_%s" metalLayer))
+                                       origin
+                                       nameId
+                                       rotation)
+  (letseq ((pathName (sprintf nil "inputConnector_%s_%s" nameId metalLayer))
            (layerPP (list metalLayer "drawing"))
            (bottomY (difference lowEdge (times 1.5 width)))
            (createCentreBridge
-             (lambda (x) (rodCreatePath ?name pathName
-                                        ?layer layerPP
-                                        ?width width
-                                        ?pts (list x:0 x:bottomY)
-                                        ?endType "variable"
-                                        ?beginExt (quotient width 2)
-                                        ?endExt 0))))
+             (lambda (x) (letseq ((pt1 x:0)
+                                  (pt2 x:bottomY)
+                                  (pts (list pt1
+                                             (if rotation
+                                                 (qub::rotatePoint origin 
+                                                                   pt2 
+                                                                   rotation)
+                                                 pt2))))
+                           (rodCreatePath ?name pathName
+                                          ?layer layerPP
+                                          ?width width
+                                          ?pts pts
+                                          ?endType "variable"
+                                          ?beginExt (quotient width 2)
+                                          ?endExt 0)))))
     (cond ((equal connType "None") nil)
           ((equal connType "Coil Centre") (createCentreBridge 0))
           ((equal connType "Coil Centre (Wide)")
@@ -189,6 +207,12 @@
                                    "Loop Centre")
                     ?defValue "None"
                     ?description "Connect the inner ends of both loops")
+    (cdfCreateParam cdfId
+                    ?name "drawSecondInput"
+                    ?prompt "Add second input"
+                    ?type "boolean"
+                    ?defValue nil
+                    ?description "Add a second input bridge for symmetry.")
     (cdfSaveCDF cdfId)))
     
 (defmacro qub::createFrlanPCell (@key (library nil)
@@ -210,7 +234,8 @@
                 (topMetalLayers "string" ,defaultTopMetalLayer)
                 (underpassMetalLayers "string" ,defaultBridgeMetalLayer)
                 (drawConnectingBridge "boolean" nil)
-                (inputConnectorType "string" "None"))
+                (inputConnectorType "string" "None")
+                (drawSecondInput "boolean" nil))
                (let ((pcell (makeInstance 'qub::frlanPCell)))
                  (qub::setPcellParams pcell pcCellView)
                  (qub::draw pcell 
