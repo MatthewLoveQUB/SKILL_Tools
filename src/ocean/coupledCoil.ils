@@ -14,6 +14,10 @@
   f = (qub::sToF)
   w = (times 2 qub::m.PI f)
 
+  ; Delta increase
+  di = (lambda (x y) (let ((delta (abs (difference x y))))
+                       (times 100.0 (quotient delta (min x y)))))
+  
   port1 = (car ports)
   port2 = (cadr ports)
   
@@ -41,13 +45,13 @@
   Qa = (quotient Xa Ra)
   Qb = (quotient Xb Rb)
   Qc = (quotient Xc Rc)
-
+  delta_Q_T_increase = (di Qa Qb)
+  
   ; The branch inductaces
   La = (quotient Xa w)
   Lb = (quotient Xb w)
   Lc = (quotient Xc w)
-  delta_L_T = (abs (difference La Lb))
-  delta_L_T_increase = (times 100.0 (quotient delta_L_T (min La Lb)))
+  delta_L_T_increase = (di La Lb)
   
   ; The uncoupled branch inductances
   Lax = (quotient (imag (zpm "sp" 1 1)) w)
@@ -86,16 +90,16 @@
   Xy = (imag Zy)
   Xz = (imag Zz)
 
-  Lx = (quotient Xx w)
-  Ly = (quotient Xy w)
-  Lz = (quotient Xz w)
-  delta_L_Pi = (abs (difference Lx Ly))
-  delta_L_Pi_increase = (times 100.0 (quotient delta_L_Pi (min Lx Ly)))
-  
   Qx = (quotient Xx Rx)
   Qy = (quotient Xy Ry)
   Qz = (quotient Xz Rz)
-
+  delta_Q_Pi_increase = (di Qx Qy)
+  
+  Lx = (quotient Xx w)
+  Ly = (quotient Xy w)
+  Lz = (quotient Xz w)
+  delta_L_Pi_increase = (di Lx Ly)
+  
   ; Additional measurements for using the coil
   top = Rz**2 + Xz**2
   Rz_parallel = top / Rz
@@ -113,17 +117,34 @@
   (addTitle "Coupled Coil Analysis")
 
   (addSubwindowTitle "Q Factors")
-  (if plotT (plot Qa Qb Qc ?expr (list "Qa (T)" "Qb (T)" "Qc (T-Virtual)")))
-  (if plotPi (plot Qx Qy Qz ?expr (list "Qx (Pi)" "Qy (Pi)" "Qz (Pi-Virtual)")))
+  (when plotT 
+    (plot Qa 
+          Qb 
+          Qc
+          delta_Q_T_increase
+          ?expr (list "Qa (T)" 
+                      "Qb (T)" 
+                      "Qc (T-Virtual)"
+                      "QaQb Imbalance (%)")))
+  (when plotPi 
+    (plot Qx 
+          Qy 
+          Qz
+          delta_Q_Pi_increase
+          ?expr (list "Qx (Pi)" 
+                      "Qy (Pi)" 
+                      "Qz (Pi-Virtual)"
+                      "QxQy Imbalance (%)")))
 
   (addSubwindow)
   (addSubwindowTitle "Resistances")
-  (if plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
-  (if plotPi (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
+  (when plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
+  (when plotPi 
+    (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
 
   (addSubwindow)
   (addSubwindowTitle "Inductances")
-  (if plotT (plot La 
+  (when plotT (plot La 
                   Lax 
                   Lb 
                   Lbx 
@@ -136,7 +157,7 @@
                               "Lbx (T)" 
                               "Lc (T-Virtual)"
                               "LaLb Imbalance (%)")))
-  (if plotPi (plot Lx 
+  (when plotPi (plot Lx 
                    Ly 
                    Lz
                    delta_L_Pi_increase
@@ -144,10 +165,10 @@
                    ?expr (list "Lx (Pi)" 
                                "Ly (Pi)" 
                                "Lz (Pi-Virtual)" 
-                               "Delta L (%)")))
+                               "LxLy L (%)")))
   (plot K ?yNumber (list 2) ?expr (list "K"))
   
-  (if plotPi (progn (addSubwindow)
+  (when plotPi (progn (addSubwindow)
                     (addSubwindowTitle "Miscellaneous")
                     (plot Cres 
                           Lz_parallel 
@@ -155,8 +176,8 @@
                           ?expr (list "Cres" 
                                       "Lz (Parallel RL)" 
                                       "Rz (Parallel RL)"))))
-  (if (or (floatp f0) (integerp f0))
-      (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
-             (awvPlaceXMarker winId f0 ?subwindow 2) 
-             (awvPlaceXMarker winId f0 ?subwindow 3)
-             (if plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
+  (when (or (floatp f0) (integerp f0))
+    (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
+           (awvPlaceXMarker winId f0 ?subwindow 2) 
+           (awvPlaceXMarker winId f0 ?subwindow 3)
+           (when plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
