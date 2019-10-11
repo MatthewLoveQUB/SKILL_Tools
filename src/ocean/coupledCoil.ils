@@ -122,6 +122,7 @@
           Qb 
           Qc
           delta_Q_T_increase
+          ?yNumber (list 1 1 1 2) 
           ?expr (list "Qa (T)" 
                       "Qb (T)" 
                       "Qc (T-Virtual)"
@@ -131,6 +132,7 @@
           Qy 
           Qz
           delta_Q_Pi_increase
+          ?yNumber (list 1 1 1 2) 
           ?expr (list "Qx (Pi)" 
                       "Qy (Pi)" 
                       "Qz (Pi-Virtual)"
