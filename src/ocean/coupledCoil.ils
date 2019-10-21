@@ -160,14 +160,16 @@
                               "Lc (T-Virtual)"
                               "LaLb Imbalance (%)")))
   (when plotPi (plot Lx 
-                   Ly 
-                   Lz
-                   delta_L_Pi_increase
-                   ?yNumber (list 1 1 1 2) 
-                   ?expr (list "Lx (Pi)" 
-                               "Ly (Pi)" 
-                               "Lz (Pi-Virtual)" 
-                               "LxLy L (%)")))
+                     Ly 
+                     Lz
+                     Lc
+                     delta_L_Pi_increase
+                     ?yNumber (list 1 1 1 1 2) 
+                     ?expr (list "Lx (Pi)" 
+                                 "Ly (Pi)" 
+                                 "Lz (Pi-Virtual)"
+                                 "Lc (M)"
+                                 "LxLy L (%)")))
   (plot K ?yNumber (list 2) ?expr (list "K"))
   
   (when plotPi (progn (addSubwindow)
