@@ -13,6 +13,10 @@
 ; If this macro is too restrictive then you can always define your own macro
 ; or look to see what the individual macros are doing to create a more custom
 ; version.
+;
+; The libInit.il file for the library should re-load this library's code
+; or else streaming out to GDSII will fail.
+;
 ; Return:
 ;   Nothing, it only generates side effects.
 ; Args:
@@ -44,4 +48,9 @@
             ?library ,libname 
             ?defaultTopMetalLayer (car ,metalLayers)
             ?defaultBridgeMetalLayer (cadr ,metalLayers))
-          (printf "Created PCells in %s" ,libname)))
+          (printf "Created PCells in %s.\n" ,libname)
+          (printf 
+            (strcat 
+              "Note: Don't forget to re-load this library's code in "
+              "libInit.il to prevent errors when "
+              "streaming out the layout.\n"))))

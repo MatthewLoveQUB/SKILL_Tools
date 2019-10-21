@@ -15,12 +15,14 @@ There's not a lot of SKILL code in the wild beyond the Cadence forums.
 | `pcell` | `qub` | Generating custom PCells
 | `qtest` | `qtest` | Unit testing.
 | `std` | `qub` | A "standard library" of useful functions.
-| `inductor_generator` | `qub` | A side project on generating spiral inductors. Should be ignored.
+| `inductor_generator` | `qub` | Inductor PCell generation.
 
 ## Importing the project
 
 Create the environment variable QUB_CODE_REPO_DIR and point it at the repo root directory.
-Run the SKILL `load` function on `init.ils` at the root of the repo and all other modules will be imported.
+Add the `src` folder to the SKILL path and run the SKILL `load` function on `src/init.ils` at the root of the repo and all other modules will be imported.
+The `src` folder can be added to the SKILl path like so: `(setSkillPath (append (getSkillPath) (list "~/code/src/")))`.
+If the inductor PCell code is to be used, this code library needs to be re-added using libInit.il for the Virtuoso library that the PCell resides in or else stream-out will fail.
 
 ## Unit Testing
 
