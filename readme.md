@@ -20,8 +20,8 @@ There's not a lot of SKILL code in the wild beyond the Cadence forums.
 ## Importing the project
 
 Create the environment variable QUB_CODE_REPO_DIR and point it at the repo root directory.
-Add the `src` folder to the SKILL path and run `(load (strcat "$QUB_CODE_REPO_DIR" "/src/init.ils"))` and all other modules will be imported.
-The `src` folder can be added to the SKILL path like so: `(setSkillPath (append (getSkillPath) (list (strcat "$QUB_CODE_REPO_DIR" "/src/"))))`.
+Add the `src` folder to the SKILL path and run `(load (strcat (getShellEnvVar "QUB_CODE_REPO_DIR") "/src/init.ils"))` and all other modules will be imported.
+The `src` folder can be added to the SKILL path like so: `(setSkillPath (append (getSkillPath) (list (strcat (getShellEnvVar "QUB_CODE_REPO_DIR") "/src/"))))`.
 If the inductor PCell code is to be used, this code library needs to be re-added using libInit.il for the Virtuoso library that the PCell resides in or else stream-out will fail.
 
 ## Unit Testing
