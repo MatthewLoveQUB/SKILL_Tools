@@ -119,8 +119,6 @@
     (setf (nth 0 coords) initMidpoint)
     ; Add the output point
     (qub::pushEnd finalPoint coords)
-    ; Fix the coordinates to a 5nm grid value
-    (setf coords (mapcar qub::roundCoord5nm coords))
     ; Draw the coil itself
     (rodCreatePath ?name "path"
                    ?layer layerPP
