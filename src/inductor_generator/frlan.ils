@@ -76,7 +76,7 @@
                                                        nameId
                                                        rotation)))
            (inputConnector 
-             (mapcar (lambda (x) (mkInConn x "A" nil)) underpassMetalLayers))
+             (mapcar (lambda (x) (mkInConn x "A" 0.0)) underpassMetalLayers))
            (inputConnector2
              (when (qub::getPcellBoolParamVal device 'drawSecondInput) 
                (mapcar (lambda (x) (mkInConn x "B" 180.0))
@@ -127,7 +127,7 @@
                                   (pt2 x:bottomY)
                                   (pts (list pt1
                                              (if rotation
-                                                 (qub::rotatePoint origin 
+                                                 (qub::rotatePoint pt1 
                                                                    pt2 
                                                                    rotation)
                                                  pt2))))
@@ -144,10 +144,11 @@
            (let ((underpassName (sprintf nil "Bridge Under %s" metalLayer)))
              (createCentreBridge 0)
              (qub::createFrlanInnerBridge 
-              coil1 coil2 0:0 metalLayer width underpassName)))
+               coil1 coil2 0:0 metalLayer width underpassName)))
           ((equal connType "Loop Centre")
-           (letseq ((coilPoints (car coil2->master->shapes)->points)
-                    (rot (lambda (x) (qub::rotatePoint origin x 180.0)))
+           (letseq ((rot (lambda (x) 
+                           (qub::rotatePoint origin x (plus 180.0 rotation))))
+                    (coilPoints (car coil2->master->shapes)->points)
                     (pt1 (rot (nth 2 coilPoints)))
                     (pt2 (rot (nth 3 coilPoints)))
                     (xVal (qub::mean (xCoord pt2) (xCoord pt1))))
