@@ -74,7 +74,7 @@
                                  spectralInputPower2)
                            fundamentalHarmonicIndex))
   paeDenominator = (- (harmonic spectralDcPower dcHarmonicIndex))
-  PAE = paeNumerator / paeDenominator
+  pae = paeNumerator / paeDenominator
 
   drainEfficiencyNumerator =
     (100.0 * (harmonic spectralOutputPower fundamentalHarmonicIndex))
