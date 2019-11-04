@@ -179,7 +179,8 @@
                           Rz_parallel 
                           ?expr (list "Cres" 
                                       "Lz (Parallel RL)" 
-                                      "Rz (Parallel RL)"))))
+                                      "Rz (Parallel RL)")
+                          ?yNumber (list 1 2 3))))
   (when (or (floatp f0) (integerp f0))
     (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
            (awvPlaceXMarker winId f0 ?subwindow 2) 
