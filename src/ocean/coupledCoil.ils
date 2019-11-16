@@ -11,178 +11,161 @@
 (defun qub::ocnCoupledCoil (@key (f0 nil)
                                  (plotMode 'all)
                                  (ports (list 1 2)))
-  f = (qub::sToF)
-  w = (times 2 qub::m.PI f)
-
-  ; Delta increase
-  di = (lambda (x y) (let ((delta (abs (difference x y))))
-                       (times 100.0 (quotient delta (min x y)))))
-  
-  port1 = (car ports)
-  port2 = (cadr ports)
-  
-  ; T Network representation using Z-Parameters.
-  ; T network is assumed to be in the following form.
-  ;
-  ; P1  O---Za-----Zb---O P2
-  ;             |
-  ;             Zc
-  ;             |
-  ; Gnd O---------------O Gnd
-
-  Za = (zpm "sp" port1 port1) - (zpm "sp" port1 port2)
-  Zb = (zpm "sp" port2 port2) - (zpm "sp" port1 port2)
-  Zc = (zpm "sp" port1 port2)
-
-  Ra = (real Za)
-  Rb = (real Zb)
-  Rc = (real Zc)
-
-  Xa = (imag Za)
-  Xb = (imag Zb)
-  Xc = (imag Zc)
-
-  Qa = (quotient Xa Ra)
-  Qb = (quotient Xb Rb)
-  Qc = (quotient Xc Rc)
-  delta_Q_T_increase = (di Qa Qb)
-  
-  ; The branch inductaces
-  La = (quotient Xa w)
-  Lb = (quotient Xb w)
-  Lc = (quotient Xc w)
-  delta_L_T_increase = (di La Lb)
-  
-  ; The uncoupled branch inductances
-  Lax = (quotient (imag (zpm "sp" 1 1)) w)
-  Lbx = (quotient (imag (zpm "sp" 2 2)) w)
-  ; M = Lc
-  ; M = k*Lx
-  ; k = M / Lx
-  Kac = (quotient Lc Lax)
-  Kbc = (quotient Lc Lbx)
-  ; k = M / sqrt(Lax * Lbx)
-  K = (quotient Lc (sqrt Lax * Lbx))
-
-  ; Y Network Parameters
-  ; Assumed to be in the following form.
-  ;
-  ; P1  O----Zz----O P2
-  ;       |      |
-  ;       Zx     Zy
-  ;       |      |
-  ; Gnd O----------O Gnd
-  
-  Y11 = (ypm "sp" port1 port1)
-  Y22 = (ypm "sp" port2 port2)
-  Y12 = (ypm "sp" port1 port2)
-  
-  
-  Zx = (quotient 1.0 (plus Y11 Y12))
-  Zy = (quotient 1.0 (plus Y22 Y12))
-  Zz = (quotient -1.0 Y12)
-  
-  Rx = (real Zx)
-  Ry = (real Zy)
-  Rz = (real Zz)
-
-  Xx = (imag Zx)
-  Xy = (imag Zy)
-  Xz = (imag Zz)
-
-  Qx = (quotient Xx Rx)
-  Qy = (quotient Xy Ry)
-  Qz = (quotient Xz Rz)
-  delta_Q_Pi_increase = (di Qx Qy)
-  
-  Lx = (quotient Xx w)
-  Ly = (quotient Xy w)
-  Lz = (quotient Xz w)
-  delta_L_Pi_increase = (di Lx Ly)
-  
-  ; Additional measurements for using the coil
-  top = Rz**2 + Xz**2
-  Rz_parallel = top / Rz
-  Xz_parallel = top / Xz
-  Lz_parallel = (quotient Xz_parallel w)
-
-  ; To resonate out Lz_parallel
-  Cres = (1.0 / ((pow w 2.0) * Lz_parallel))
-                          
-  ; Plotting the results
-  plotT = (or (eq plotMode 'all) (eq plotMode 'T))
-  plotPi = (or (eq plotMode 'all) (eq plotMode 'Pi))
-  
-  winId = (newWindow)
-  (addTitle "Coupled Coil Analysis")
-
-  (addSubwindowTitle "Q Factors")
-  (when plotT 
-    (plot Qa 
-          Qb 
-          Qc
-          delta_Q_T_increase
-          ?yNumber (list 1 1 1 2) 
-          ?expr (list "Qa (T)" 
-                      "Qb (T)" 
-                      "Qc (T-Virtual)"
-                      "QaQb Imbalance (%)")))
-  (when plotPi 
-    (plot Qx 
-          Qy 
-          Qz
-          delta_Q_Pi_increase
-          ?yNumber (list 1 1 1 2) 
-          ?expr (list "Qx (Pi)" 
-                      "Qy (Pi)" 
-                      "Qz (Pi-Virtual)"
-                      "QxQy Imbalance (%)")))
-
-  (addSubwindow)
-  (addSubwindowTitle "Resistances")
-  (when plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
-  (when plotPi 
-    (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
-
-  (addSubwindow)
-  (addSubwindowTitle "Inductances")
-  (when plotT (plot La 
-                  Lax 
-                  Lb 
-                  Lbx 
-                  Lc
-                  delta_L_T_increase
-                  ?yNumber (list 1 1 1 1 1 2) 
-                  ?expr (list "La (T)" 
-                              "Lax (T)" 
-                              "Lb (T)" 
-                              "Lbx (T)" 
-                              "Lc (T-Virtual)"
-                              "LaLb Imbalance (%)")))
-  (when plotPi (plot Lx 
-                     Ly 
-                     Lz
-                     Lc
-                     delta_L_Pi_increase
-                     ?yNumber (list 1 1 1 1 2) 
-                     ?expr (list "Lx (Pi)" 
-                                 "Ly (Pi)" 
-                                 "Lz (Pi-Virtual)"
-                                 "Lc (M)"
-                                 "LxLy L (%)")))
-  (plot K ?yNumber (list 2) ?expr (list "K"))
-  
-  (when plotPi (progn (addSubwindow)
-                    (addSubwindowTitle "Miscellaneous")
-                    (plot Cres 
-                          Lz_parallel 
-                          Rz_parallel 
-                          ?expr (list "Cres" 
-                                      "Lz (Parallel RL)" 
-                                      "Rz (Parallel RL)")
-                          ?yNumber (list 1 2 3))))
-  (when (or (floatp f0) (integerp f0))
-    (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
-           (awvPlaceXMarker winId f0 ?subwindow 2) 
-           (awvPlaceXMarker winId f0 ?subwindow 3)
-           (when plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
+  (letseq ((f (qub::sToF))
+           (w (times 2 qub::m.PI f))
+           (port1 (car ports))
+           (port2 (cadr ports))
+           ; T Network representation using Z-Parameters.
+           ; T network is assumed to be in the following form.
+           ;
+           ; P1  O---Za-----Zb---O P2
+           ;             |
+           ;             Zc
+           ;             |
+           ; Gnd O---------------O Gnd
+           (Z11 (zpm "sp" port1 port1))
+           (Z12 (zpm "sp" port1 port2))
+           (Z22 (zpm "sp" port2 port2))
+           (Za (difference Z11 Z12))
+           (Zb (difference Z22 Z12))
+           (Zc Z12)
+           (Ra (real Za))
+           (Rb (real Zb))
+           (Rc (real Zc))
+           (Xa (imag Za))
+           (Xb (imag Zb))
+           (Xc (imag Zc))
+           (Qa (quotient Xa Ra))
+           (Qb (quotient Xb Rb))
+           (Qc (quotient Xc Rc))
+           ; Delta increase
+           (di (lambda (x y) 
+                 (let ((delta (abs (difference x y))))
+                   (times 100.0 (quotient delta (min x y))))))
+           (delta_Q_T_increase (di Qa Qb))
+           ; The branch inductaces
+           (La (quotient Xa w))
+           (Lb (quotient Xb w))
+           (Lc (quotient Xc w))
+           (delta_L_T_increase (di La Lb))
+           ; The uncoupled branch inductances
+           (Lax (quotient (imag Z11) w))
+           (Lbx (quotient (imag Z22) w))
+           ; M = Lc
+           ; M = k*Lx
+           ; k = M / Lx
+           (Kac (quotient Lc Lax))
+           (Kbc (quotient Lc Lbx))
+           ; k = M / sqrt(Lax * Lbx)
+           (K (quotient Lc (sqrt (times Lax Lbx))))
+           ; Y Network Parameters
+           ; Assumed to be in the following form.
+           ;
+           ; P1  O----Zz----O P2
+           ;       |      |
+           ;       Zx     Zy
+           ;       |      |
+           ; Gnd O----------O Gnd
+           (Y11 (ypm "sp" port1 port1))
+           (Y22 (ypm "sp" port2 port2))
+           (Y12 (ypm "sp" port1 port2))
+           (Zx (quotient 1.0 (plus Y11 Y12)))
+           (Zy (quotient 1.0 (plus Y22 Y12)))
+           (Zz (quotient -1.0 Y12))
+           (Rx (real Zx))
+           (Ry (real Zy))
+           (Rz (real Zz))
+           (Xx (imag Zx))
+           (Xy (imag Zy))
+           (Xz (imag Zz))
+           (Qx (quotient Xx Rx))
+           (Qy (quotient Xy Ry))
+           (Qz (quotient Xz Rz))
+           (delta_Q_Pi_increase (di Qx Qy))
+           (Lx (quotient Xx w))
+           (Ly (quotient Xy w))
+           (Lz (quotient Xz w))
+           (delta_L_Pi_increase (di Lx Ly))
+           ; Additional measurements for using the coil
+           (top Rz**2 + Xz**2)
+           (Rz_parallel (quotient top Rz))
+           (Xz_parallel (quotient top Xz))
+           (Lz_parallel (quotient Xz_parallel w))
+           ; To resonate out Lz_parallel
+           (Cres (quotient 1.0 
+                           (times (pow w 2.0) 
+                                  Lz_parallel)))
+           ; Plotting the results
+           (plotT (or (eq plotMode 'all) (eq plotMode 'T)))
+           (plotPi (or (eq plotMode 'all) (eq plotMode 'Pi)))
+           (winId (newWindow)))
+    (addTitle "Coupled Coil Analysis")
+    (addSubwindowTitle "Q Factors")
+    (when plotT 
+      (plot Qa 
+            Qb 
+            Qc
+            delta_Q_T_increase
+            ?yNumber (list 1 1 1 2) 
+            ?expr (list "Qa (T)" 
+                        "Qb (T)" 
+                        "Qc (T-Virtual)"
+                        "QaQb Imbalance (%)")))
+    (when plotPi 
+      (plot Qx 
+            Qy 
+            Qz
+            delta_Q_Pi_increase
+            ?yNumber (list 1 1 1 2) 
+            ?expr (list "Qx (Pi)" 
+                        "Qy (Pi)" 
+                        "Qz (Pi-Virtual)"
+                        "QxQy Imbalance (%)")))
+    
+    (addSubwindow)
+    (addSubwindowTitle "Resistances")
+    (when plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
+    (when plotPi 
+      (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
+    
+    (addSubwindow)
+    (addSubwindowTitle "Inductances")
+    (when plotT (plot La 
+                    Lax 
+                    Lb 
+                    Lbx 
+                    Lc
+                    delta_L_T_increase
+                    ?yNumber (list 1 1 1 1 1 2) 
+                    ?expr (list "La (T)" 
+                                "Lax (T)" 
+                                "Lb (T)" 
+                                "Lbx (T)" 
+                                "Lc (T-Virtual)"
+                                "LaLb Imbalance (%)")))
+    (when plotPi (plot Lx 
+                       Ly 
+                       Lz
+                       Lc
+                       delta_L_Pi_increase
+                       ?yNumber (list 1 1 1 1 2) 
+                       ?expr (list "Lx (Pi)" 
+                                   "Ly (Pi)" 
+                                   "Lz (Pi-Virtual)"
+                                   "Lc (M)"
+                                   "LxLy L (%)")))
+    (plot K ?yNumber (list 2) ?expr (list "K"))
+    (when plotPi (progn (addSubwindow)
+                        (addSubwindowTitle "Miscellaneous")
+                        (plot Cres 
+                              Lz_parallel 
+                              Rz_parallel 
+                              ?expr (list "Cres" 
+                                          "Lz (Parallel RL)" 
+                                          "Rz (Parallel RL)")
+                              ?yNumber (list 1 2 3))))
+    (when (or (floatp f0) (integerp f0))
+      (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
+             (awvPlaceXMarker winId f0 ?subwindow 2) 
+             (awvPlaceXMarker winId f0 ?subwindow 3)
+             (when plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
