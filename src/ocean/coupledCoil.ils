@@ -121,13 +121,11 @@
                         "Qy (Pi)" 
                         "Qz (Pi-Virtual)"
                         "QxQy Imbalance (%)")))
-    
     (addSubwindow)
     (addSubwindowTitle "Resistances")
     (when plotT (plot Ra Rb Rc ?expr (list "Ra (T)" "Rb (T)" "Rc (T-Virtual)")))
     (when plotPi 
       (plot Rx Ry Rz ?expr (list "Rx (Pi)" "Ry (Pi)" "Rz (Pi-Virtual)")))
-    
     (addSubwindow)
     (addSubwindowTitle "Inductances")
     (when plotT (plot La 
@@ -168,4 +166,4 @@
       (progn (awvPlaceXMarker winId f0 ?subwindow 1) 
              (awvPlaceXMarker winId f0 ?subwindow 2) 
              (awvPlaceXMarker winId f0 ?subwindow 3)
-             (when plotPi (awvPlaceXMarker winId f0 ?subwindow 4)))))
+             (when plotPi (awvPlaceXMarker winId f0 ?subwindow 4))))))
