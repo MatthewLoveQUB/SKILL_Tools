@@ -1,10 +1,13 @@
 ; Evaluate a passive component using a one-port S-parameter simulation
 ; Args:
-;   port: int
+;   port: integer
 ;         The index of the S-parameter port to analyse
-;   plotMode: symbol
-;             Can be 'sL, 'pL, 'sC, 'pC for 
-;             series inductance, parallel inductance etc
+;   plotMode: (list symbol)
+;             Valid values: 
+;                 'sL (series inductor)
+;                 'pL (parallel inductor)
+;                 'sC (series capacitor)
+;                 'pC (parallel capacitor)
 ;   markerFreq: float
 ;               Places a vertical marker in all plots at the desired frequency
 ;   singleFreq: float
@@ -48,16 +51,24 @@
           (Qp (changeVarSingleFreq Qp)))
       (define (plotSeriesInductance)
         (addSubwindowTitle "Series RL")
-        (plot Rs X Qs Ls ?expr (list "R" "X" "Q" "L") ?yNumber (list 1 2 3 4)))
+        (plot Rs X Qs Ls (abs Z) 
+              ?expr (list "R" "X" "Q" "L" "|Z|") 
+              ?yNumber (list 1 1 2 3 1)))
       (define (plotParallelInductance)
         (addSubwindowTitle "Parallel RL")
-        (plot Rp Xp Qp Lp ?expr (list "R" "X" "Q" "L") ?yNumber (list 1 2 3 4)))
+        (plot Rp Xp Qp Lp 
+              ?expr (list "R" "X" "Q" "L") 
+              ?yNumber (list 1 2 3 4)))
       (define (plotSeriesCapacitance)
         (addSubwindowTitle "Series RC")
-        (plot Rs X Qs Cs Z ?expr (list "R" "X" "Q" "C" "|Z|")  ?yNumber (list 1 2 3 4 5)))
+        (plot Rs X Qs Cs (abs Z) 
+              ?expr (list "R" "X" "Q" "C" "|Z|") 
+              ?yNumber (list 1 1 2 3 1)))
       (define (plotParallelCapacitance)
         (addSubwindowTitle "Parallel RC")
-        (plot Rp Xp Qp Cp ?expr (list "R" "X" "Q" "C") ?yNumber (list 1 2 3 4)))
+        (plot Rp Xp Qp Cp 
+              ?expr (list "R" "X" "Q" "C") 
+              ?yNumber (list 1 2 3 4)))
       (let ((plotFns (makeTable "plotFunTable" 0)))
         plotFns['sL] = plotSeriesInductance
         plotFns['pL] = plotParallelInductance
