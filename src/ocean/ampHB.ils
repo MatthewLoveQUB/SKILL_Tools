@@ -13,6 +13,10 @@
 ;         The nets and nodes of the power supplies.
 ;         Unlike out and in, this is a list 
 ;         of lists to support multiple supplies.
+;     opSupply: (list net:string node:string)
+;         The net and node of the supply voltage of the output stage.
+;         Used to check the drain efficiency of the output stage only.
+;         Set it to nil if you don't want to use it
 ;     nHarmonics: int
 ;                 The number of harmonics to plot.
 ;     testType: symbol
@@ -21,30 +25,41 @@
 (defun qub::ocnAmpHb (@key (out nil) 
                            (in nil) 
                            (supplies nil)
+                           (opSupply nil)
                            (testType 'hb)
                            (pwrInWatts nil)
                            (nHarmonics 3))
   (letseq ((getPwr (lambda (x) (pvi testType (car x) 0 (cadr x) 0)))
+           (getPwrDc (lambda (x) (abs (harmonic (getPwr x) 0))))
            (pwrOutWatts (getPwr out))
            (harmIdxs (qub::range ?start 1 ?stop nHarmonics+1 ?step 1))
            (pwrOutWattsHarms 
              (qub::lcmp (harmonic pwrOutWatts x) for x in harmIdxs))
            (pwrOutWattsF0 (car pwrOutWattsHarms))
-           (pwrDc (qub::sum 
-                    (qub::lcmp (abs (harmonic (getPwr src) 0)) 
-                      for src in supplies)))
+           (pwrDc (qub::sum (qub::lcmp (getPwrDc src) for src in supplies)))
+           (opPwrDc (if opSupply
+                        (getPwrDc opSupply)
+                        nil))
            (gain (db10 (pwrOutWattsF0 / pwrInWatts)))
            (pae (times 100.0 (quotient (pwrOutWattsF0 - pwrInWatts) pwrDc)))
-           (drain_efficiency (times 100.0 (quotient pwrOutWattsF0 pwrDc)))
+           (getDe (lambda (pOut pDc) (times 100.0 (quotient pOut pDc))))
+           (drain_efficiency (getDe pwrOutWattsF0 pwrDc))
+           (op_drain_efficiency (if opPwrDc
+                                    (getDe pwrOutWattsF0 opPwrDc)
+                                    nil))
            (winId (newWindow)))
   (if (or (drIsWaveform pae) (drIsParamWave pae))
       (progn (plot gain drain_efficiency pae
                    ?expr (list "Gain (dB)" "DE (%)" "PAE (%)"))
+             (when op_drain_efficiency
+                   (plot op_drain_efficiency ?expr (list "DE (OP) (%)")))
              (foreach idx (qub::range ?start 0 ?stop nHarmonics ?step 1)
                (plot (dbm (nth idx pwrOutWattsHarms)) 
                      ?expr (list (sprintf nil "Pout (dBm, %df0)" idx+1)))))
       (progn (printf "Pout (f0): %.2f dBm\n" (dBm pwrOutWattsF0))
              (printf "PAE: %.2f%%\n" pae)
              (printf "DE: %.2f%%\n" drain_efficiency)
+             (when op_drain_efficiency
+                   (printf "DE (OP): %.2f%%\n" op_drain_efficiency))
              (printf "Gain: %.2f dB\n" gain)
              (plot (dbm pwrOutWatts) ?expr (list "Pout"))))))
