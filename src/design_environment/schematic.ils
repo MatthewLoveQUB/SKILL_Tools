@@ -203,3 +203,13 @@
         (qub::createInstancesPinsAndStubs cell_view
                                           instances
                                           prefix_instance_name)))))
+                                          
+(defun qub::createSelectedInstancesStubs (prefix_instance_name)
+  (let ((instances (geGetSelSet))
+        (wire_length 0.75))
+    (when instances
+      (let ((cell_view (car instances)->cellView))
+        (qub::addStubsToInstances cell_view
+                                  instances
+                                  wire_length
+                                  prefix_instance_name)))))
