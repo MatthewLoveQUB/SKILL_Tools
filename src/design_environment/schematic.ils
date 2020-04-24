@@ -84,7 +84,7 @@
            (label_name (sprintf nil 
                                 "%s%s%s"
                                 label_prefix
-                                terminal->name 
+                                (car (parseString terminal->name "<"))
                                 (if (num_bits > 1)
                                     (sprintf nil "<0:%d>" num_bits - 1)
                                     ""))))
@@ -135,7 +135,7 @@
     (for i 0 (sub1 (length terminals))
       (letseq ((terminal (nth i terminals))
                (num_bits terminal->numBits)
-               (terminal_name terminal->name)
+               (terminal_name (car (parseString terminal->name "<")))
                (label_prefix (if prefix_instance_name
                              (sprintf nil "%s_" instance->baseName)
                              ""))
