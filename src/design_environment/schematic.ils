@@ -157,18 +157,10 @@
         t))))
         
 ; prefix_instance_name: bool
-(defun qub::createSchematicPinsAndStubs (prefix_instance_name)
-  (letseq ((cell_view (geGetEditCellView))
-           ; Instance list is in the format: 
-           ; (list (list instance_obj num) ; (list instance_obj num) ...)
-           ; Where num is presumably the index number for a bus
-           ; As a result there are duplicate entries which we need to filter out
-           ; We only need a single instance_obj as the object has bus details
-           ; in it anyway
-           (instances (qub::lcmp (car x) 
-                                 for x in cell_view->memInsts 
-                                 if (zerop (cadr x))))
-           (num_instances (length instances))
+(defun qub::createInstancesPinsAndStubs (cell_view 
+                                         instances 
+                                         prefix_instance_name)
+  (letseq ((num_instances (length instances))
            (x_start 0)
            (y_start 0)
            (x_delta 1)
@@ -187,3 +179,27 @@
                               instances 
                               wire_length 
                               prefix_instance_name)))
+                              
+; prefix_instance_name: bool
+(defun qub::createSchematicPinsAndStubs (prefix_instance_name)
+  (letseq ((cell_view (geGetEditCellView))
+           ; Instance list is in the format: 
+           ; (list (list instance_obj num) ; (list instance_obj num) ...)
+           ; Where num is presumably the index number for a bus
+           ; As a result there are duplicate entries which we need to filter out
+           ; We only need a single instance_obj as the object has bus details
+           ; in it anyway
+           (instances (qub::lcmp (car x) 
+                                 for x in cell_view->memInsts 
+                                 if (zerop (cadr x)))))
+     (qub::createInstancesPinsAndStubs cell_view 
+                                       instances 
+                                       prefix_instance_name)))
+                                       
+(defun qub::createSelectedInstancesPinsAndStubs (prefix_instance_name)
+  (let ((instances (geGetSelSet)))
+    (when instances
+      (let ((cell_view (car instances)->cellView))
+        (qub::createInstancesPinsAndStubs cell_view
+                                          instances
+                                          prefix_instance_name)))))
