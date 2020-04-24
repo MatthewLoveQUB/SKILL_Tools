@@ -42,7 +42,14 @@
 ; terminal: The terminal object
 ; instance: Terminal's parent instance
 ; wire_length: Length of the new wire
-(defun qub::makeTerminalStub (cell_view terminal instance wire_length)
+; prefix_instance_name: 
+;   Add the name of the instance to the wire
+;   Done to avoid name clashes when different instances share the same pin name
+(defun qub::makeTerminalStub (cell_view 
+                              terminal 
+                              instance 
+                              wire_length 
+                              prefix_instance_name)
   (letseq ((terminal_pin (car terminal->term->pins))
            (pin_bbox (geTransformUserBBox (car terminal_pin->figs)->bBox
                                           instance->transform))
@@ -71,8 +78,12 @@
                                          0.0)))
            (wire_center (centerBox new_wire->bBox))
            (num_bits terminal->numBits)
+           (label_prefix (if prefix_instance_name
+                             (sprintf nil "%s_" instance->baseName)
+                             ""))
            (label_name (sprintf nil 
-                                "%s%s" 
+                                "%s%s%s"
+                                label_prefix
                                 terminal->name 
                                 (if (num_bits > 1)
                                     (sprintf nil "<0:%d>" num_bits - 1)
@@ -90,15 +101,33 @@
                       nil)))
 
                               
-(defun qub::addStubsToInstance (cell_view instance wire_length)
+(defun qub::addStubsToInstance (cell_view 
+                                instance 
+                                wire_length 
+                                prefix_instance_name)
   (foreach terminal instance->instTerms
-    (qub::makeTerminalStub cell_view terminal instance wire_length)))
+    (qub::makeTerminalStub cell_view 
+                           terminal 
+                           instance 
+                           wire_length
+                           prefix_instance_name)))
 
-(defun qub::addStubsToInstances (cell_view instances wire_length)
+(defun qub::addStubsToInstances (cell_view 
+                                 instances 
+                                 wire_length 
+                                 prefix_instance_name)
   (foreach instance instances
-    (qub::addStubsToInstance cell_view instance wire_length)))
+    (qub::addStubsToInstance cell_view 
+                             instance 
+                             wire_length 
+                             prefix_instance_name)))
 
-(defun qub::createPinsFromInstance (cell_view instance x_coord y_coord y_delta)
+(defun qub::createPinsFromInstance (cell_view 
+                                    instance 
+                                    x_coord 
+                                    y_coord 
+                                    y_delta 
+                                    prefix_instance_name)
   (letseq ((io_pin_master (dbOpenCellView "basic" "iopin" "symbol" nil "r"))
            (inst_name instance->name)
            (cell_name instance->cellName)
@@ -107,10 +136,17 @@
       (letseq ((terminal (nth i terminals))
                (num_bits terminal->numBits)
                (terminal_name terminal->name)
+               (label_prefix (if prefix_instance_name
+                             (sprintf nil "%s_" instance->baseName)
+                             ""))
                (bus_text (if (num_bits > 1) 
                              (sprintf nil "<0:%d>" num_bits-1)
                              ""))
-               (pin_name (sprintf nil "%s%s" terminal_name bus_text))
+               (pin_name (sprintf nil 
+                                  "%s%s%s" 
+                                  label_prefix 
+                                  terminal_name 
+                                  bus_text))
                (pin (schCreatePin cell_view 
                       io_pin_master 
                       pin_name 
@@ -120,7 +156,8 @@
                       "R0")))
         t))))
         
-(defun qub::createSchematicPinsAndStubs ()
+; prefix_instance_name: bool
+(defun qub::createSchematicPinsAndStubs (prefix_instance_name)
   (letseq ((cell_view (geGetEditCellView))
            ; Instance list is in the format: 
            ; (list (list instance_obj num) ; (list instance_obj num) ...)
@@ -135,7 +172,8 @@
            (x_start 0)
            (y_start 0)
            (x_delta 1)
-           (y_delta 0.25))
+           (y_delta 0.25)
+           (wire_length 0.75))
     (for i 0 (sub1 num_instances)
       (letseq ((instance (nth i instances))
                (pin_x (plus x_start (times i x_delta))))
@@ -143,6 +181,9 @@
                                      instance 
                                      pin_x
                                      y_start
-                                     y_delta)))
-    (qub::addStubsToInstances cell_view instances 0.75)))
-                                          
+                                     y_delta
+                                     prefix_instance_name)))
+    (qub::addStubsToInstances cell_view 
+                              instances 
+                              wire_length 
+                              prefix_instance_name)))
