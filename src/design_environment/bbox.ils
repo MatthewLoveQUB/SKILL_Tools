@@ -5,3 +5,22 @@
 ; Get the height of a bounding box  
 (defun qub::bboxHeight (bbox)
   (difference (topEdge bbox) (bottomEdge bbox)))
+  
+; Find what side a point is relative to a bbox
+(defun qub::bboxFindSide (bbox pt)
+  (let ((x (xCoord pt))
+        (y (yCoord pt))
+        (top (topEdge bbox))
+        (left (leftEdge bbox))
+        (right (rightEdge bbox))
+        (bottom (bottomEdge bbox)))
+    (if (and (lessp y top)
+             (greaterp y bottom))
+        ; Has to be on left or right side
+        (if (leqp x left)
+            'left
+            'right)
+        ; Has to be above or below
+        (if (leqp y bottom)
+            'bottom
+            'top))))

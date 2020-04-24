@@ -14,8 +14,135 @@
    (geGetAdjustedPath win (if (netName=="/") 
                               (strcat netName net->name) 
                               (strcat netName "/" net->name)))))
-           
+
+; The bbox reported by the instance object is interfered with by the 
+; various labels on it
+; This returns the bbox of the selection box in the schematic
+(defun qub::getSchematicInstanceBBox (instance)
+  (letseq ((instance_shapes instance->master->shapes)
+           (is_selection_box (lambda (x) (and (x->layerName=="instance")
+                                              (x->objType=="rect"))))
+           (selection_box (car (setof x instance_shapes (is_selection_box x)))))
+    selection_box->bBox))
+
 ; Get the full net string of an instance
 (defun qub::getInstTermNet (inst term_name)
   (letseq ((term (car (setof term inst->instTerms term->name==term_name))))
     (qub::getHierNetName term->net)))
+	
+; Create a wire stub for a terminal
+; Cadence can do this but it fails for buses of instances
+; This version fixes that issue
+; e.g. If you have a terminal X on instance Y, if you have multiple Ys in
+; parallel, e.g. Y<0:1>, then the wire stub should be X<0:1> but instead 
+; it will just be X
+;
+; Args
+; cellView: Schematic cell view;
+; terminal: The terminal object
+; instance: Terminal's parent instance
+; wire_length: Length of the new wire
+(defun qub::makeTerminalStub (cell_view terminal instance wire_length)
+  (letseq ((terminal_pin (car terminal->term->pins))
+           (pin_bbox (geTransformUserBBox (car terminal_pin->figs)->bBox
+                                          instance->transform))
+           (instance_untransformed_bbox (qub::getSchematicInstanceBBox instance))
+           (instance_bbox (geTransformUserBBox instance_untransformed_bbox
+                                               instance->transform))
+           (pin_middle (centerBox pin_bbox))
+           (instance_middle (centerBox instance_bbox))
+           (pin_x (xCoord pin_middle))
+           (pin_y (yCoord pin_middle))
+           (pin_side (qub::bboxFindSide instance_bbox pin_middle))
+           (new_point 
+             (cond ((equal pin_side 'left) (pin_x-wire_length):pin_y)
+                   ((equal pin_side 'right) (pin_x+wire_length):pin_y)
+                   ((equal pin_side 'top) pin_x:(pin_y+wire_length))
+                   ((equal pin_side 'bottom) pin_x:(pin_y-wire_length))))
+           (snap_spacing (envGetVal "schematic" "schSnapSpacing" 'float))
+           (font_height (envGetVal "schematic" "createLabelFontHeight" 'float))
+           (font_style (envGetVal "schematic" "createLabelFontStyle" 'cyclic))
+           (new_wire (car (schCreateWire cell_view 
+                                         "draw" 
+                                         "full" 
+                                         (list pin_middle new_point) 
+                                         snap_spacing 
+                                         snap_spacing
+                                         0.0)))
+           (wire_center (centerBox new_wire->bBox))
+           (num_bits terminal->numBits)
+           (label_name (sprintf nil 
+                                "%s%s" 
+                                terminal->name 
+                                (if (num_bits > 1)
+                                    (sprintf nil "<0:%d>" num_bits - 1)
+                                    ""))))
+  (schCreateWireLabel cell_view
+                      new_wire
+                      (list (xCoord wire_center)
+                            (plus (yCoord wire_center) 
+                                  (times 2.0 font_height)))
+                      label_name
+                      "upperCenter"
+                      "R0"
+                      font_style
+                      font_height
+                      nil)))
+
+                              
+(defun qub::addStubsToInstance (cell_view instance wire_length)
+  (foreach terminal instance->instTerms
+    (qub::makeTerminalStub cell_view terminal instance wire_length)))
+
+(defun qub::addStubsToInstances (cell_view instances wire_length)
+  (foreach instance instances
+    (qub::addStubsToInstance cell_view instance wire_length)))
+
+(defun qub::createPinsFromInstance (cell_view instance x_coord y_coord y_delta)
+  (letseq ((io_pin_master (dbOpenCellView "basic" "iopin" "symbol" nil "r"))
+           (inst_name instance->name)
+           (cell_name instance->cellName)
+           (terminals instance->instTerms))
+    (for i 0 (sub1 (length terminals))
+      (letseq ((terminal (nth i terminals))
+               (num_bits terminal->numBits)
+               (terminal_name terminal->name)
+               (bus_text (if (num_bits > 1) 
+                             (sprintf nil "<0:%d>" num_bits-1)
+                             ""))
+               (pin_name (sprintf nil "%s%s" terminal_name bus_text))
+               (pin (schCreatePin cell_view 
+                      io_pin_master 
+                      pin_name 
+                      "inputOutput" 
+                      nil 
+                      (list x_coord (plus y_coord (times i y_delta)))
+                      "R0")))
+        t))))
+        
+(defun qub::createSchematicPinsAndStubs ()
+  (letseq ((cell_view (geGetEditCellView))
+           ; Instance list is in the format: 
+           ; (list (list instance_obj num) ; (list instance_obj num) ...)
+           ; Where num is presumably the index number for a bus
+           ; As a result there are duplicate entries which we need to filter out
+           ; We only need a single instance_obj as the object has bus details
+           ; in it anyway
+           (instances (qub::lcmp (car x) 
+                                 for x in cell_view->memInsts 
+                                 if (zerop (cadr x))))
+           (num_instances (length instances))
+           (x_start 0)
+           (y_start 0)
+           (x_delta 1)
+           (y_delta 0.25))
+    (for i 0 (sub1 num_instances)
+      (letseq ((instance (nth i instances))
+               (pin_x (plus x_start (times i x_delta))))
+        (qub::createPinsFromInstance cell_view
+                                     instance 
+                                     pin_x
+                                     y_start
+                                     y_delta)))
+    (qub::addStubsToInstances cell_view instances 0.75)))
+                                          

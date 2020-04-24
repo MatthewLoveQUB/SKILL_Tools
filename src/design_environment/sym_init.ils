@@ -1,10 +1,17 @@
 ; bbox.ils
 (addToExportList '(qub:::bboxWidth
-                   qub:::bboxHeight))
+                   qub:::bboxHeight
+                   qub:::bboxFindSide))
 
 ; schematic.ils
 (addToExportList '(qub:::getInstTermNet
-                   qub:::getHierNetName))
+                   qub:::getHierNetName
+                   qub:::getSchematicInstanceBBox
+                   qub:::makeTerminalStub
+                   qub:::addStubsToInstance
+                   qub:::addStubsToInstances
+                   qub:::createPinsFromInstance
+                   qub:::createSchematicPinsAndStubs))
 
 ; ade.ils
 (addToExportList '(qub:::adeDirectPlot))
