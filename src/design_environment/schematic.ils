@@ -29,7 +29,24 @@
 (defun qub::getInstTermNet (inst term_name)
   (letseq ((term (car (setof term inst->instTerms term->name==term_name))))
     (qub::getHierNetName term->net)))
-	
+
+(defun qub::generateSchPinName (instance terminal prefix_instance_name)
+  (letseq ((terminal_name (car (parseString terminal->name "<")))
+           (label_prefix (if prefix_instance_name
+                             (sprintf nil "%s_" instance->baseName)
+                             ""))
+           (num_bits terminal->numBits)
+           (bus_text (if (num_bits > 1) 
+                         (sprintf nil "<0:%d>" num_bits-1)
+                         ""))
+           (pin_name (sprintf nil 
+                             "%s%s%s" 
+                             label_prefix 
+                             terminal_name 
+                             bus_text)))
+    pin_name))
+
+
 ; Create a wire stub for a terminal
 ; Cadence can do this but it fails for buses of instances
 ; This version fixes that issue
@@ -77,28 +94,18 @@
                                          snap_spacing
                                          0.0)))
            (wire_center (centerBox new_wire->bBox))
-           (num_bits terminal->numBits)
-           (label_prefix (if prefix_instance_name
-                             (sprintf nil "%s_" instance->baseName)
-                             ""))
-           (label_name (sprintf nil 
-                                "%s%s%s"
-                                label_prefix
-                                (car (parseString terminal->name "<"))
-                                (if (num_bits > 1)
-                                    (sprintf nil "<0:%d>" num_bits - 1)
-                                    ""))))
-  (schCreateWireLabel cell_view
-                      new_wire
-                      (list (xCoord wire_center)
-                            (plus (yCoord wire_center) 
-                                  (times 2.0 font_height)))
-                      label_name
-                      "upperCenter"
-                      "R0"
-                      font_style
-                      font_height
-                      nil)))
+           (label_name (qub::generateSchPinName instance terminal prefix_instance_name)))
+    (schCreateWireLabel cell_view
+                        new_wire
+                        (list (xCoord wire_center)
+                              (plus (yCoord wire_center) 
+                                    (times 2.0 font_height)))
+                        label_name
+                        "upperCenter"
+                        "R0"
+                        font_style
+                        font_height
+                        nil)))
 
                               
 (defun qub::addStubsToInstance (cell_view 
@@ -134,19 +141,7 @@
            (terminals instance->instTerms))
     (for i 0 (sub1 (length terminals))
       (letseq ((terminal (nth i terminals))
-               (num_bits terminal->numBits)
-               (terminal_name (car (parseString terminal->name "<")))
-               (label_prefix (if prefix_instance_name
-                             (sprintf nil "%s_" instance->baseName)
-                             ""))
-               (bus_text (if (num_bits > 1) 
-                             (sprintf nil "<0:%d>" num_bits-1)
-                             ""))
-               (pin_name (sprintf nil 
-                                  "%s%s%s" 
-                                  label_prefix 
-                                  terminal_name 
-                                  bus_text))
+               (pin_name (qub::generateSchPinName instance terminal prefix_instance_name))
                (pin (schCreatePin cell_view 
                       io_pin_master 
                       pin_name 

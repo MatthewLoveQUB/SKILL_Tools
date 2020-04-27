@@ -14,7 +14,8 @@
                    qub:::createInstancesPinsAndStubs
                    qub:::createSchematicPinsAndStubs
                    qub:::createSelectedInstancesPinsAndStubs
-                   qub:::createSelectedInstancesStubs))
+                   qub:::createSelectedInstancesStubs
+                   qub:::generateSchPinName))
 
 ; ade.ils
 (addToExportList '(qub:::adeDirectPlot))
