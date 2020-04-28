@@ -152,13 +152,7 @@
                       nil 
                       (list x_coord (plus y_coord (times i y_delta)))
                       "R0"))
-               (pin_label (car pin->children))
-               (label_half_width (quotient (qub::bboxWidth pin_label->bBox) 
-                                           2.0))
                (snap_spacing (envGetVal "schematic" "schSnapSpacing" 'float))
-               (font_height (envGetVal "schematic" 
-                                       "createLabelFontHeight" 
-                                       'float))
                (pin_shape_bbox 
                  (car (qub::lcmp x->bBox 
                                  for x in io_pin_master->shapes
