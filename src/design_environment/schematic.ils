@@ -129,13 +129,16 @@
                              wire_length 
                              prefix_instance_name)))
 
+(defun qub::createInstancePins (instance prefix_instance_name)
+  t)
+
 (defun qub::createPinsFromInstance (cell_view 
                                     instance 
                                     x_coord 
                                     y_coord 
                                     y_delta 
                                     prefix_instance_name)
-  (letseq ((io_pin_master (dbOpenCellView "basic" "iopin" "symbol" nil "r"))
+  (letseq ((io_pin_master (dbOpenCellView "basic" "iopin" "symbolr" nil "r"))
            (inst_name instance->name)
            (cell_name instance->cellName)
            (terminals instance->instTerms))
@@ -148,9 +151,24 @@
                       "inputOutput" 
                       nil 
                       (list x_coord (plus y_coord (times i y_delta)))
-                      "R0")))
-        t))))
-        
+                      "R0"))
+               (pin_label (car pin->children))
+               (label_half_width (quotient (qub::bboxWidth pin_label->bBox) 
+                                           2.0))
+               (snap_spacing (envGetVal "schematic" "schSnapSpacing" 'float))
+               (font_height (envGetVal "schematic" 
+                                       "createLabelFontHeight" 
+                                       'float))
+               (pin_shape_bbox 
+                 (car (qub::lcmp x->bBox 
+                                 for x in io_pin_master->shapes
+                                 if (equal x->purpose "drawing9"))))
+               (pin_width (qub::bboxWidth pin_shape_bbox))
+               (pin_new_xy (list (difference (xCoord pin->xy) 
+                                             (quotient pin_width 3.0))
+                                 (yCoord pin->xy))))
+        (setf pin->xy pin_new_xy)))))
+
 ; prefix_instance_name: bool
 (defun qub::createInstancesPinsAndStubs (cell_view 
                                          instances 
