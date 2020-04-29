@@ -20,3 +20,21 @@
       (if maxWidth
           (min width maxWidth)
           width))))
+          
+(defun qub::subtractSmallerShapes (cv 
+                                   shapes
+                                   @key
+                                   (delete_large_shape nil)
+                                   (delete_small_shapes nil))
+  (letseq ((sortedShapes (sort shapes 
+                               (lambda (x y) (geqp (qub::bboxArea x->bBox) 
+                                                   (qub::bboxArea y->bBox)))))
+           (largestShape (car sortedShapes))
+           (subtractors (cdr sortedShapes))
+           (outputLayer (car largestShape->lpp)))
+    (dbLayerAndNot cv outputLayer (list largestShape) subtractors)
+    (when delete_small_shapes
+      (foreach shape subtractors
+        (dbDeleteObject shape)))
+    (when delete_large_shape
+      (dbDeleteObject largestShape))))

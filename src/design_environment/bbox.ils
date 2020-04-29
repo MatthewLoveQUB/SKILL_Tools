@@ -6,6 +6,9 @@
 (defun qub::bboxHeight (bbox)
   (difference (topEdge bbox) (bottomEdge bbox)))
   
+(defun qub::bboxArea (bbox)
+  (times (qub::bboxHeight bbox) (qub::bboxWidth bbox)))
+  
 ; Find what side a point is relative to a bbox
 (defun qub::bboxFindSide (bbox pt)
   (let ((x (xCoord pt))

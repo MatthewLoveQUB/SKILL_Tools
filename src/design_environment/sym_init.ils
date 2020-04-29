@@ -1,6 +1,7 @@
 ; bbox.ils
 (addToExportList '(qub:::bboxWidth
                    qub:::bboxHeight
+                   qub:::bboxArea
                    qub:::bboxFindSide))
 
 ; schematic.ils
@@ -23,4 +24,5 @@
 
 ; layout.ils
 (addToExportList '(qub:::hidePaletteDuplicates
-                   qub:::limitPathWidth))
+                   qub:::limitPathWidth
+                   qub:::subtractSmallerShapes))
