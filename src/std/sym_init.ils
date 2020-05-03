@@ -39,4 +39,5 @@
                    qub:::mean))
 
 ; string.ils
-(addToExportList '(qub:::startsWith))                   
+(addToExportList '(qub:::startsWith
+                   qub:::sexpToStr))                   
