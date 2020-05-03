@@ -2,4 +2,6 @@
   (modload "bbox.ils")
   (modload "schematic.ils")
   (modload "ade.ils")
-  (modload "layout.ils"))
+  (modload "layout.ils")
+  (modload "schematic_gui.ils")
+  (modload "layout_gui.ils"))

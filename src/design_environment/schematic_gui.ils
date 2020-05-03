@@ -1,0 +1,30 @@
+; If registered with schematic cell views using deRegUserTriggers, it
+; creates a drop-down menu with a few buttons to trigger helper functions
+(defun qub::createSchematicMenu (args)
+  (letseq ((actions 
+             (list (hiCreateMenuItem 
+                     ?name 'QubCreateSelectionPinsStubs
+              	   ?itemText "Create Instance(s) Pins/Stubs)"
+                     ?callback "(qub::createSelectedInstancesPinsAndStubs nil)")
+                   (hiCreateMenuItem 
+                     ?name 'QubCreateSelectionPinsStubsPrefixed
+              	   ?itemText "Create Instance(s) Pins/Stubs (Prefixed)"
+                     ?callback "(qub::createSelectedInstancesPinsAndStubs t)")
+                   (hiCreateMenuItem 
+                     ?name 'QubCreateSchematicPinsStubs
+              	   ?itemText "Create Schematic Pins/Stubs"
+                     ?callback "(qub::createSchematicPinsAndStubs nil)")
+                   (hiCreateMenuItem 
+                     ?name 'QubCreateSchematicPinsStubsPrefixed
+              	   ?itemText "Create Schematic Pins/Stubs (Prefixed)"
+                     ?callback "(qub::createSchematicPinsAndStubs t)")
+                   (hiCreateMenuItem 
+                     ?name 'QubCreateSelectionStubs
+              	   ?itemText "Create Instance(s) Stubs"
+                     ?callback "(qub::createSelectedInstancesStubs nil)")
+                   (hiCreateMenuItem 
+                     ?name 'QubCreateSelectionStubsPrefixes
+              	   ?itemText "Create Instance(s) Stubs (Prefixed)"
+                     ?callback "(qub::createSelectedInstancesStubs t)")))
+           (pulldownMenu (hiCreatePulldownMenu 'qub_schematic_menu "QUB" actions)))
+    (list pulldownMenu)))

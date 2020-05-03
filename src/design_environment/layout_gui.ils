@@ -1,0 +1,14 @@
+(defun qub::createLayoutMenu (args)
+  (letseq ((actions 
+             (list (hiCreateMenuItem 
+                     ?name 'QubSubtractShapesButton1
+              	   ?itemText "Subtract Shapes"
+                     ?callback "(qub::subtractSmallerShapes (geGetEditCellView) (geGetSelSet))")
+                   (hiCreateMenuItem 
+                     ?name 'QubSubtractShapesButton2
+              	   ?itemText "Subtract Shapes (Remove old shapes)"
+                     ?callback "(qub::subtractSmallerShapes (geGetEditCellView) (geGetSelSet) ?delete_large_shape t ?delete_small_shapes t)")))
+           (pulldownMenu (hiCreatePulldownMenu 'qub_layout_menu 
+                                               "QUB" 
+                                               actions)))
+    (list pulldownMenu)))

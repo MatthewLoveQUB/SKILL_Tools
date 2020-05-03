@@ -22,6 +22,12 @@
 ; ade.ils
 (addToExportList '(qub:::adeDirectPlot))
 
+; schematic_gui.ils
+(addToExportList '(qub:::createLayoutMenu))
+
+; layout_gui.ils
+(addToExportList '(qub:::createSchematicMenu))
+
 ; layout.ils
 (addToExportList '(qub:::hidePaletteDuplicates
                    qub:::limitPathWidth
