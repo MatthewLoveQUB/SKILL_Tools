@@ -63,7 +63,8 @@
 ;      Length of the new schematic wire
 ;     prefix_instance_name: 
 ;       Add the name of the instance to the wire
-;       Done to avoid name clashes when different instances share the same pin name
+;       Done to avoid name clashes when different instances share 
+;       the same pin name
 (defun qub::makeTerminalStub (terminal stub_settings)
   (letseq ((cell_view terminal->cellView)
            (instance terminal->inst)
