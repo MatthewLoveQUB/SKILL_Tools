@@ -23,3 +23,15 @@
     (qub::copyObjProperties oldXVals newX)
     (qub::copyObjProperties oldYVals newY)
     (drCreateWaveform newX newY)))
+    
+; Map function fn to waveform wfm
+; This is destructive, the original waveform will be modified
+; Wrap wfm in qub::copyWaveform if you want to preserve the original waveform
+(defun qub::mapWaveform (fn wfm)
+  (letseq ((y_vec (drGetWaveformYVec wfm))
+           (n_elements (drVectorLength y_vec))
+           (stop_idx (sub1 n_elements)))
+    (for idx 0 stop_idx
+      (let ((element (drGetElem y_vec idx)))
+        (drSetElem y_vec idx (fn element))))
+    wfm))

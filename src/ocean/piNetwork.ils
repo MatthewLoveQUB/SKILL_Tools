@@ -2,7 +2,20 @@
 ; Args:
 ;   f0: float
 ;       The frequency of the plot marker
-(defun qub::ocnPiNetwork (f0)
+;   L: bool
+;      Plot eqivalent inductance of the impedance
+;   C: bool
+;      Plot eqivalent capacitance of the impedance
+;   ports: (list int int)
+;      The S-parameter index of the two ports under excitation
+;   zero_vals: bool
+;      Sets L and C values to zero if they're negative
+(defun qub::ocnPiNetwork (f0 
+                          @key 
+                          (L nil) 
+                          (C nil) 
+                          (ports (list 1 2)) 
+                          (zero_vals t))
   ; Y Network Parameters
   ; Assumed to be in the following form.
   ;
@@ -11,23 +24,51 @@
   ;   Zx     Zy
   ;   |      |
   ; O----------O
-
-  Y12 = (ypm "sp" 1 2)
-  Y11 = (ypm "sp" 1 1)
-  Y22 = (ypm "sp" 2 2)
-
-  Zz = (quotient -1.0 Y12)
-  Zx = (quotient 1.0 (plus Y11 Y12))
-  Zy = (quotient 1.0 (plus Y22 Y12))
-
-  Xx = (imag Zx)
-  Xy = (imag Zy)
-  Xz = (imag Zz)
-  
-  Rx = (real Zx)
-  Ry = (real Zy)
-  Rz = (real Zz)
-
-  winId = (newWindow)
-  (plot Xx Xy Xz Rx Ry Rz ?expr (list "Xx" "Xy" "Xz" "Rx" "Ry" "Rz") ?yNumber (list 1 1 1 2 2 2))
-  (awvPlaceXMarker winId f0 ?subwindow 1))
+  (letseq ((f (qub::sToF))
+           (p1 (car ports))
+           (p2 (cadr ports))
+           (w (times 2 qub::m.PI f))
+           (Y12 (ypm "sp" p1 p2))
+           (Y11 (ypm "sp" p1 p1))
+           (Y22 (ypm "sp" p2 p2))
+           (Zz (quotient -1.0 Y12))
+           (Zx (quotient 1.0 (plus Y11 Y12)))
+           (Zy (quotient 1.0 (plus Y22 Y12)))
+           (Xx (imag Zx))
+           (Xy (imag Zy))
+           (Xz (imag Zz))
+           (Rx (real Zx))
+           (Ry (real Zy))
+           (Rz (real Zz))
+           (Cx (qub::XToC Xx w))
+           (Cy (qub::XToC Xy w))
+           (Cz (qub::XToC Xz w))
+           (Lx (qub::XToL Xx w))
+           (Ly (qub::XToL Xy w))
+           (Lz (qub::XToL Xz w))
+           (setLC (lambda (x) 
+                    (if zero_vals
+                        (qub::mapWaveform (lambda (x) (if (lessp x 0) 0 x)) x)
+                        x)))
+           (winId (newWindow)))
+    (addTitle "Coupled Coil Analysis")
+    (addSubwindowTitle "Reactances")
+    (plot Xx Xy Xz ?expr (list "Xx" "Xy" "Xz"))
+    (addSubwindow)
+    (addSubwindowTitle "Resistances")
+    (plot Rx Ry Rz ?expr (list "Rx" "Ry" "Rz"))
+    (when L
+      (progn (addSubwindow)
+             (addSubwindowTitle "Inductances")
+             (plot (setLC Lx)
+                   (setLC Ly)
+                   (setLC Lz)
+                   ?expr (list "Lx" "Ly" "Lz"))))
+    (when C
+      (progn (addSubwindow)
+             (addSubwindowTitle "Capacitances")
+             (plot (setLC Cx)
+                   (setLC Cy)
+                   (setLC Cz)
+                   ?expr (list "Cx" "Cy" "Cz"))))
+    (awvPlaceXMarker winId f0 ?subwindow 1)))

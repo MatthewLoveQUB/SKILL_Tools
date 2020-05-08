@@ -45,4 +45,5 @@
 (addToExportList '(qub:::ocnShootThoughCurrent))
 
 ; waveforms.ils
-(addToExportList '(qub:::copyWaveform))
+(addToExportList '(qub:::copyWaveform
+                   qub:::mapWaveform))

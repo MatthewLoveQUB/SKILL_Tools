@@ -1,0 +1,60 @@
+; TODO: Use recursion to build the settings list
+; TODO: Don't, make it simple and slow. You're working on like 50 text lines
+
+; Returns a prop list of the settings
+; Args
+;   Settings: A string of the user settings
+(defun qub::parseSchematicSettings (settings_text)
+  (letseq ((lines (parseString settings_text "\n"))
+           (first_line (car lines)))
+    (when (equal first_line "qub_settings")
+      ; Parse the settings and filter out any that failed to parse
+      (letseq ((parsed_settings 
+                 (setof x (mapcar qub::parseSchematicSettingsLine lines) x))
+               (settings (list nil 
+                               'merge nil 
+                               'prefix_instance_name 
+                               'wire_length 0.75)))
+        (mapcar (lambda (x) (qub::processNewSchematicSettingsEntry x settings))
+                settings)))))
+            
+      
+(defun qub::parseSchematicSettingsLine (line)
+  (letseq ((vals (parseString x "="))
+           (cmd (car vals))
+           (arg (cadr vals)))
+    (cond ((equal cmd "merge")
+           (list nil 
+             'command cmd
+             'argument (parseString arg ",")))
+          ((equal cmd "prefix_instance_name")
+           (list nil
+             'command cmd
+             'argument arg))
+          ((equal cmd "wire_length")
+           (list nil
+             'command cmd
+             'argument arg))
+          (t (list nil 'command cmd 'argument arg)))))
+  
+(defun qub::processNewSchematicSettingsEntry (entry settings)
+  (let ((add_setting
+                 (lambda (entry settings_option)
+                   ; Check if the settings option is empty
+                   ; If so, create a new list otherwise push the item
+                   ; to the end of the list
+                   (let ((option (get settings settings_option)))
+                     (if option
+                         ; Check if the entry has already been added
+                         ; Print a warning to the user if it has
+                         (if (member entry option)
+                             (printf "Duplicate entry \"%s\" in %s\n" 
+                                     entry 
+                                     settings_option)
+                             (qub::pushEnd new_entry option))
+                         (putprop settings (list entry) settings_option))))))
+    t))
+    
+(defun qub::procEntries (entry settings)
+  (cond ((equal entry->command "merge")
+         (let
