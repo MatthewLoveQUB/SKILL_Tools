@@ -2,17 +2,15 @@
 ; Args:
 ;   f0: float
 ;       The frequency of the plot marker
-;   L: bool
-;      Plot eqivalent inductance of the impedance
-;   C: bool
-;      Plot eqivalent capacitance of the impedance
+;   LC: bool
+;      Plot eqivalent series inductance/capacitance of the impedance
 ;   ports: (list int int)
 ;      The S-parameter index of the two ports under excitation
 ;   zero_vals: bool
 ;      Sets L and C values to zero if they're negative
 (defun qub::ocnPiNetwork (f0 
                           @key 
-                          (L nil) 
+                          (LC nil) 
                           (C nil) 
                           (ports (list 1 2)) 
                           (zero_vals t))
@@ -40,6 +38,10 @@
            (Rx (real Zx))
            (Ry (real Zy))
            (Rz (real Zz))
+           (calcq (lambda (x r) (abs (quotient x r))))
+           (Qx (calcq Xx Rx))
+           (Qy (calcq Xx Ry))
+           (Qz (calcq Xx Rz))
            (Cx (qub::XToC Xx w))
            (Cy (qub::XToC Xy w))
            (Cz (qub::XToC Xz w))
@@ -59,19 +61,21 @@
     (addSubwindowTitle "Resistances")
     (plot Rx Ry Rz ?expr (list "Rx" "Ry" "Rz"))
     (awvPlaceXMarker winId f0 ?subwindow 2)
-    (when L
+    (addSubwindow)
+    (addSubwindowTitle "Q Factor")
+    (plot Qx Qy Qz ?expr (list "Qx" "Qy" "Qz"))
+    (awvPlaceXMarker winId f0 ?subwindow 3)
+    (when LC
       (let ((subwindowIdx (addSubwindow)))
-        (addSubwindowTitle "Inductances")
+        (addSubwindowTitle "Inductances/Capacitances")
         (plot (setLC Lx)
               (setLC Ly)
               (setLC Lz)
-              ?expr (list "Lx" "Ly" "Lz"))
-        (awvPlaceXMarker winId f0 ?subwindow subwindowIdx)))
-    (when C
-      (let ((subwindowIdx (addSubwindow)))
-       (addSubwindowTitle "Capacitances")
-       (plot (setLC Cx)
+              ?expr (list "Lx" "Ly" "Lz")
+              ?yNumber (list 1 1 1))
+        (plot (setLC Cx)
              (setLC Cy)
              (setLC Cz)
-             ?expr (list "Cx" "Cy" "Cz"))
+             ?expr (list "Cx" "Cy" "Cz")
+             ?yNumber (list 2 2 2))
         (awvPlaceXMarker winId f0 ?subwindow subwindowIdx)))))
