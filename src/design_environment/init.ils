@@ -1,7 +1,7 @@
 (qubCreateModule "design_environment/"
   (modload "bbox.ils")
   (modload "schematic.ils")
-  ;(modload "schematic_settings.ils")
+  (modload "schematic_settings.ils")
   (modload "ade.ils")
   (modload "layout.ils")
   (modload "schematic_gui.ils")

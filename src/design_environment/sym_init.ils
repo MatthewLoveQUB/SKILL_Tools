@@ -25,6 +25,13 @@
 ; schematic_gui.ils
 (addToExportList '(qub:::createLayoutMenu))
 
+; schematic_settings.ils
+(addToExportList '(qub:::findSettingsTextBlocks
+                   qub:::makeEmptySchematicSettings
+                   qub:::parseSchematicSettings
+                   qub:::parseSchematicSettingsLine
+                   qub:::addSettingsEntry))
+                   
 ; layout_gui.ils
 (addToExportList '(qub:::createSchematicMenu))
 
