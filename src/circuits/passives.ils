@@ -33,3 +33,23 @@
 ; Susceptance to inductance
 (defun qub::BToL (susceptance angular_frequency)
   (quotient -1.0 (times susceptance angular_frequency)))
+
+(defun qub::GToR (conductance)
+  (quotient 1.0 conductance))
+
+(defun qub::ZToY (impedance)
+  (quotient 1.0 impedance))
+  
+; Return plist of fields for R, L and C
+(defun qub::ZToSeriesRLC (impedance angular_frequency)
+  (list nil 
+        'R (real impedance) 
+        'L (qub::XToL (imag impedance) angular_frequency)
+        'C (qub::XToC (imag impedance) angular_frequency)))
+
+; Return plist of fields for R, L and C
+(defun qub::YToParallelRLC (admittance angular_frequency)
+  (list nil
+        'R (qub::GToR (real admittance))
+        'L (qub::BToL (imag admittance) angular_frequency)
+        'C (qub::BToC (imag admittance) angular_frequency)))

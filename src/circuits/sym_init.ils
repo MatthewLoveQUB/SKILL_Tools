@@ -5,7 +5,11 @@
                    qub:::XToC
                    qub:::XToL
                    qub:::BToC
-                   qub:::BToL))
+                   qub:::BToL
+                   qub:::GToR
+                   qub:::ZToY
+                   qub:::ZToSeriesRLC
+                   qub:::YToParallelRLC))
  
 ; unit_conversion.ils 
-(addToExportList '(qub:::dBmToWatts))                   
+(addToExportList '(qub:::dBmToWatts))
