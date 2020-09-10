@@ -78,7 +78,11 @@
     (addSubwindow)
     (ocnYvsYplot ?wavex backoff_simulated
                  ?wavey drainEfficiency
-                 ?titleList (list "Drain Efficiency")
+                 ?titleList (list "Drain Efficiency (%)")
+                 ?colorList (list "y2"))
+    (ocnYvsYplot ?wavex backoff_simulated
+                 ?wavey pae
+                 ?titleList (list "PAE (%)")
                  ?colorList (list "y2"))
     (awvSetXAxisLabel (currentWindow) "Backoff")))
   
