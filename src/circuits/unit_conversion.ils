@@ -1,3 +1,11 @@
 ; Convert power in dBm to Watts
 (defun qub::dBmToWatts (x)
   (quotient (pow 10.0 (quotient x 10.0)) 1e3))
+  
+; Sinusoidal Vpeak to Watts
+; Default arg assumes 50 ohms
+(defun qub::vpeakToWatts (vp @key (r 50.0))
+  (quotient (pow vp 2) (times 2.0 r)))
+  
+(defun qub::wattsToVpeak (p @key (r 50.0))
+  (sqrt (times 2.0 p r)))

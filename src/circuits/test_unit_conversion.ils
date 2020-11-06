@@ -1,0 +1,12 @@
+(qtest::runSuites
+  (qtest::TestSuite ((fn qub::dBmToWatts))
+    (qtest::TestCase check_multiples_of_ten
+      (qtest::assertEqual 
+        (qub::lcmp (fn x) for x in (list 30 20 10 0))
+        (list 1 0.1 1e-2 1e-3))))
+  (qtest::TestSuite ((fn qub::vpeakToWatts))
+    (qtest::TestCase check_1V
+      (qtest::assertEqual (fn 1) 0.01)))
+  (qtest::TestSuite ((fn qub::wattsToVpeak))
+    (qtest::TestCase check_0p01W
+      (qtest::assertEqual (fn 0.01) 1.0))))
